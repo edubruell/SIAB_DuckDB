@@ -30,3 +30,34 @@ quick_year = function(dates) {
   rem_yrs     <-  (rr >= 365L) + (rr >= 730L) + (rr >= 1096L)
   return(1970L + 4L * quadrennia + rem_yrs)
 }
+
+#====================================================================
+#1. Database related functions
+#====================================================================
+
+compute_and_overwrite <- function(.query,.table="data"){
+  #Check whether there is no temp table
+  if(dbExistsTable(con, "temp")){
+    stop("Temporary table 'temp' allready exsists")
+  }
+  
+  #Compute query
+  .query %>%
+    compute(name = "temp", temporary = FALSE)
+  
+  #Did the query compute
+  if(!dbExistsTable(con, "temp")){
+    stop("Temporary table could not be computed")
+  }
+  
+  
+  # Ensure the "data" table is dropped if it exists
+  if (dbExistsTable(con, .table)) {
+    dbRemoveTable(con, .table)
+  }
+  
+  #Rename the query
+  rename_sql <- glue('ALTER TABLE temp RENAME TO {.table}') 
+  dbExecute(con, rename_sql)
+  invisible(NULL)
+}

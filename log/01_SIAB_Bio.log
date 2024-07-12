@@ -1,0 +1,4 @@
+INFO [2024-07-12 12:05:36] Script to generate additional biographic variables from longitudinal data started
+INFO [2024-07-12 12:05:36] Adding level1 (PER EPISODE AND SOURCE) and level2 (PER EPISODE) observation counters 
+SUCCESS [2024-07-12 12:07:07] Observation counters added
+SUCCESS [2024-07-12 12:07:08] -> ASSERT: No missings in observation counters
