@@ -9,9 +9,9 @@ p_load(readstata13,
 #Load common functions
 source(here("functions","00_common_functions.R"))
 
-#Set folders
-rawdata <- folder_reference_factory("/Users/ebr/data/siab_raw")
-dbfolder <- folder_reference_factory("/Users/ebr/data/siab_db")
+#Set folders - Add
+rawdata <- folder_reference_factory("/share/raw_siab")
+dbfolder <- folder_reference_factory("/share/duckdb/")
 
 #Setup an empty database
 con <- dbConnect(duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)

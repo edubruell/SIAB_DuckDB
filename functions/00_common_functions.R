@@ -31,6 +31,17 @@ quick_year = function(dates) {
   return(1970L + 4L * quadrennia + rem_yrs)
 }
 
+#Simple input validation for functions
+validate_inputs <- function(.predicates) {
+  # Use lapply to iterate over predicates and stop on the first failure
+  results <- lapply(names(.predicates), function(error_msg) {
+    if (!.predicates[[error_msg]]) {
+      stop(error_msg)
+    }
+  })
+}
+
+
 #====================================================================
 #1. Database related functions
 #====================================================================
