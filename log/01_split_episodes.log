@@ -1,0 +1,18 @@
+INFO [2024-08-21 09:18:34] Episode splitting script started
+SUCCESS [2024-08-21 09:18:43] Variables for original episode start and end dates created
+INFO [2024-08-21 09:18:43] Checking how many observations span multiple years:
+INFO [2024-08-21 09:18:44] 49643384 observations span 1 years
+INFO [2024-08-21 09:18:44] 2176383 observations span 2 years
+INFO [2024-08-21 09:18:44] 135750 observations span 3 years
+INFO [2024-08-21 09:18:44] 26420 observations span 4 years
+INFO [2024-08-21 09:18:44] 3701 observations span 5 years
+INFO [2024-08-21 09:18:44] 1314 observations span 6 years
+INFO [2024-08-21 09:18:44] 628 observations span 7 years
+INFO [2024-08-21 09:18:44] 379 observations span 8 years
+INFO [2024-08-21 09:18:44] Expanding observation that span n years n times
+SUCCESS [2024-08-21 09:19:40] -> Expansion plan written
+SUCCESS [2024-08-21 09:20:54] -> Data expanded to copy split episodes
+SUCCESS [2024-08-21 09:21:05] -> Copied entries updated with right endepi and begepi in the base table
+SUCCESS [2024-08-21 09:21:07] CLEANUP: Expansion plan deleted from database
+SUCCESS [2024-08-21 09:21:07] Episode splitting script finished
+SUCCESS [2024-08-21 09:40:14] Biographic variables script finished

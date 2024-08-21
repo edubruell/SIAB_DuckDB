@@ -1,0 +1,520 @@
+INFO [2024-08-21 09:42:21] Modify assessment limit and flag censored wages
+SUCCESS [2024-08-21 09:42:44]  ->  limit_assess4, ln_limit_assess4 and cens added
+INFO [2024-08-21 09:42:45] 31114942 BeH wages (94%) are below the wage assessment limit
+INFO [2024-08-21 09:42:45] 1833950 BeH wages (6%) are above the wage assessment limit
+INFO [2024-08-21 09:42:45] --------------------
+INFO [2024-08-21 09:42:45] 2.9% of wages are censored for Missing Education
+INFO [2024-08-21 09:42:45] 0.9% of wages are censored for Low Education
+INFO [2024-08-21 09:42:45] 5.2% of wages are censored for Medium Education
+INFO [2024-08-21 09:42:45] 32.3% of wages are censored for High Education
+INFO [2024-08-21 09:42:45] --------------------
+INFO [2024-08-21 09:42:45] For the highly educated in age range 18 to 25 0.61% of wages are censored
+INFO [2024-08-21 09:42:45] For the highly educated in age range 25 to 30 6.71% of wages are censored
+INFO [2024-08-21 09:42:45] For the highly educated in age range 30 to 35 22.46% of wages are censored
+INFO [2024-08-21 09:42:45] For the highly educated in age range 35 to 40 37.00% of wages are censored
+INFO [2024-08-21 09:42:45] For the highly educated in age range 40 to 45 43.67% of wages are censored
+INFO [2024-08-21 09:42:45] For the highly educated in age range 45 to 50 46.33% of wages are censored
+INFO [2024-08-21 09:42:45] For the highly educated in age range 50 to 55 45.93% of wages are censored
+INFO [2024-08-21 09:42:45] For the highly educated in age range 55 to 60 43.32% of wages are censored
+INFO [2024-08-21 09:42:45] --------------------
+INFO [2024-08-21 09:42:46] 3.5% of wages are censored for Missing FT-Info employees
+INFO [2024-08-21 09:42:46] 7.2% of wages are censored for Fulltime employees
+INFO [2024-08-21 09:42:46] 0.5% of wages are censored for Parttime employees
+INFO [2024-08-21 09:42:46] --------------------
+INFO [2024-08-21 09:42:46] 8.9% of wages of Men are censored 
+INFO [2024-08-21 09:42:46] 1.6% of wages of Women are censored 
+INFO [2024-08-21 09:42:46] --------------------
+INFO [2024-08-21 09:42:46] Preapering dependent variable for imputation
+SUCCESS [2024-08-21 09:43:12]  ->  wage, ln_wage and ln_wage_cens variables added
+INFO [2024-08-21 09:43:12] Preapering control variables for imputation
+SUCCESS [2024-08-21 09:43:44]  ->  Controls variables for imputation added
+INFO [2024-08-21 09:43:44] Starting imputation run for year=1975, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:43:46]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:46] Starting imputation run for year=1975, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:43:48]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:49] Starting imputation run for year=1975, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:43:49]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:49] Starting imputation run for year=1975, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:43:50]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:50] Starting imputation run for year=1975, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:43:50]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:51] Starting imputation run for year=1975, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:43:51]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:51] Starting imputation run for year=1976, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:43:53]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:53] Starting imputation run for year=1976, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:43:55]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:55] Starting imputation run for year=1976, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:43:56]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:56] Starting imputation run for year=1976, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:43:57]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:57] Starting imputation run for year=1976, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:43:57]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:57] Starting imputation run for year=1976, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:43:58]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:43:58] Starting imputation run for year=1977, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:00]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:00] Starting imputation run for year=1977, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:02]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:02] Starting imputation run for year=1977, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:03]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:03] Starting imputation run for year=1977, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:03]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:03] Starting imputation run for year=1977, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:04]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:04] Starting imputation run for year=1977, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:04]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:04] Starting imputation run for year=1978, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:07]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:07] Starting imputation run for year=1978, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:09]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:09] Starting imputation run for year=1978, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:10]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:10] Starting imputation run for year=1978, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:11]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:11] Starting imputation run for year=1978, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:11]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:11] Starting imputation run for year=1978, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:12]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:12] Starting imputation run for year=1979, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:14]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:14] Starting imputation run for year=1979, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:16]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:17] Starting imputation run for year=1979, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:17]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:17] Starting imputation run for year=1979, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:18]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:18] Starting imputation run for year=1979, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:18]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:19] Starting imputation run for year=1979, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:19]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:19] Starting imputation run for year=1980, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:21]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:21] Starting imputation run for year=1980, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:23]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:23] Starting imputation run for year=1980, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:24]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:24] Starting imputation run for year=1980, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:24]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:25] Starting imputation run for year=1980, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:25]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:25] Starting imputation run for year=1980, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:25]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:26] Starting imputation run for year=1981, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:28]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:28] Starting imputation run for year=1981, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:30]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:30] Starting imputation run for year=1981, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:31]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:31] Starting imputation run for year=1981, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:31]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:32] Starting imputation run for year=1981, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:32]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:32] Starting imputation run for year=1981, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:33]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:33] Starting imputation run for year=1982, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:34]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:35] Starting imputation run for year=1982, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:37]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:37] Starting imputation run for year=1982, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:38]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:38] Starting imputation run for year=1982, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:38]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:39] Starting imputation run for year=1982, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:39]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:39] Starting imputation run for year=1982, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:39]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:40] Starting imputation run for year=1983, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:41]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:41] Starting imputation run for year=1983, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:43]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:44] Starting imputation run for year=1983, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:44]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:44] Starting imputation run for year=1983, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:45]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:45] Starting imputation run for year=1983, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:45]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:46] Starting imputation run for year=1983, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:46]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:46] Starting imputation run for year=1984, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:48]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:48] Starting imputation run for year=1984, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:50]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:50] Starting imputation run for year=1984, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:51]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:51] Starting imputation run for year=1984, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:52]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:52] Starting imputation run for year=1984, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:52]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:52] Starting imputation run for year=1984, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:53]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:53] Starting imputation run for year=1985, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:44:54]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:54] Starting imputation run for year=1985, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:44:57]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:57] Starting imputation run for year=1985, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:44:58]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:58] Starting imputation run for year=1985, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:44:58]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:59] Starting imputation run for year=1985, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:44:59]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:44:59] Starting imputation run for year=1985, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:44:59]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:00] Starting imputation run for year=1986, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:01]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:01] Starting imputation run for year=1986, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:04]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:04] Starting imputation run for year=1986, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:05]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:05] Starting imputation run for year=1986, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:05]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:05] Starting imputation run for year=1986, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:06]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:06] Starting imputation run for year=1986, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:06]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:06] Starting imputation run for year=1987, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:08]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:08] Starting imputation run for year=1987, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:11]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:11] Starting imputation run for year=1987, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:12]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:12] Starting imputation run for year=1987, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:12]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:12] Starting imputation run for year=1987, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:13]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:13] Starting imputation run for year=1987, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:13]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:13] Starting imputation run for year=1988, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:15]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:15] Starting imputation run for year=1988, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:18]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:18] Starting imputation run for year=1988, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:19]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:19] Starting imputation run for year=1988, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:19]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:19] Starting imputation run for year=1988, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:20]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:20] Starting imputation run for year=1988, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:20]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:20] Starting imputation run for year=1989, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:21]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:21] Starting imputation run for year=1989, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:23]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:23] Starting imputation run for year=1989, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:24]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:24] Starting imputation run for year=1989, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:24]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:25] Starting imputation run for year=1989, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:25]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:25] Starting imputation run for year=1989, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:25]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:26] Starting imputation run for year=1990, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:27]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:27] Starting imputation run for year=1990, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:29]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:29] Starting imputation run for year=1990, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:30]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:30] Starting imputation run for year=1990, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:30]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:30] Starting imputation run for year=1990, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:31]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:31] Starting imputation run for year=1990, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:31]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:31] Starting imputation run for year=1991, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:33]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:33] Starting imputation run for year=1991, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:36]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:36] Starting imputation run for year=1991, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:37]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:37] Starting imputation run for year=1991, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:38]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:38] Starting imputation run for year=1991, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:38]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:38] Starting imputation run for year=1991, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:39]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:39] Starting imputation run for year=1992, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:41]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:41] Starting imputation run for year=1992, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:43]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:43] Starting imputation run for year=1992, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:44]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:44] Starting imputation run for year=1992, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:45]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:46] Starting imputation run for year=1992, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:47]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:47] Starting imputation run for year=1992, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:48]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:48] Starting imputation run for year=1993, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:50]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:50] Starting imputation run for year=1993, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:45:53]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:53] Starting imputation run for year=1993, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:45:54]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:54] Starting imputation run for year=1993, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:45:55]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:55] Starting imputation run for year=1993, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:45:56]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:56] Starting imputation run for year=1993, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:45:57]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:57] Starting imputation run for year=1994, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:45:59]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:45:59] Starting imputation run for year=1994, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:46:02]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:02] Starting imputation run for year=1994, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:46:03]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:03] Starting imputation run for year=1994, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:46:04]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:04] Starting imputation run for year=1994, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:46:05]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:05] Starting imputation run for year=1994, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:46:06]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:06] Starting imputation run for year=1995, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:46:08]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:08] Starting imputation run for year=1995, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:46:11]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:11] Starting imputation run for year=1995, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:46:12]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:12] Starting imputation run for year=1995, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:46:13]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:13] Starting imputation run for year=1995, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:46:14]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:15] Starting imputation run for year=1995, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:46:15]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:15] Starting imputation run for year=1996, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:46:17]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:17] Starting imputation run for year=1996, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:46:20]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:20] Starting imputation run for year=1996, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:46:21]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:21] Starting imputation run for year=1996, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:46:22]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:22] Starting imputation run for year=1996, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:46:23]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:23] Starting imputation run for year=1996, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:46:24]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:24] Starting imputation run for year=1997, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:46:26]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:26] Starting imputation run for year=1997, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:46:30]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:30] Starting imputation run for year=1997, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:46:30]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:31] Starting imputation run for year=1997, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:46:32]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:32] Starting imputation run for year=1997, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:46:33]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:33] Starting imputation run for year=1997, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:46:34]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:34] Starting imputation run for year=1998, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:46:36]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:36] Starting imputation run for year=1998, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:46:39]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:39] Starting imputation run for year=1998, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:46:40]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:40] Starting imputation run for year=1998, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:46:41]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:41] Starting imputation run for year=1998, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:46:42]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:42] Starting imputation run for year=1998, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:46:43]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:43] Starting imputation run for year=1999, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:46:45]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:45] Starting imputation run for year=1999, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:46:48]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:48] Starting imputation run for year=1999, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:46:49]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:49] Starting imputation run for year=1999, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:46:50]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:50] Starting imputation run for year=1999, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:46:51]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:51] Starting imputation run for year=1999, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:46:52]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:52] Starting imputation run for year=2000, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:46:54]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:54] Starting imputation run for year=2000, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:46:57]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:57] Starting imputation run for year=2000, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:46:58]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:46:58] Starting imputation run for year=2000, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:46:59]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:00] Starting imputation run for year=2000, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:47:01]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:01] Starting imputation run for year=2000, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:47:02]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:02] Starting imputation run for year=2001, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:47:04]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:04] Starting imputation run for year=2001, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:47:07]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:07] Starting imputation run for year=2001, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:47:08]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:08] Starting imputation run for year=2001, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:47:09]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:09] Starting imputation run for year=2001, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:47:10]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:11] Starting imputation run for year=2001, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:47:11]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:11] Starting imputation run for year=2002, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:47:13]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:13] Starting imputation run for year=2002, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:47:16]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:17] Starting imputation run for year=2002, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:47:17]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:18] Starting imputation run for year=2002, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:47:19]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:19] Starting imputation run for year=2002, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:47:20]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:20] Starting imputation run for year=2002, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:47:21]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:21] Starting imputation run for year=2003, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:47:23]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:23] Starting imputation run for year=2003, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:47:26]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:26] Starting imputation run for year=2003, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:47:27]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:28] Starting imputation run for year=2003, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:47:28]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:29] Starting imputation run for year=2003, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:47:30]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:30] Starting imputation run for year=2003, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:47:31]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:31] Starting imputation run for year=2004, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:47:33]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:33] Starting imputation run for year=2004, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:47:36]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:36] Starting imputation run for year=2004, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:47:37]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:37] Starting imputation run for year=2004, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:47:38]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:38] Starting imputation run for year=2004, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:47:39]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:39] Starting imputation run for year=2004, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:47:40]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:40] Starting imputation run for year=2005, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:47:42]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:42] Starting imputation run for year=2005, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:47:45]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:45] Starting imputation run for year=2005, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:47:46]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:46] Starting imputation run for year=2005, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:47:47]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:47] Starting imputation run for year=2005, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:47:48]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:48] Starting imputation run for year=2005, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:47:48]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:49] Starting imputation run for year=2006, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:47:51]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:51] Starting imputation run for year=2006, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:47:54]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:54] Starting imputation run for year=2006, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:47:55]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:55] Starting imputation run for year=2006, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:47:56]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:56] Starting imputation run for year=2006, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:47:57]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:57] Starting imputation run for year=2006, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:47:58]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:47:58] Starting imputation run for year=2007, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:48:00]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:00] Starting imputation run for year=2007, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:48:03]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:03] Starting imputation run for year=2007, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:48:04]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:04] Starting imputation run for year=2007, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:48:05]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:05] Starting imputation run for year=2007, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:48:07]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:07] Starting imputation run for year=2007, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:48:07]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:08] Starting imputation run for year=2008, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:48:10]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:10] Starting imputation run for year=2008, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:48:13]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:13] Starting imputation run for year=2008, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:48:14]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:14] Starting imputation run for year=2008, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:48:15]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:15] Starting imputation run for year=2008, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:48:16]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:17] Starting imputation run for year=2008, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:48:17]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:17] Starting imputation run for year=2009, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:48:19]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:20] Starting imputation run for year=2009, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:48:23]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:23] Starting imputation run for year=2009, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:48:24]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:24] Starting imputation run for year=2009, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:48:25]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:25] Starting imputation run for year=2009, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:48:26]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:26] Starting imputation run for year=2009, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:48:27]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:27] Starting imputation run for year=2010, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:48:29]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:30] Starting imputation run for year=2010, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:48:33]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:33] Starting imputation run for year=2010, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:48:34]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:34] Starting imputation run for year=2010, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:48:35]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:36] Starting imputation run for year=2010, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:48:37]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:37] Starting imputation run for year=2010, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:48:38]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:38] Starting imputation run for year=2011, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:48:41]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:42] Starting imputation run for year=2011, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:48:44]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:44] Starting imputation run for year=2011, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:48:45]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:45] Starting imputation run for year=2011, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:48:47]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:47] Starting imputation run for year=2011, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:48:48]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:48] Starting imputation run for year=2011, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:48:49]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:49] Starting imputation run for year=2012, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:48:52]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:52] Starting imputation run for year=2012, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:48:55]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:55] Starting imputation run for year=2012, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:48:56]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:56] Starting imputation run for year=2012, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:48:58]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:58] Starting imputation run for year=2012, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:48:59]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:48:59] Starting imputation run for year=2012, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:49:00]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:00] Starting imputation run for year=2013, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:49:03]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:03] Starting imputation run for year=2013, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:49:05]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:05] Starting imputation run for year=2013, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:49:07]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:07] Starting imputation run for year=2013, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:49:08]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:08] Starting imputation run for year=2013, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:49:09]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:09] Starting imputation run for year=2013, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:49:10]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:10] Starting imputation run for year=2014, educ= 1 and east = 0
+SUCCESS [2024-08-21 09:49:13]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:13] Starting imputation run for year=2014, educ= 2 and east = 0
+SUCCESS [2024-08-21 09:49:16]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:16] Starting imputation run for year=2014, educ= 3 and east = 0
+SUCCESS [2024-08-21 09:49:17]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:17] Starting imputation run for year=2014, educ= 1 and east = 1
+SUCCESS [2024-08-21 09:49:18]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:18] Starting imputation run for year=2014, educ= 2 and east = 1
+SUCCESS [2024-08-21 09:49:20]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:20] Starting imputation run for year=2014, educ= 3 and east = 1
+SUCCESS [2024-08-21 09:49:20]  ->  Run finished and writen to temporary datatbase table
+INFO [2024-08-21 09:49:21] Merging imputed wage to main data
+SUCCESS [2024-08-21 09:50:08]  ->  Imputed data merged back
+INFO [2024-08-21 09:50:08] Deleting temporary imputation helper table from database
+SUCCESS [2024-08-21 09:50:08]  ->  Table deleted
+INFO [2024-08-21 09:50:08] Add imputed wages in levels
+SUCCESS [2024-08-21 09:50:51]  ->  Imputed wages in levels added
+SUCCESS [2024-08-21 09:51:35]  ->  Implausibly high wages bounded
+INFO [2024-08-21 09:51:35] The following variables are deselected from the data for cleanup: old, age_sq, age_old, age_sq_old, tenure_sq, limit_assess4, ln_limit_assess4 and  ln_wage_cens
+SUCCESS [2024-08-21 09:52:05]  ->  Cleanup finished
+SUCCESS [2024-08-21 09:52:05] Wage imputation file finished

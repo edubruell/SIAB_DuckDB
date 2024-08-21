@@ -1,0 +1,11 @@
+INFO [2024-08-21 09:18:33] Adding broad education categories
+INFO [2024-08-21 09:41:13] ausbildung = 1 encoded as educ = 1 for 10233933 cases
+INFO [2024-08-21 09:41:13] ausbildung = 2 encoded as educ = 2 for 22103893 cases
+INFO [2024-08-21 09:41:13] ausbildung = 3 encoded as educ = 1 for 190550 cases
+INFO [2024-08-21 09:41:13] ausbildung = 4 encoded as educ = 2 for 216146 cases
+INFO [2024-08-21 09:41:13] ausbildung = 5 encoded as educ = 3 for 193987 cases
+INFO [2024-08-21 09:41:13] ausbildung = 6 encoded as educ = 3 for 320183 cases
+INFO [2024-08-21 09:41:13] ausbildung = 11 encoded as educ = 3 for 663583 cases
+INFO [2024-08-21 09:41:13] ausbildung = 12 encoded as educ = 3 for 1497896 cases
+INFO [2024-08-21 09:41:13] ausbildung = NA encoded as educ = NA for 19122726 cases
+SUCCESS [2024-08-21 09:41:13] Educ variable generated

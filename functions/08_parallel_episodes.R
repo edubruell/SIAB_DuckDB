@@ -97,19 +97,19 @@ handle_parallel_episodes <- function(.connection,
     set_sort_order() %>%
     mutate(
       #count parallel employment episodes
-      parallel_jobs = sum(tmp_jobs),
+      parallel_jobs = sum(tmp_jobs, na.rm=TRUE),
       #total wage of all parallel employment episodes
-      parallel_wage = sum(tmp_wage),
+      parallel_wage = sum(tmp_wage, na.rm=TRUE),
       #total (imputed) wage of all parallel employment episodes
-      parallel_wage_imp = sum(tmp_wage_imp),
+      parallel_wage_imp = sum(tmp_wage_imp, na.rm=TRUE),
       #Attach indicator for recipience of UI benefits to all parallel episodes
-      parallel_benefits = max(tmp_benefits)
+      parallel_benefits = max(tmp_benefits, na.rm=TRUE)
     ) %>%
     #Only keep the main episode
     filter(row_number()==1) %>%
     window_order(persnr,begepi) %>%
     group_by(persnr) %>%
-    mutate(nspell = 1:n()) %>%
+    mutate(nspell = row_number()) %>%
     ungroup()  %>%
     compute_and_overwrite()
     

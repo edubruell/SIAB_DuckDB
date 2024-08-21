@@ -1,0 +1,5 @@
+INFO [2024-08-21 10:19:29] Job with highest wage  is defined as main episode
+INFO [2024-08-21 10:19:29] Generating info on parallel jobs and keeping only the main spell
+SUCCESS [2024-08-21 10:24:33] -> parallel episodes handled
+SUCCESS [2024-08-21 10:26:21]  ->  Cleanup finished
+SUCCESS [2024-08-21 10:26:21] Parallel episodes file finished

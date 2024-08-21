@@ -1,0 +1,4 @@
+INFO [2024-08-21 09:18:33] Reading limit_assess values from csv
+INFO [2024-08-21 09:18:33] Generating ao_bula, east and the limit_assess
+SUCCESS [2024-08-21 09:41:35]  -> ao_bula, east and limit_assess added
+SUCCESS [2024-08-21 09:41:35] Wage assesment ceiling file finished

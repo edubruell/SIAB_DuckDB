@@ -59,17 +59,17 @@ build_yearly_panel <- function(.connection,
   #Durations of episodes
   tbl(.connection, "data") %>%
     window_order(persnr,year,begepi,endepi,quelle_gr) %>%
-    group_by(persnr,jahr,begepi,endepi) %>%
+    group_by(persnr,year,begepi,endepi) %>%
     mutate(dur_emp      = if_else(quelle_gr == 1,endepi-begepi + 1,0),
            dur_benefits = if_else(quelle_gr == 2 | parallel_benefits == 1,endepi-begepi + 1,0)
            ) %>%
     group_by(persnr,year) %>%
     #Total time working, total time receiving UI benefits
     mutate(
-      year_days_emp      = sum(dur_emp),
-      year_days_benefits = sum(dur_benefits),
+      year_days_emp      = sum(dur_emp,na.rm=TRUE),
+      year_days_benefits = sum(dur_benefits,na.rm=TRUE),
       #Earnings=wage*duration
-      year_labor_earn    = sum(parallel_wage_imp*dur_emp)
+      year_labor_earn    = sum(parallel_wage_imp*dur_emp,na.rm=TRUE)
     ) %>%
     ungroup() %>%
     select(-dur_emp,-dur_benefits) %>%
@@ -102,7 +102,7 @@ build_yearly_panel <- function(.connection,
   #  Adjust durations to end at cutoff date
   #-----------------------------------------------------------------------------
   log_info("Adjust durations to end at cutoff date", namespace = "yearly_panel")
-  
+
   #Get day and month into a string for easy conversion to duckdb date function
   md_string <- paste0(
     "-",
@@ -111,14 +111,13 @@ build_yearly_panel <- function(.connection,
     floor(.cutoffDay)
   )
   
-
   tbl(.connection, "data") %>%
       #Generate the cutoff-date as helper variable
       mutate(cu_date = as.Date(paste0(as.integer(year),md_string)),
              tage_bet = if_else(quelle_gr==1,tage_bet - (endepi - cu_date),NA_integer_),
              tage_job = if_else(quelle_gr==1,tage_job - (endepi - cu_date),NA_integer_),
              tage_erw = if_else(quelle_gr==1 & erwstat_gr != 2,tage_erw - (endepi - cu_date),NA_integer_),
-             tage_lst = if_else(quelle_gr==2 | parallel_benefits == 1, tage_lst - (endepi - cu_date),NA_integer_)                  
+             #tage_lst = if_else(quelle_gr==2 | parallel_benefits == 1, tage_lst - (endepi - cu_date),NA_integer_)                  
              ) %>%
     select(-cu_date) %>%
     compute_and_overwrite()

@@ -60,12 +60,14 @@ con %>%
   deflate_wages(                .log_file = here("log","06_wages_deflation.log")) %>%
   impute_wages(                 .log_file = here("log","07_wages_imputation.log")) %>%
   handle_parallel_episodes(     .log_file = here("log","08_parallel_episodes.log"),
-                                .handling = "wage") %>%
+                                .handling = "wage") con %>%
   build_yearly_panel(           .log_file = here("log","09_yearly_panel.log"),
                                 .cutoffMonth = 6,
                                 .cutoffDay   = 30) %>%
   #Print the head of the table in the last step
   tbl("data")
+
+
 
 #Cleanup intermediate database tables 
 dbListTables(con) %>%

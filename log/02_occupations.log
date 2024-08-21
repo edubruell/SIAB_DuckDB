@@ -1,0 +1,59 @@
+INFO [2024-08-21 09:18:33] Occupation variable script started
+INFO [2024-08-21 09:18:33] Reading KldB92 2-digit walkover to beruf_gr
+INFO [2024-08-21 09:18:33] Following KlDB 2-digit occupations have no unique walkover to beruf_gr and will not be added to the data:
+INFO [2024-08-21 09:18:33] beruf_gr = 1 matches KldB-92-2digit occupations 1,2,3 and 4
+INFO [2024-08-21 09:18:33] beruf_gr = 2 matches KldB-92-2digit occupations 5 and 6
+INFO [2024-08-21 09:18:33] beruf_gr = 3 matches KldB-92-2digit occupations 7,8,9,10 and 11
+INFO [2024-08-21 09:18:33] beruf_gr = 4 matches KldB-92-2digit occupations 12 and 13
+INFO [2024-08-21 09:18:33] beruf_gr = 12 matches KldB-92-2digit occupations 19 and 20
+INFO [2024-08-21 09:18:33] beruf_gr = 17 matches KldB-92-2digit occupations 23 and 24
+INFO [2024-08-21 09:18:33] beruf_gr = 19 matches KldB-92-2digit occupations 25 and 26
+INFO [2024-08-21 09:18:33] beruf_gr = 28 matches KldB-92-2digit occupations 29 and 30
+INFO [2024-08-21 09:18:33] beruf_gr = 36 matches KldB-92-2digit occupations 33,34 and 37
+INFO [2024-08-21 09:18:33] beruf_gr = 37 matches KldB-92-2digit occupations 35 and 36
+INFO [2024-08-21 09:18:33] beruf_gr = 41 matches KldB-92-2digit occupations 42 and 43
+INFO [2024-08-21 09:18:33] beruf_gr = 50 matches KldB-92-2digit occupations 49 and 50
+INFO [2024-08-21 09:18:33] beruf_gr = 98 matches KldB-92-2digit occupations 80 and 81
+INFO [2024-08-21 09:18:33] beruf_gr = 108 matches KldB-92-2digit occupations 86 and 89
+INFO [2024-08-21 09:18:33] Merging KldB92 2-digit walkover to beruf_gr
+SUCCESS [2024-08-21 09:40:33]  -> Uniquely identifiable 2-digit occupation varibale (occ_kldb92_2) added
+INFO [2024-08-21 09:40:33] Reading KldB92 2-digit walkover to Blossfeld occupation classification
+INFO [2024-08-21 09:40:34] Following Blossfeld-classifications have no unique walkover to beruf_gr and will not be added to the data:
+INFO [2024-08-21 09:40:34] beruf_gr = 1 matches Blossfeld-classifications 1,11 and 5
+INFO [2024-08-21 09:40:34] beruf_gr = 2 matches Blossfeld-classifications 1 and 5
+INFO [2024-08-21 09:40:34] beruf_gr = 4 matches Blossfeld-classifications 2 and 3
+INFO [2024-08-21 09:40:34] beruf_gr = 6 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 8 matches Blossfeld-classifications 2 and 3
+INFO [2024-08-21 09:40:34] beruf_gr = 10 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 12 matches Blossfeld-classifications 2 and 3
+INFO [2024-08-21 09:40:34] beruf_gr = 19 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 28 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 29 matches Blossfeld-classifications 4 and 3
+INFO [2024-08-21 09:40:34] beruf_gr = 31 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 36 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 37 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 39 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 40 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 41 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 42 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 43 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 46 matches Blossfeld-classifications 2 and 3
+INFO [2024-08-21 09:40:34] beruf_gr = 48 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 49 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 50 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 57 matches Blossfeld-classifications 3 and 2
+INFO [2024-08-21 09:40:34] beruf_gr = 74 matches Blossfeld-classifications 11,7 and 6
+INFO [2024-08-21 09:40:34] beruf_gr = 75 matches Blossfeld-classifications 10 and 6
+INFO [2024-08-21 09:40:34] beruf_gr = 79 matches Blossfeld-classifications 11,7 and 6
+INFO [2024-08-21 09:40:34] beruf_gr = 80 matches Blossfeld-classifications 7 and 6
+INFO [2024-08-21 09:40:34] beruf_gr = 82 matches Blossfeld-classifications 4,6 and 5
+INFO [2024-08-21 09:40:34] beruf_gr = 83 matches Blossfeld-classifications 10 and 4
+INFO [2024-08-21 09:40:34] beruf_gr = 98 matches Blossfeld-classifications 7,6 and 9
+INFO [2024-08-21 09:40:34] beruf_gr = 101 matches Blossfeld-classifications 7 and 6
+INFO [2024-08-21 09:40:34] beruf_gr = 106 matches Blossfeld-classifications 7 and 4
+INFO [2024-08-21 09:40:34] beruf_gr = 108 matches Blossfeld-classifications 8,9 and 7
+INFO [2024-08-21 09:40:34] beruf_gr = 111 matches Blossfeld-classifications 9 and 8
+INFO [2024-08-21 09:40:34] beruf_gr = 113 matches Blossfeld-classifications 9 and 5
+INFO [2024-08-21 09:40:34] beruf_gr = 117 matches Blossfeld-classifications 7 and 6
+SUCCESS [2024-08-21 09:40:53] -> occ_blo variable added
+SUCCESS [2024-08-21 09:40:53] Occupation variables script finished

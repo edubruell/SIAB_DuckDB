@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project is a reimplementation of the data preparation process for the Sample of Integrated Labour Market Biographies (SIAB) based on original `STATA` reference implementation  by Wolfgang Dauth and Johann Eppelsheimer. This reimplementation uses R and DuckDB, leveraging the high-performance capabilities of DuckDB to handle large datasets efficiently, including those that exceed available memory.
+This project is a reimplementation of the data preparation process for the Sample of Integrated Labour Market Biographies (SIAB) based on original `STATA` reference implementation  by [Wolfgang Dauth and Johann  Eppelsheimer (2023)](https://labourmarketresearch.springeropen.com/articles/10.1186/s12651-023-00335-w). This reimplementation uses R and DuckDB, leveraging the high-performance capabilities of DuckDB to handle large datasets efficiently, including those that exceed available memory.
 
 ### Key Differences from the Original Implementation
 
@@ -14,11 +14,11 @@ One of the most significant differences between this reimplementation and the or
 
 ### Advantages of Using DuckDB
 
-- **High Performance**: DuckDB's in-memory database engine optimizes query performance, significantly speeding up the preparation comparad to STATA. In addition. processes like wage imputation based on observables are also much faster in R.
+- **High Performance**: DuckDB's in-memory database engine optimizes query performance, significantly speeding up the preparation compared to STATA. In addition processes like wage imputation based on observables are also much faster in R, leading to run times of less than 40 minutes for the entire workflow on a very limited virtual machine with just 8GB of RAM. 
   
 - **Big Data Capability**: This implementation can handle datasets that exceed memory limits, making it possible to extend this code to prepare the entire universe of German social security data with only minor modifications. This larger-then-memory capability was tested by running the reimplementation on a virtual machine with artificially limited memory to a size smaller than the SIAB 2% sample data.
 
-- **Portability**: Through the use of `dbplyr` and automatic SQL translation to DuckDB ensures that most of the code is pure tidyverse. Therefore, it can be easily adapted to other database systems or different big-data solutions like [tidypolars](https://github.com/etiennebacher/tidypolars). In fact only the episode splitting part uses SQL code directly.
+- **Portability**: The use of `dbplyr` and automatic SQL translation to DuckDB ensures that most of the code is a pure tidyverse implemetation. Therefore, it can be easily adapted to other database systems or different big-data solutions like [tidypolars](https://github.com/etiennebacher/tidypolars). In fact only the episode splitting part uses SQL code directly.
 
 ## Installation and Setup
 

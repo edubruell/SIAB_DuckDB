@@ -1,4 +1,18 @@
-INFO [2024-07-12 12:05:36] Script to generate additional biographic variables from longitudinal data started
-INFO [2024-07-12 12:05:36] Adding level1 (PER EPISODE AND SOURCE) and level2 (PER EPISODE) observation counters 
-SUCCESS [2024-07-12 12:07:07] Observation counters added
-SUCCESS [2024-07-12 12:07:08] -> ASSERT: No missings in observation counters
+INFO [2024-08-21 09:18:33] Script to generate additional biographic variables from longitudinal data started
+INFO [2024-08-21 09:18:33] Adding level1 (PER EPISODE AND SOURCE) and level2 (PER EPISODE) observation counters 
+SUCCESS [2024-08-21 09:22:23] -> Observation counters added
+SUCCESS [2024-08-21 09:22:23] -> ASSERT: No missings in observation counters
+INFO [2024-08-21 09:22:23] Creating emp, azubi and ein_erw variables
+SUCCESS [2024-08-21 09:23:20] -> First day in employment (ein_erw variable) created
+INFO [2024-08-21 09:23:20] Computing number of days in employment
+SUCCESS [2024-08-21 09:25:00] -> Number of days in employment (tage_erw) variable created)
+INFO [2024-08-21 09:25:00] Computing first day and number of days in establishment
+SUCCESS [2024-08-21 09:27:06] -> First day and number of days in establishment variables created)
+INFO [2024-08-21 09:27:06] Computing first day in job
+SUCCESS [2024-08-21 09:35:52] -> First day in job and job epsiode variables created
+INFO [2024-08-21 09:35:52] Computing number of days in job
+SUCCESS [2024-08-21 09:38:04] -> tage_job variable created
+INFO [2024-08-21 09:38:04] Computing number of benefit receipts
+SUCCESS [2024-08-21 09:40:13] -> anz_lst variable created
+INFO [2024-08-21 09:40:13] Computing number of days with benefit receipts
+SUCCESS [2024-08-21 09:40:14] -> tage_lst variable created
