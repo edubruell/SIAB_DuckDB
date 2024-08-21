@@ -21,7 +21,7 @@ here("functions") %>%
 
 
 #Set folder
-dbfolder <- folder_reference_factory("/Users/ebr/data/siab_db")
+dbfolder <- folder_reference_factory("/share/siabdb")
 
 # Open DuckDB connection
 con <- dbConnect(duckdb::duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
