@@ -31,7 +31,7 @@ One of the most significant differences between this reimplementation and the or
 - **R**: Ensure that R is installed on your machine.
 - **DuckDB**: Install the DuckDB package for R.
 - **tidyverse**: The code heavily relies on tidyverse packages, namely `dplyr`, `dbplyr`, `readr`, `tidyr`, `purrr`,  `stringr`, `glue` and  `here`,
-- **logger**: Logger is neede to create log-files for the data preparation workflows
+- **logger**: Logger is needed to create log-files for the data preparation workflows
 - **survival**: Contains a very fast implementation of censored normal regression used for imputing wages on observables
 
 ### Getting started
