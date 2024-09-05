@@ -1,3 +1,7 @@
+<div style="padding-top:1em; padding-bottom: 0.5em;">
+<img src="siab_duckdb.png" width = 120 align="right" />
+</div>
+
 # Reimplementation of SIAB Preparation using R and DuckDB
 
 ## Project Overview
