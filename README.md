@@ -1,8 +1,5 @@
-<div style="padding-top:1em; padding-bottom: 0.5em;">
-<img src="siab_duckdb.png" width = 120 align="right" />
-</div>
-
-# Reimplementation of SIAB Preparation using R and DuckDB
+# SIAB  DuckDB <img src="siab_duckdb.png" align="right" height="139" alt="" />
+![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-blue.svg)
 
 ## Project Overview
 
