@@ -38,15 +38,37 @@ generate_limit_marginal <- function(connection, log_file = NULL){
   }
   
   log_info("Reading limit_marginal values from csv", namespace = "limit_marginal")
-  tbl_limit_marginal <- read_csv(here("classifications","limit_marginal.csv")) 
+  tbl_limit_marginal <- read_csv(here("classifications","limit_marginal.csv")) |>
+    mutate(limit_marginal = stata_float(limit_marginal))
   
   log_info("Generating limit_marginal and marginal dummy in data", namespace ="limit_marginal")
   tbl(connection, "data") |>
-    left_join(tbl_limit_marginal, by=c("east","year"), copy=TRUE) |>
+    #Same pre-1992 rule as the assessment ceiling: 07_wages_marginal.do assigns
+    #the threshold on the year alone until 1991 and only conditions on east from
+    #1992 on. See functions/04_wage_assesment_ceiling.R.
+    mutate(east_lookup = if_else(year < 1992, 0, east)) |>
+    left_join(tbl_limit_marginal |> rename(east_lookup = east),
+              by = c("east_lookup", "year"), copy = TRUE) |>
+    select(-east_lookup) |>
+    #07_wages_marginal.do writes `gen byte marginal = 0` and then
+    #`replace marginal = 1 if tentgelt <= limit_marginal`, so the flag is never
+    #missing. The two missing cases below follow from how Stata orders its
+    #missing values, and both are reproduced on purpose because the Stata prep
+    #is the reference:
+    #
+    # - A missing tentgelt always gives 0. The SIAB codes an absent wage as an
+    #   extended missing (.a to .z, never the system missing), and an extended
+    #   missing is larger than everything, including the system missing the
+    #   do-file starts limit_marginal at. So the comparison is false whatever
+    #   the threshold is. Checked on the test data: all 32,848 missing wages at
+    #   this step are extended, none is a system missing.
+    # - A missing limit_marginal with a real wage gives 1, because any number
+    #   is at or below Stata's missing.
     mutate(marginal = case_when(
-      is.na(tentgelt) | is.na(limit_marginal) ~ NA_real_,
+      is.na(tentgelt)            ~ 0,
+      is.na(limit_marginal)      ~ 1,
       tentgelt <= limit_marginal ~ 1,
-      tentgelt > limit_marginal ~ 0
+      TRUE                       ~ 0
     )) |>
     compute_and_overwrite()
   

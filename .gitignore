@@ -15,3 +15,6 @@ CLAUDE.md
 test_data_ein_bet.dta
 test_data_job.dta
 README.html
+
+# Stata's batch log, dropped in the working directory by -b do
+/make_fixtures.log

@@ -44,7 +44,8 @@ generate_limit_assess <- function(connection, log_file = NULL){
   }
   
   log_info("Reading limit_assess values from csv", namespace = "wa_ceiling")
-  wa_ceiling <-  read_csv(here("classifications","wa_ceiling.csv")) 
+  wa_ceiling <-  read_csv(here("classifications","wa_ceiling.csv")) |>
+    mutate(limit_assess = stata_float(limit_assess))
   
   
   log_info("Generating east and the limit_assess", namespace ="wa_ceiling")
@@ -59,7 +60,15 @@ generate_limit_assess <- function(connection, log_file = NULL){
              ao_bula < 11 ~ 0, 
              TRUE ~ NA_real_
            ))   |>
-    left_join(wa_ceiling, by=c("east","year"), copy=TRUE) |>    
+    #Before 1992 there was one nationwide ceiling, and 06_wages_assessment_ceiling.do
+    #assigns it on the year alone. A spell whose federal state is unknown therefore
+    #still gets a ceiling in those years, and only loses one from 1992, when the
+    #reference starts conditioning on east. Joining on east throughout would drop
+    #those pre-1992 rows to missing.
+    mutate(east_lookup = if_else(year < 1992, 0, east)) |>
+    left_join(wa_ceiling |> rename(east_lookup = east),
+              by = c("east_lookup", "year"), copy = TRUE) |>
+    select(-east_lookup) |>
     compute_and_overwrite()
   
   log_success(" -> east and limit_assess added", namespace = "wa_ceiling")

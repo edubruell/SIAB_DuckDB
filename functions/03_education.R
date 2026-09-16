@@ -35,20 +35,20 @@ generate_educ_variable <- function(connection, log_file = NULL){
   #generate broader education classes
   tbl(connection, "data") |>
     mutate(educ = case_when(
-      ausbildung %in% c(5, 6,11,12) ~ 3L,   # degree from a university or university of applied science (Uni or FH)
-      ausbildung %in% c(2, 4) ~ 2L,   # vocational training (Ausbildung)
-      ausbildung %in% c(1, 3) ~ 1L,   # neither vocational training nor degree from university (of applied science)
+      ausbildung_imp %in% c(5, 6) ~ 3L,   # degree from a university or university of applied science (Uni or FH)
+      ausbildung_imp %in% c(2, 4) ~ 2L,   # vocational training (Ausbildung)
+      ausbildung_imp %in% c(1, 3) ~ 1L,   # neither vocational training nor degree from university (of applied science)
       TRUE ~ NA_integer_                   # If none of the conditions are met, assign NA (or some other default value)
     )) |>
     compute_and_overwrite()
   
   tbl(connection, "data") |> 
     group_by(educ) |>
-    count(ausbildung) |>
-    arrange(ausbildung) |>
+    count(ausbildung_imp) |>
+    arrange(ausbildung_imp) |>
     ungroup() |>
     collect() |>
-    glue_data("ausbildung = {ausbildung} encoded as educ = {educ} for {n} cases") |>
+    glue_data("ausbildung_imp = {ausbildung_imp} encoded as educ = {educ} for {n} cases") |>
     walk(log_info, namespace = "educ")
   
   log_success("Educ variable generated", namespace = "educ")

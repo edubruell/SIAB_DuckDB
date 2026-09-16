@@ -63,47 +63,53 @@
 generate_biographic_variables <- function(connection, log_file = NULL){
   #---------------------------------------#
   # Setup logging for SIAB_bio            #
-  #---------------------------------------# 
-  
+  #---------------------------------------#
+
   # Remove old log file if it exists
   if (!is.null(log_file) && file.exists(log_file)) {
     file.remove(log_file)
   }
-  
+
   # Clear existing log appenders
   log_appender(NULL, namespace = "siab_bio")
-  
+
   # Initialize console logger
   log_appender(appender_console, namespace = "siab_bio")
-  
+
   # Initialize file logger if log_file is specified
   if (!is.null(log_file)) {
     log_appender(appender_tee(file = log_file), namespace = "siab_bio")
   }
-  
+
   log_info("Script to generate additional biographic variables from longitudinal data started", namespace = "siab_bio")
-  
+
+  # Every window below is ordered on (begepi, spell) or (spell, begepi) rather
+  # than on spell alone. 01_split_episodes.do cuts a spell that runs over a year
+  # boundary into one row per year and gives the pieces the same spell number,
+  # so spell stopped identifying a row at the previous step. Ordering on it
+  # alone leaves ties, and a running total over tied rows hands each of them a
+  # different value from run to run. That is what made anz_lst and tage_lst move
+  # between two runs over the same data before this was written.
+
   #---------------------------------------#
   # Add OBSERVATION COUNTER               #
-  #---------------------------------------# 
+  #---------------------------------------#
   log_info("Adding level1 (PER EPISODE AND SOURCE) and level2 (PER EPISODE) observation counters ", namespace = "siab_bio")
-  
+
   tbl(connection, "data") |>
-    group_by(persnr, begepi, quelle) |>
-    window_order(persnr, begepi, quelle) |>
     #OBSERVATION COUNTER PER EPISODE AND SOURCE
-    mutate(level1 = row_number() - 1) |>
-    group_by(persnr, begepi) |>
-    window_order(persnr, begepi) |>
+    group_by(persnr, begepi, quelle) |>
+    window_order(spell) |>
+    mutate(level1 = row_number() - 1L) |>
     #OBSERVATION COUNTER PER EPISODE
-    mutate(level2 = row_number() - 1) |>
+    group_by(persnr, begepi) |>
+    window_order(spell) |>
+    mutate(level2 = row_number() - 1L) |>
     ungroup() |>
-    arrange(persnr, begepi, quelle) |>
     compute_and_overwrite()
-  
+
   log_success("-> Observation counters added", namespace = "siab_bio")
-  
-  
+
   missing_obs_counters <- tbl(connection, "data") |>
     filter(is.na(level1)|is.na(level2)) |>
     count() |>
@@ -115,235 +121,283 @@ generate_biographic_variables <- function(connection, log_file = NULL){
          call. = FALSE)
   }
   log_success("-> ASSERT: No missings in observation counters", namespace = "siab_bio")
-  
+
   #---------------------------------------#
   # FIRST DAY IN EMPLOYMENT  (ein_erw)    #
   #---------------------------------------#
-  
+
   log_info("Creating emp, azubi and ein_erw variables", namespace = "siab_bio")
-  
+
+  # 03_SIAB_bio.do:
+  #   gen byte azubi = inlist(erwstat, 102, 121, 122, 141) & grund != 154
+  #   gen byte emp   = 1 if azubi != 1 & quelle == 1 & grund != 154
+  #
+  # Both conditions have to survive a missing value the way Stata reads one.
+  # inlist() on a missing erwstat is 0, not missing, and `grund != 154` is true
+  # when grund is missing, so coalesce() stands in for both. Dropping the second
+  # test is not an option even though 02_grund154.do has already removed every
+  # grund == 154 spell: the reference keeps it, and so does this.
+  #
+  # emp is 1 or missing, never 0. That is what makes the two lines below work:
+  # a person's first employment is the smallest begorig over the emp == 1 rows,
+  # and Stata carries it to every row of the person with egen max().
   tbl(connection, "data") |>
     mutate(
-      # TAG VOCATIONAL TRAINING
-      # 03_SIAB_bio.do: inlist(erwstat, 102, 121, 122, 141)
-      azubi = if_else(erwstat %in% c(102L, 121L, 122L, 141L), 1L, 0L),
-      emp = if_else(quelle == 1 & azubi == 0, 1L, 0L)
+      azubi = if_else(coalesce(erwstat, -1L) %in% c(102L, 121L, 122L, 141L) &
+                        coalesce(grund, -1L) != 154L, 1L, 0L),
+      emp   = if_else(quelle == 1L & coalesce(grund, -1L) != 154L, 1L, NA_integer_),
+      emp   = if_else(azubi == 1L, NA_integer_, emp)
     ) |>
-    group_by(persnr, emp) |>
-    window_order(persnr, emp, begorig) |>
-    mutate(ein_erw=first(begorig)) |>
-    arrange(persnr, begepi, quelle) |>
+    group_by(persnr) |>
+    mutate(ein_erw = min(if_else(emp == 1L, begorig, NA), na.rm = TRUE)) |>
+    ungroup() |>
     compute_and_overwrite()
-  
-  log_success("-> First day in employment (ein_erw variable) created", 
+
+  log_success("-> First day in employment (ein_erw variable) created",
               namespace = "siab_bio")
-  
+
   #-----------------------------------------#
   # NUMBER OF DAYS IN EMPLOYMENT (tage_erw) #
   #-----------------------------------------#
-  
-  log_info("Computing number of days in employment", 
+
+  log_info("Computing number of days in employment",
            namespace = "siab_bio")
-  
+
+  # Only the first spell of an episode contributes its length, so parallel
+  # episodes are counted once. The running total is taken in (begepi, nrE)
+  # order, and nrE is missing outside employment, which sorts last in Stata and
+  # in DuckDB alike.
   tbl(connection, "data") |>
-    group_by(persnr, emp,begepi) |>
-    window_order(persnr, emp, begepi, spell) |>
-           #COUNTER OF EMPLOYMENT OBSERVATIONS PER EPISODE 
-           #(WITHOUT VOCATIONAL TRAINING)
-    mutate(nrE = if_else(emp == 1, row_number(), NA_integer_),
-           #AUXILIARY VARIABLE FOR EMPLOYMENT DURATIONS 
-           #(EXCLUDING PARALLEL EPISODES)
-           d   = if_else(nrE == 1, endepi-begepi+1,0)) |>
+    #COUNTER OF EMPLOYMENT OBSERVATIONS PER EPISODE
+    #(WITHOUT VOCATIONAL TRAINING)
+    group_by(persnr, emp, begepi) |>
+    window_order(spell) |>
+    mutate(nrE = if_else(emp == 1L, row_number(), NA_integer_)) |>
+    ungroup() |>
+    #AUXILIARY VARIABLE FOR EMPLOYMENT DURATIONS
+    #(EXCLUDING PARALLEL EPISODES)
+    mutate(d = if_else(!is.na(nrE) & nrE == 1L,
+                       as.integer(endepi - begepi + 1L), 0L)) |>
+    #RUNNING TOTAL OF JOB DURATIONS
     group_by(persnr) |>
-    window_order(persnr, begepi, nrE) |>
+    window_order(begepi, nrE, spell) |>
     mutate(tage_erw = cumsum(d)) |>
     ungroup() |>
-    arrange(persnr, begepi, quelle) |>
-    select(-d,-emp,-nrE)|>
+    select(-d, -emp, -nrE) |>
     compute_and_overwrite()
-    
-  log_success("-> Number of days in employment (tage_erw) variable created)", 
+
+  log_success("-> Number of days in employment (tage_erw) variable created)",
               namespace = "siab_bio")
-  
+
   #---------------------------------------------------------------------#
   # FIRST DAY (ein_bet) and NUMBER OF DAYS IN ESTABLISHMENT (tage_bet)  #
   #---------------------------------------------------------------------#
-  
-  log_info("Computing first day and number of days in establishment", 
+
+  log_info("Computing first day and number of days in establishment",
            namespace = "siab_bio")
-  
+
   #SIAB 7523 v2 carries a real establishment identifier (betnr, from betnr_siab),
   #so the grouping is by establishment as in 03_SIAB_bio.do. The SUF this code
   #was written for had only betnr, a person-specific counter that numbered the
   #establishments in one working life in order of first appearance.
-  
+  #
+  #ein_bet is the smallest begorig, the start of the unsplit spell, over the
+  #employment rows of the person and establishment. begepi would be the split
+  #episode's own start, which is later whenever the spell crossed a new year.
   tbl(connection, "data") |>
+    mutate(emp2 = if_else(quelle == 1L & !is.na(betnr) &
+                            coalesce(grund, -1L) != 154L, 1L, NA_integer_)) |>
     # First day in establishment (ein_bet)
     group_by(persnr, betnr) |>
-    mutate(ein_bet = min(begepi)) |>
+    mutate(ein_bet = min(if_else(emp2 == 1L, begorig, NA), na.rm = TRUE)) |>
+    # AUXILIARY VARIABLE MARKS DUPLICATE OBSERVATIONS PER ESTABLISHMENT AND EPISODE
     group_by(persnr, betnr, begepi, endepi) |>
-    window_order(persnr,betnr,begepi,endepi,spell) |>
-    mutate(nrB   = row_number(),
-           dauer = if_else(nrB == 1, as.integer(endepi -begepi + 1), 0L)) |>
+    window_order(spell) |>
+    mutate(nrB = if_else(!is.na(betnr) & coalesce(grund, -1L) != 154L,
+                         row_number(), NA_integer_)) |>
+    ungroup() |>
+    # CALCULATION OF THE DURATION
+    mutate(dauer = if_else(!is.na(nrB) & nrB == 1L,
+                           as.integer(endepi - begepi + 1L), 0L)) |>
+    # RUNNING TOTAL OF DAYS IN ESTABLISHMENT
     group_by(persnr, betnr) |>
-    window_order(persnr,betnr,spell) |>
-    # Number of days in establishment (tage_bet)
-    mutate(tage_bet = cumsum(dauer),
-           tage_bet = if_else(is.na(betnr),NA_integer_,tage_bet)) |>
+    window_order(spell, begepi) |>
+    mutate(tage_bet = if_else(is.na(betnr), NA_integer_, cumsum(dauer))) |>
     ungroup() |>
-    #03_SIAB_bio.do drops nrB alongside dauer
-    select(-dauer,-nrB) |>
-    arrange(persnr, begepi) |>
+    select(-emp2, -nrB, -dauer) |>
     compute_and_overwrite()
-  
-  
-  log_success("-> First day and number of days in establishment variables created)", 
-              namespace = "siab_bio")  
-    
-  #----------------------------#
-  # FIRST DAY IN JOB (ein_job) #
-  #----------------------------#
-  
-  log_info("Computing first day in job", 
+
+  log_success("-> First day and number of days in establishment variables created)",
+              namespace = "siab_bio")
+
+  #-----------------------------------------------------------------#
+  # FIRST DAY IN JOB (ein_job) AND NUMBER OF DAYS IN JOB (tage_job)  #
+  #-----------------------------------------------------------------#
+
+  log_info("Computing first day and number of days in job",
            namespace = "siab_bio")
-  
+
+  # 03_SIAB_bio.do works this block out row by row over the data sorted by
+  # person, apprenticeship, establishment and spell:
+  #
+  #   gen byte job = 1 if persnr == persnr[_n-1] & betnr == betnr[_n-1] &
+  #                       azubi == azubi[_n-1] & !missing(betnr)
+  #
+  # In that sort order the test is just "this is not the first row of its
+  # person-apprenticeship-establishment group", which is what row_number() says
+  # here without a lag. A job then ends where job is missing, so the runs of
+  # job == 1 are the jobs, and a cumulative count of the breaks names them.
+  #
+  # ein_job is the begepi of the row that opens the run, and tage_job the
+  # running duration inside it. The reference reaches both by copying from the
+  # previous row, which is a running total in disguise.
   tbl(connection, "data") |>
-    mutate(ein_job = if_else(!is.na(betnr),begepi,NA)) |>
-    window_order(persnr,azubi,betnr,spell) |>
-    mutate(job = if_else(persnr == lag(persnr) & 
-                         betnr    == lag(betnr) & 
-                         azubi  == lag(azubi) & !is.na(betnr),1L,NA_integer_)
-    ) |>
-    ungroup() |>
-    window_order(persnr,azubi,betnr,begepi,spell) |>
-    group_by(persnr,azubi,betnr,begepi) |>
-    #Tag job endings of main spell by grund
-    #grund levels, following 03_SIAB_bio.do: inlist(grund[1], 130, 134, 140, 149)
-    #130: Deregistration due to end of employment
-    #134: Deregistration due to interruption of employment for more than one month
-    #140: Simultaneous registration and deregistration due to end of employment
-    #149: Deregistration due to death
-    mutate(end = if_else(first(grund) %in% c(130L, 134L, 140L, 149L), 1L, NA)) |>
-    ungroup() |>
-    mutate(gap     = if_else(job==1,as.integer(begepi - lag(endepi) - 1), NA_integer_),
-          #COUNT AS NEW JOB IF EMPLOYER REPORTED END OF EMPLOYMENT AND GAP > 92 DAYS
-          #COUNT AS NEW JOB IF GAP > 366 DAYS
-          job = if_else((lag(end) == 1 & gap > 92) | gap > 366, NA, job),
-          job_ep_switch = if_else(job==1&is.na(lag(job)),1L,0L),
-          job_ep_switch = if_else(is.na(job_ep_switch),0L,job_ep_switch)) |>
-    group_by(persnr) |>
-    mutate(job_ep = cumsum(job_ep_switch),
-           job_ep = if_else(is.na(job),NA,job_ep)
-           ) |>
-    window_order(persnr,azubi,betnr,begepi,spell) |>
-    mutate(job_ep = if_else(!is.na(lead(job_ep)) & is.na(job_ep),lead(job_ep), job_ep)) |>
-    group_by(persnr,job_ep) |>
-    mutate(ein_job = min(ein_job),
-           ein_job = if_else(is.na(job_ep),NA,ein_job)) |>
-    ungroup() |>
-    select(-end,-gap,-job_ep_switch) |>
-    compute_and_overwrite()
-  
-  log_success("-> First day in job and job epsiode variables created", 
-              namespace = "siab_bio")  
-  
-  #----------------------------------#
-  # NUMBER OF DAYS IN JOB (tage_job) #
-  #----------------------------------#
-  
-  log_info("Computing number of days in job", 
-           namespace = "siab_bio")
-  
-  tbl(connection, "data") |>
-    window_order(persnr, azubi, betnr, begepi,spell) |>
+    # CONSIDER ENDING NOTIFICATION OF PREVIOUS MAIN EMPLOYMENT IN CASE OF GAPS
+    # grund levels, following 03_SIAB_bio.do: inlist(grund[1], 130, 134, 140, 149)
+    # 130: Deregistration due to end of employment
+    # 134: Deregistration due to interruption of employment for more than one month
+    # 140: Simultaneous registration and deregistration due to end of employment
+    # 149: Deregistration due to death
+    # AUXILIARY VARIABLE FOR NUMBER OF PARALLEL EPISODES PER JOB
     group_by(persnr, azubi, betnr, begepi) |>
-    mutate(nrA = row_number(),
-      jobdauer = as.integer(endepi - begepi + 1),
-      #Do not count duration in secondary jobs
-      jobdauer = if_else(nrA != 1, 0L, jobdauer),
-      jobdauer  = if_else(is.na(jobdauer), 0L,jobdauer)
-    ) |>
+    window_order(spell) |>
+    mutate(end = if_else(first(grund) %in% c(130L, 134L, 140L, 149L), 1L, 0L),
+           nrA = if_else(!is.na(betnr), row_number(), NA_integer_)) |>
+    # MARK SUBSEQUENT EPISODES OF JOB
+    group_by(persnr, azubi, betnr) |>
+    window_order(begepi, spell) |>
+    mutate(job = if_else(!is.na(betnr) & row_number() > 1L, 1L, NA_integer_),
+           gap = if_else(job == 1L,
+                         as.integer(begepi - lag(endepi) - 1L), NA_integer_)) |>
+    # COUNT AS NEW JOB IF EMPLOYER REPORTED END OF EMPLOYMENT AND GAP > 92 DAYS
+    # COUNT AS NEW JOB IF GAP > 366 DAYS
+    mutate(job = if_else((coalesce(lag(end), 0L) == 1L & gap > 92L) | gap > 366L,
+                         NA_integer_, job)) |>
+    # RUNS OF job == 1 ARE THE JOBS
+    mutate(job_run = cumsum(if_else(is.na(job), 1L, 0L)),
+           jobdauer = if_else(is.na(betnr), NA_integer_,
+                              as.integer(endepi - begepi + 1L)),
+           # The row that opens a job contributes its own length; a later row
+           # contributes its length only when it is the episode's first spell,
+           # so parallel episodes in the same job are not counted twice.
+           jobdauer_add = case_when(
+             is.na(betnr) ~ NA_integer_,
+             is.na(job)   ~ jobdauer,
+             nrA == 1L    ~ jobdauer,
+             TRUE         ~ 0L
+           )) |>
+    # GENERATE START DATE OF JOB AND THE RUNNING TOTAL OF ITS DURATION
+    group_by(persnr, azubi, betnr, job_run) |>
+    window_order(begepi, spell) |>
+    mutate(ein_job  = if_else(is.na(betnr), NA, first(begepi)),
+           tage_job = if_else(is.na(betnr), NA_integer_, cumsum(jobdauer_add))) |>
     ungroup() |>
-    window_order(persnr, azubi, betnr, begepi,spell) |>
-    group_by(persnr, job_ep) |>
-    mutate(
-      jobdauer = cumsum(jobdauer),
-      tage_job = if_else(is.na(job_ep),NA,jobdauer)
-    ) |>
-    ungroup() |>
-    arrange(persnr,begepi,spell) |>
-    select(-jobdauer,-nrA,-job,-job_ep) |>
+    select(-end, -nrA, -job, -gap, -job_run, -jobdauer, -jobdauer_add) |>
     compute_and_overwrite()
-  
-  log_success("-> tage_job variable created", 
-              namespace = "siab_bio")    
-    
+
+  log_success("-> ein_job and tage_job variables created",
+              namespace = "siab_bio")
+
   #--------------------------------------*
   # NUMBER OF BENEFIT RECEIPTS (anz_lst) *
   #--------------------------------------*
-    
-  log_info("Computing number of benefit receipts", 
+
+  log_info("Computing number of benefit receipts",
            namespace = "siab_bio")
-  
+
+  # nrL is missing outside a benefit episode, exactly as in the reference. The
+  # tage_lst block below relies on that: it sorts on nrL and needs the
+  # non-benefit rows to land last.
+  #
+  # A receipt counts as new when more than 10 days have passed since the end of
+  # the last one. Where there is no last one the difference is missing, and a
+  # Stata missing is larger than 10, so the first receipt of a person always
+  # counts. That is the is.na(ende_vor) branch.
   tbl(connection, "data") |>
-    #Benefit spells, following 03_SIAB_bio.do: inlist(quelle, 2, 3)
-    mutate(quelleL = if_else(quelle %in% c(2L, 3L), 1L, 0L)) |>
-    window_order(persnr, begepi, quelleL,spell) |>
+    # MARK EPISODE OF BENEFIT RECEIPT (DATA SOURCES LeH, LHG)
+    mutate(quelleL = if_else(coalesce(quelle, -1L) %in% c(2L, 3L), 1L, 0L)) |>
+    # COUNTER OF BENEFIT RECEIPTS WITHIN EPISODE
     group_by(persnr, begepi, quelleL) |>
-    mutate(nrL = row_number()) |>
-    ungroup() |>
-    window_order(persnr,spell) |>
-    group_by(persnr) |>
+    window_order(quelle, spell) |>
+    mutate(nrL = if_else(quelleL == 1L, row_number(), NA_integer_)) |>
     # COPY END DATE OF LAST BENEFIT RECEIPT TO SUBSEQUENT OBSERVATIONS
-    mutate(ende_vor = if_else(lag(quelleL)==1L, lag(endepi), NA)) |>
+    group_by(persnr) |>
+    window_order(spell, begepi) |>
+    mutate(ende_vor = if_else(lag(quelleL) == 1L, lag(endepi), NA)) |>
     fill(ende_vor, .direction = "down") |>
     ungroup() |>
     # MARK OBSERVATIONS THAT COUNT AS SEPARATE BENEFIT RECEIPTS
-    # Only 1 per episode, separate benefit receipt if gap > 10 days 
-    mutate(lst = as.integer(quelleL==1 & nrL == 1 & (begepi-ende_vor> 10)),
-           lst = if_else(is.na(lst),1L,lst)) |>
-    #RUNNING TOTAL OF BENEFIT RECEIPTS
-    #03_SIAB_bio.do: gsort persnr begepi -lst, then anz_lst accumulates lst
+    # Only 1 per episode, separate benefit receipt if gap > 10 days
+    mutate(lst = if_else(quelleL == 1L & !is.na(nrL) & nrL == 1L &
+                           (is.na(ende_vor) | begepi - ende_vor > 10L), 1L, 0L)) |>
+    # RUNNING TOTAL OF BENEFIT RECEIPTS
+    # 03_SIAB_bio.do: gsort persnr begepi -lst, then anz_lst accumulates lst
     group_by(persnr) |>
-    window_order(persnr, begepi, desc(lst)) |>
-    mutate(anz_lst = cumsum(lst))  |>
+    window_order(begepi, desc(lst), spell) |>
+    mutate(anz_lst = cumsum(lst)) |>
     ungroup() |>
-    select(-ende_vor,-lst) |>
+    select(-ende_vor, -lst) |>
     compute_and_overwrite()
-  
-  log_success("-> anz_lst variable created", 
-              namespace = "siab_bio")    
-  
+
+  log_success("-> anz_lst variable created",
+              namespace = "siab_bio")
+
   #--------------------------------------------------*
   # NUMBER OF DAYS WITH BENEFIT RECEIPT (tage_lst)   *
   #--------------------------------------------------*
-  
-  log_info("Computing number of days with benefit receipts", 
+
+  log_info("Computing number of days with benefit receipts",
            namespace = "siab_bio")
-  
+
   tbl(connection, "data") |>
     #DURATION OF BENEFIT RECEIPT (WITHOUT DURATION OF PARALLEL OBSERVATIONS)
-    mutate(lstdauer = if_else(quelleL ==1 & nrL ==1, as.integer(endepi - begepi +1), 0L)) |>
-    group_by(persnr) |>
-    window_order(persnr,spell) |>
+    mutate(lstdauer = if_else(quelleL == 1L & !is.na(nrL) & nrL == 1L,
+                              as.integer(endepi - begepi + 1L), 0L)) |>
     #03_SIAB_bio.do carries the running sum only on the main spell of each
     #episode and on non-benefit spells, then copies it to the parallel spells
+    group_by(persnr) |>
+    window_order(spell, begepi) |>
     mutate(tage_lst = cumsum(lstdauer),
-           tage_lst = if_else(nrL == 1 | quelleL == 0, tage_lst, NA_integer_)) |>
-    group_by(persnr, begepi) |>
+           tage_lst = if_else(quelleL == 0L | (!is.na(nrL) & nrL == 1L),
+                              tage_lst, NA_integer_)) |>
+    # FILL VARIABLE FOR PARALLEL OBSERVATIONS
     #nrL is missing for non-benefit spells in Stata and therefore sorts last,
     #so benefit spells come first here
-    window_order(desc(quelleL), nrL) |>
+    group_by(persnr, begepi) |>
+    window_order(nrL, spell) |>
     mutate(tage_lst = first(tage_lst)) |>
     ungroup() |>
-    select(-lstdauer,-quelleL,-nrL) |>
-    arrange(persnr,spell) |>
+    select(-lstdauer, -quelleL, -nrL) |>
     compute_and_overwrite()
 
   log_success("-> tage_lst variable created",
               namespace = "siab_bio")
+
+  #-----------------------*
+  # ADJUST MISSING VALUES *
+  #-----------------------*
+
+  # The four establishment and job variables say nothing outside the employment
+  # history, so the reference blanks them wherever the source is not BEH. A
+  # missing quelle counts as not BEH, because `quelle != 1` is true for a Stata
+  # missing. Without this the columns carry a number on benefit spells that the
+  # reference leaves empty.
+  log_info("Blanking the establishment and job variables outside quelle 1",
+           namespace = "siab_bio")
+
+  tbl(connection, "data") |>
+    mutate(not_beh = coalesce(quelle, -1L) != 1L) |>
+    mutate(ein_bet  = if_else(not_beh, NA, ein_bet),
+           tage_bet = if_else(not_beh, NA_integer_, tage_bet),
+           ein_job  = if_else(not_beh, NA, ein_job),
+           tage_job = if_else(not_beh, NA_integer_, tage_job)) |>
+    select(-not_beh) |>
+    compute_and_overwrite()
+
+  log_success("-> Establishment and job variables blanked outside quelle 1",
+              namespace = "siab_bio")
   log_success("Biographic variables script finished", namespace = "siab_bio")
   #Return the connection so we can pipe prepare functions
   return(connection)
-    
+
 }

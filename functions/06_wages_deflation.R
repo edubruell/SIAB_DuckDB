@@ -42,7 +42,8 @@ deflate_wages <- function(connection, log_file = NULL){
   }
   
   log_info("Reading cpi data from csv", namespace = "deflate_wages")
-  tbl_cpi <- read_csv(here("classifications","cpi.csv")) 
+  tbl_cpi <- read_csv(here("classifications","cpi.csv")) |>
+    mutate(cpi = stata_float(cpi))
   
   log_info("Add cpi to data and generate wage_defl, limit_marginal_defl and limit_assess_defl", namespace ="deflate_wages")
   
