@@ -18,3 +18,6 @@ README.html
 
 # Stata's batch log, dropped in the working directory by -b do
 /make_fixtures.log
+# Run logs, written by every pipeline pass. The folder is tracked, its contents are not.
+log/*
+!log/.gitkeep

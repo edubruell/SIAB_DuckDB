@@ -1,5 +1,0 @@
-INFO [2026-09-16 22:21:31] Job with longest tenure is defined as main episode
-INFO [2026-09-16 22:21:31] Generating info on parallel jobs and keeping only the main spell
-SUCCESS [2026-09-16 22:21:34] -> parallel episodes handled
-SUCCESS [2026-09-16 22:21:35]  ->  Cleanup finished
-SUCCESS [2026-09-16 22:21:35] Parallel episodes file finished
