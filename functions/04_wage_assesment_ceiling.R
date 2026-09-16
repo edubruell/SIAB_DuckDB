@@ -5,9 +5,12 @@
 # Add contribution assessment ceiling (1975 - 2017)
 # 
 # Generates the variable:
-#   - ao_bula: The German state of the employer
-#   - east: 1 if workplace in East Germany (incl. Berlin); 0 if West
+#   - east: 1 if workplace in East Germany (Berlin from 1992); 0 if West
 #   - limit_assess: contribution assessment ceiling
+#
+# Requires ao_bula, which merge_basic_bhp() brings in from the Basic
+# Establishment File. The SUF this code was written for carried ao_region
+# instead, from which ao_bula was derived as floor(ao_region/1000).
 # 
 # Notes:
 #   In Germany there is a contribution assessment ceiling ("Beitragsbemessungsgrenze"). Hence, wages are right-cencored.
@@ -44,12 +47,13 @@ generate_limit_assess <- function(.connection, .log_file = NULL){
   wa_ceiling <-  read_csv(here("classifications","wa_ceiling.csv")) 
   
   
-  log_info("Generating ao_bula, east and the limit_assess", namespace ="wa_ceiling")
+  log_info("Generating east and the limit_assess", namespace ="wa_ceiling")
  
   tbl(.connection, "data") %>%
-    mutate(ao_bula = floor(ao_region/1000),
-           east = case_when(
-             #East: Berlin, Brandenburg, Mecklenburg-Western Pomerania, Saxony, Saxony-Anhalt, Thuringia
+    mutate(east = case_when(
+             #West: Berlin until 1991, following 06_wages_assessment_ceiling.do
+             ao_bula == 11 & year < 1992 ~ 0,
+             #East: Berlin (from 1992), Brandenburg, Mecklenburg-Western Pomerania, Saxony, Saxony-Anhalt, Thuringia
              ao_bula %in% c(11, 12, 13, 14, 15, 16) ~ 1,
              #West: Schleswig-Holstein, Hamburg, Lower Saxony, Bremen, North Rhine-Westphalia, Hesse, Rhineland-Palatinate, Baden-Wuerttemberg, Bavaria, Saarland
              ao_bula < 11 ~ 0, 
@@ -58,7 +62,7 @@ generate_limit_assess <- function(.connection, .log_file = NULL){
     left_join(wa_ceiling, by=c("east","year"), copy=TRUE) %>%    
     compute_and_overwrite()
   
-  log_success(" -> ao_bula, east and limit_assess added", namespace = "wa_ceiling")
+  log_success(" -> east and limit_assess added", namespace = "wa_ceiling")
   log_success("Wage assesment ceiling file finished", namespace = "wa_ceiling")
   
   #Return the .connection so we can pipe prepare functions
