@@ -11,11 +11,11 @@ The target is the **SIAB 7523 v2**, the weakly anonymous extract covering 1975 t
 
 ### Advantages of Using DuckDB
 
-- **High Performance**: DuckDB's in-memory database engine optimizes query performance, significantly speeding up the preparation compared to STATA. Wage imputation on observables is also much faster in R. The whole workflow ran in under 40 minutes on the 2% sample of the older SUF, on a virtual machine with 8GB of RAM.
+- **High Performance**: DuckDB's in-memory database engine optimizes query performance, significantly speeding up the preparation compared to STATA. In addition processes like wage imputation based on observables are also much faster in R, leading to run times of less than 40 minutes for the entire workflow on a very limited virtual machine with just 8GB of RAM. 
+  
+- **Big Data Capability**: This implementation can handle datasets that exceed memory limits, making it possible to extend this code to prepare the entire universe of German social security data with only minor modifications. This larger-than-memory capability was tested by running the reimplementation on a virtual machine with artificially limited memory to a size smaller than the SIAB 2% sample data.
 
-- **Big Data Capability**: This implementation handles datasets that exceed memory limits, which makes it possible to extend the code to the entire universe of German social security data with minor modifications. The larger-than-memory capability was tested on a virtual machine with memory artificially limited below the size of the SIAB 2% sample.
-
-- **Portability**: The use of `dbplyr` and automatic SQL translation to DuckDB keeps most of the code a pure tidyverse implementation. It can therefore be adapted to other database systems or to different big-data solutions like [tidypolars](https://github.com/etiennebacher/tidypolars). Only the episode splitting part uses SQL code directly.
+- **Portability**: The use of `dbplyr` and automatic SQL translation to DuckDB ensures that most of the code is a pure tidyverse implementation. Therefore, it can be easily adapted to other database systems or different big-data solutions like [tidypolars](https://github.com/etiennebacher/tidypolars). In fact only the episode splitting part uses SQL code directly.
 
 ## Installation and Setup
 
