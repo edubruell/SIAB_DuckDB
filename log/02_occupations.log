@@ -1,16 +1,16 @@
-INFO [2026-09-16 19:17:47] Occupation variable script started
-INFO [2026-09-16 19:17:47] Reading the KldB-88 occupation table
-INFO [2026-09-16 19:17:47] beruf = 470 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] beruf = 555 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] beruf = 666 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] beruf = 888 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] beruf = 924 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] beruf = 995 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] beruf = 996 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] beruf = 997 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
-INFO [2026-09-16 19:17:47] Merging the 2-digit KldB-88 Berufsgruppe to beruf
-SUCCESS [2026-09-16 19:18:04]  -> 2-digit occupation variable (occ_kldb88_2) added
-INFO [2026-09-16 19:18:04] Reading the Blossfeld walkover
-INFO [2026-09-16 19:18:04] Merging the Blossfeld classification to beruf
-SUCCESS [2026-09-16 19:18:05] -> occ_blo variable added
-SUCCESS [2026-09-16 19:18:05] Occupation variables script finished
+INFO [2026-09-16 20:49:00] Occupation variable script started
+INFO [2026-09-16 20:49:00] Reading the KldB-88 occupation table
+INFO [2026-09-16 20:49:01] beruf = 470 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] beruf = 555 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] beruf = 666 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] beruf = 888 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] beruf = 924 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] beruf = 995 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] beruf = 996 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] beruf = 997 is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe
+INFO [2026-09-16 20:49:01] Merging the 2-digit KldB-88 Berufsgruppe to beruf
+SUCCESS [2026-09-16 20:49:01]  -> 2-digit occupation variable (occ_kldb88_2) added
+INFO [2026-09-16 20:49:02] Reading the Blossfeld walkover
+INFO [2026-09-16 20:49:02] Merging the Blossfeld classification to beruf
+SUCCESS [2026-09-16 20:49:02] -> occ_blo variable added
+SUCCESS [2026-09-16 20:49:02] Occupation variables script finished

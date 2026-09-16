@@ -1,10 +1,10 @@
-INFO [2026-09-16 19:17:46] Basic BHP merge started
-INFO [2026-09-16 19:17:47] Read 292693 establishment-year rows from SIAB_7523_v2_bhp_basis_v1.dta
-INFO [2026-09-16 19:17:47] Merging ao_bula, w93_3_gen on betnr and year
-SUCCESS [2026-09-16 19:18:06]  -> Basic establishment variables added
-INFO [2026-09-16 19:18:06] Match rate by source (quelle):
-INFO [2026-09-16 19:18:06] quelle = 1: 379172 of 401942 episodes matched (94.3%)
-INFO [2026-09-16 19:18:06] quelle = 2: 0 of 73670 episodes matched (0%)
-INFO [2026-09-16 19:18:06] quelle = 3: 0 of 29438 episodes matched (0%)
-SUCCESS [2026-09-16 19:18:06] CLEANUP: Establishment file deleted from database
-SUCCESS [2026-09-16 19:18:06] Basic BHP merge finished
+INFO [2026-09-16 20:49:02] Basic BHP merge started
+INFO [2026-09-16 20:49:03] Read 292693 establishment-year rows from SIAB_7523_v2_bhp_basis_v1.dta
+INFO [2026-09-16 20:49:03] Merging ao_bula, w93_3_gen on betnr and year
+SUCCESS [2026-09-16 20:49:04]  -> Basic establishment variables added
+INFO [2026-09-16 20:49:04] Match rate by source (quelle):
+INFO [2026-09-16 20:49:04] quelle = 1: 379172 of 401942 episodes matched (94.3%)
+INFO [2026-09-16 20:49:04] quelle = 2: 0 of 73670 episodes matched (0%)
+INFO [2026-09-16 20:49:04] quelle = 3: 0 of 29438 episodes matched (0%)
+SUCCESS [2026-09-16 20:49:04] CLEANUP: Establishment file deleted from database
+SUCCESS [2026-09-16 20:49:04] Basic BHP merge finished

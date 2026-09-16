@@ -11,6 +11,11 @@
 #
 #    Rscript tests/fixtures/make_fixtures.R
 #
+#  Naming steps converts only those, which is what you want after extending the
+#  do-file by one step: the fixtures already committed are left alone.
+#
+#    Rscript tests/fixtures/make_fixtures.R 10_wages_imputation
+#
 #  Parquet is written through DuckDB rather than arrow, so the test suite adds
 #  no runtime dependency beyond the ones the preparation already uses.
 #
@@ -50,7 +55,12 @@ touched <- list(
   "08_wages_deflation"          = c("tentgelt", "cpi", "wage_defl",
                                     "limit_marginal_defl", "limit_assess_defl"),
   # 09 removes rows rather than adding columns, so the key is the fixture.
-  "09_restrictions"             = character(0)
+  "09_restrictions"             = character(0),
+  # 10_wages_imputation.do drops every intermediate it builds before it ends,
+  # so the three variables its own header names are all that survive into the
+  # dump. quelle rides along because each of the step's guards is `quelle == 1`
+  # and a test has no other way to tell a BeH spell from the rest.
+  "10_wages_imputation"         = c("quelle", "cens", "wage", "wage_imp")
 )
 
 
@@ -77,6 +87,15 @@ as_stata_dates <- function(tab, step) {
     tab[[col]][out_of_range] <- NA
   }
   tab
+}
+
+requested <- commandArgs(trailingOnly = TRUE)
+if (length(requested) > 0) {
+  unknown <- setdiff(requested, names(touched))
+  if (length(unknown) > 0) {
+    stop("No such step: ", paste(unknown, collapse = ", "))
+  }
+  touched <- touched[requested]
 }
 
 con <- dbConnect(duckdb::duckdb())

@@ -63,6 +63,25 @@ sql_stata_float <- function(expression){
   sql(glue("CAST(CAST({expression} AS FLOAT) AS DOUBLE)"))
 }
 
+#Stata's greater-than, with its ordering of missing
+#
+#Stata stores a missing value as a number larger than any other, so `a > b` is
+#true when a is missing and b is not, false when b is missing, and false when
+#both are. dplyr propagates NA instead, which turns the first two cases into a
+#missing result. Every port of a `replace ... if x > y` guard has to go through
+#this, because the reference relies on the ordering: 10_wages_imputation.do
+#leaves a spell whose assessment ceiling is unknown flagged as uncensored, and
+#a case_when() that returns NA there disagrees on 15,738 rows of the test data.
+#
+#Takes both sides as SQL strings and hands back a `sql()` object, so it is used
+#inside mutate() like any other column expression.
+sql_stata_gt <- function(left, right){
+  sql(glue("(CASE WHEN {left} IS NULL AND {right} IS NULL THEN FALSE ",
+           "WHEN {left} IS NULL THEN TRUE ",
+           "WHEN {right} IS NULL THEN FALSE ",
+           "ELSE {left} > {right} END)"))
+}
+
 #Simple input validation for functions
 validate_inputs <- function(predicates) {
   # Use lapply to iterate over predicates and stop on the first failure

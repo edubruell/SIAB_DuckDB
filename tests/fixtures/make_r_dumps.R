@@ -61,7 +61,8 @@ touched <- list(
   "07_wages_marginal"           = c("tentgelt", "limit_marginal", "marginal"),
   "08_wages_deflation"          = c("tentgelt", "cpi", "wage_defl",
                                     "limit_marginal_defl", "limit_assess_defl"),
-  "09_restrictions"             = character(0)
+  "09_restrictions"             = character(0),
+  "10_wages_imputation"         = c("quelle", "cens", "wage", "wage_imp")
 )
 
 dump_step <- function(step) {
@@ -130,8 +131,21 @@ dump_step("07_wages_marginal")
 con |> deflate_wages(log_file = here("log", "06_wages_deflation.log"))
 dump_step("08_wages_deflation")
 
-# 09_restrictions has no R counterpart either.
+# 09_restrictions has no R counterpart either. The Stata fixture run takes its
+# dump and then continues from the step 08 data for the same reason: the step
+# imposes one project's sample cut, so the imputation is compared on the whole
+# dataset instead.
 dump_step("09_restrictions")
+
+# impute_wages() draws a random term for every censored wage and sets no seed of
+# its own, so two runs of the pipeline give two different wage_imp columns. The
+# seed here is the dump's, not the pipeline's: it makes this file reproducible
+# without changing what siab_main.R does. It does not bring the draws any closer
+# to Stata's, which come from a different generator seeded inside the reference
+# step, so wage_imp can only ever be compared distributionally.
+set.seed(123)
+con |> impute_wages(log_file = here("log", "07_wages_imputation.log"))
+dump_step("10_wages_imputation")
 
 #====================================================================
 #  Clean up

@@ -1,18 +1,18 @@
-INFO [2026-09-16 19:17:48] Episode splitting script started
-SUCCESS [2026-09-16 19:17:48] Variables for original episode start and end dates created
-INFO [2026-09-16 19:17:48] Checking how many observations span multiple years:
-INFO [2026-09-16 19:17:48] 464895 observations span 1 years
-INFO [2026-09-16 19:17:48] 18089 observations span 2 years
-INFO [2026-09-16 19:17:48] 2417 observations span 3 years
-INFO [2026-09-16 19:17:48] 625 observations span 4 years
-INFO [2026-09-16 19:17:48] 72 observations span 5 years
-INFO [2026-09-16 19:17:48] 20 observations span 6 years
-INFO [2026-09-16 19:17:48] 10 observations span 7 years
-INFO [2026-09-16 19:17:48] 6 observations span 8 years
-INFO [2026-09-16 19:17:48] 4 observations span 9 years
-INFO [2026-09-16 19:17:48] Expanding observation that span n years n times
-SUCCESS [2026-09-16 19:17:48] -> Expansion plan written
-SUCCESS [2026-09-16 19:17:49] -> Data expanded to copy split episodes
-SUCCESS [2026-09-16 19:17:49] -> Copied entries updated with right endepi and begepi in the base table
-SUCCESS [2026-09-16 19:17:49] CLEANUP: Expansion plan deleted from database
-SUCCESS [2026-09-16 19:17:49] Episode splitting script finished
+INFO [2026-09-16 20:48:46] Episode splitting script started
+SUCCESS [2026-09-16 20:48:47] Variables for original episode start and end dates created
+INFO [2026-09-16 20:48:47] Checking how many observations span multiple years:
+INFO [2026-09-16 20:48:47] 464895 observations span 1 years
+INFO [2026-09-16 20:48:47] 18089 observations span 2 years
+INFO [2026-09-16 20:48:47] 2417 observations span 3 years
+INFO [2026-09-16 20:48:47] 625 observations span 4 years
+INFO [2026-09-16 20:48:47] 72 observations span 5 years
+INFO [2026-09-16 20:48:47] 20 observations span 6 years
+INFO [2026-09-16 20:48:47] 10 observations span 7 years
+INFO [2026-09-16 20:48:47] 6 observations span 8 years
+INFO [2026-09-16 20:48:47] 4 observations span 9 years
+INFO [2026-09-16 20:48:47] Expanding observation that span n years n times
+SUCCESS [2026-09-16 20:48:47] -> Expansion plan written
+SUCCESS [2026-09-16 20:48:47] -> Data expanded to copy split episodes
+SUCCESS [2026-09-16 20:48:48] -> Copied entries updated with right endepi and begepi in the base table
+SUCCESS [2026-09-16 20:48:48] CLEANUP: Expansion plan deleted from database
+SUCCESS [2026-09-16 20:48:48] Episode splitting script finished

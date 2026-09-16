@@ -16,6 +16,9 @@
 	  - renames persnr_siab and betnr_siab to persnr and betnr, which is what
 	    SIAB 7523 v2 calls the keys and what the 7519-era reference expects
 	  - saves the dataset after each step into $dump
+	  - runs 09_restrictions.do for its dump but then continues from the
+	    step 08 data, because that step imposes one project's sample cut
+	    and the R pipeline has no counterpart for it
 
 	Everything else, including the pre-step block that restricts the sources and
 	generates jahr and age, is copied from 00_master_SIAB.do unchanged.
@@ -172,6 +175,19 @@ save "${dump}/08_wages_deflation.dta", replace
 
 do "${prog}/09_restrictions.do"
 save "${dump}/09_restrictions.dta", replace
+
+* 09_restrictions.do cuts the data down to one project's population: BeH spells
+* only, men only, full-time only, ages 20 to 60, and it drops spells with a
+* missing plant, a missing east flag or a zero wage. The reference's own header
+* calls the step project-specific and expects users to edit it, and the R
+* pipeline has no counterpart. Its dump above is kept so the row set stays on
+* record, but the comparison continues from the unrestricted step 08 data, so
+* the imputation is compared on all the rows the R port carries rather than on
+* that cut.
+use "${dump}/08_wages_deflation.dta", clear
+
+do "${prog}/10_wages_imputation.do"
+save "${dump}/10_wages_imputation.dta", replace
 
 dis "fixture dumps written to ${dump}"
 dis "$S_DATE $S_TIME"
