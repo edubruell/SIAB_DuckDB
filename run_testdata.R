@@ -70,6 +70,9 @@ pipeline <- con |>
   split_episodes(               log_file = here("log", "01_split_episodes.log")) |>
   reallocate_one_time_payments(  log_file = here("log", "01b_grund154.log")) |>
   generate_biographic_variables(log_file = here("log", "01_SIAB_Bio.log")) |>
+  restrict_observation_period(  min_year = 1975,
+                                max_year = 2023,
+                                log_file = here("log", "03d_observation_period.log")) |>
   generate_occupation_variables(log_file = here("log", "02_occupations.log")) |>
   generate_educ_variable(       log_file = here("log", "03_education.log")) |>
   merge_basic_bhp(              log_file = here("log", "03b_bhp_basis.log"),

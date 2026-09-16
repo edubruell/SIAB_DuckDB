@@ -164,6 +164,12 @@ dump_step("02_grund154")
 con |> generate_biographic_variables(log_file = here("log", "01_SIAB_Bio.log"))
 dump_step("03_SIAB_bio")
 
+# The master restricts to the observation period here, between 03_SIAB_bio.do
+# and 04_merge_basic_BHP.do, and make_fixtures.do keeps that position. With the
+# full span of the delivery it drops nothing, so the dumps stay comparable.
+con |> restrict_observation_period(min_year = 1975, max_year = 2023,
+                                   log_file = here("log", "03d_observation_period.log"))
+
 # The occupation crosswalks have no Stata counterpart at this position: the
 # reference merges them in 14_occ_blossfeld.do, long after step 09. The step is
 # run anyway so the dumps come off the same pipeline run_testdata.R exercises.

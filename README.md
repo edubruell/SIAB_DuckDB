@@ -45,6 +45,7 @@ The file `stata_to_db_batch_read.R` in the project main folder contains all code
 - `split_episodes()`: Splits the episodes in the SIAB data.
 - `reallocate_one_time_payments()`: Moves one-time payments onto the episodes they belong to.
 - `generate_biographic_variables()`: Generates biographical variables.
+- `restrict_observation_period()`: Keeps the episodes whose year lies in the observation period, 1975 to 2023 by default.
 - `generate_occupation_variables()`: Generates occupation-related variables.
 - `generate_educ_variable()`: Generates the education variable.
 - `merge_basic_bhp()`: Merges the Basic Establishment File.
