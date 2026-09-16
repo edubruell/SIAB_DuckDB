@@ -8,6 +8,7 @@ p_load(dplyr,  #For tidyverse compliant code
        duckdb, #Using duckdb as database engine for this code
        stringr,#String-interpolation and regex  
        glue,   #For concatenating strings and glue_data used for logs
+       scales, #label_percent() for the censoring overviews in the imputation
        data.table, #Needed only for the old readin-part (remove dependency)
        readstata13, #Reading the Basic Establishment File for the BHP merge
        here,   #Project folder navigation

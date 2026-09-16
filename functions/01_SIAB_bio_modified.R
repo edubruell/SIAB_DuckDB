@@ -104,14 +104,17 @@ generate_biographic_variables <- function(connection, log_file = NULL){
   log_success("-> Observation counters added", namespace = "siab_bio")
   
   
-  assertion_obs_counters <- tbl(connection, "data") |>
+  missing_obs_counters <- tbl(connection, "data") |>
     filter(is.na(level1)|is.na(level2)) |>
     count() |>
-    pull() == 0
-  
-  if(assertion_obs_counters){ log_success("-> ASSERT: No missings in observation counters", namespace = "siab_bio")}
-  if(!assertion_obs_counters){log_error("-> ASSERT: Missings found in observation counters", namespace = "siab_bio")
-    break}
+    pull()
+
+  if (missing_obs_counters > 0) {
+    log_error("-> ASSERT: Missings found in observation counters", namespace = "siab_bio")
+    stop(glue("{missing_obs_counters} rows have a missing observation counter"),
+         call. = FALSE)
+  }
+  log_success("-> ASSERT: No missings in observation counters", namespace = "siab_bio")
   
   #---------------------------------------#
   # FIRST DAY IN EMPLOYMENT  (ein_erw)    #
@@ -188,7 +191,8 @@ generate_biographic_variables <- function(connection, log_file = NULL){
     mutate(tage_bet = cumsum(dauer),
            tage_bet = if_else(is.na(betnr),NA_integer_,tage_bet)) |>
     ungroup() |>
-    select(-dauer) |>
+    #03_SIAB_bio.do drops nrB alongside dauer
+    select(-dauer,-nrB) |>
     arrange(persnr, begepi) |>
     compute_and_overwrite()
   
@@ -237,7 +241,7 @@ generate_biographic_variables <- function(connection, log_file = NULL){
     mutate(ein_job = min(ein_job),
            ein_job = if_else(is.na(job_ep),NA,ein_job)) |>
     ungroup() |>
-    select(-end,-gap) |>
+    select(-end,-gap,-job_ep_switch) |>
     compute_and_overwrite()
   
   log_success("-> First day in job and job epsiode variables created", 
@@ -299,10 +303,12 @@ generate_biographic_variables <- function(connection, log_file = NULL){
     mutate(lst = as.integer(quelleL==1 & nrL == 1 & (begepi-ende_vor> 10)),
            lst = if_else(is.na(lst),1L,lst)) |>
     #RUNNING TOTAL OF BENEFIT RECEIPTS
+    #03_SIAB_bio.do: gsort persnr begepi -lst, then anz_lst accumulates lst
     group_by(persnr) |>
-    mutate(lst = cumsum(lst))  |>
-    select(-ende_vor,-lst) |>
+    window_order(persnr, begepi, desc(lst)) |>
+    mutate(anz_lst = cumsum(lst))  |>
     ungroup() |>
+    select(-ende_vor,-lst) |>
     compute_and_overwrite()
   
   log_success("-> anz_lst variable created", 
@@ -317,17 +323,26 @@ generate_biographic_variables <- function(connection, log_file = NULL){
   
   tbl(connection, "data") |>
     #DURATION OF BENEFIT RECEIPT (WITHOUT DURATION OF PARALLEL OBSERVATIONS)
-    mutate(lstdauer = if_else(quelleL ==1 & nrL ==1, endepi - begepi +1, 0)) |>
-    window_order(persnr,spell) |>
+    mutate(lstdauer = if_else(quelleL ==1 & nrL ==1, as.integer(endepi - begepi +1), 0L)) |>
     group_by(persnr) |>
-    mutate(tage_lst = cumsum(lstdauer)) |>
+    window_order(persnr,spell) |>
+    #03_SIAB_bio.do carries the running sum only on the main spell of each
+    #episode and on non-benefit spells, then copies it to the parallel spells
+    mutate(tage_lst = cumsum(lstdauer),
+           tage_lst = if_else(nrL == 1 | quelleL == 0, tage_lst, NA_integer_)) |>
+    group_by(persnr, begepi) |>
+    #nrL is missing for non-benefit spells in Stata and therefore sorts last,
+    #so benefit spells come first here
+    window_order(desc(quelleL), nrL) |>
+    mutate(tage_lst = first(tage_lst)) |>
     ungroup() |>
     select(-lstdauer,-quelleL,-nrL) |>
-    arrange(persnr,spell)
-    
-  log_success("-> tage_lst variable created", 
-              namespace = "siab_bio")    
-  log_success("Biographic variables script finished", namespace = "split_episodes")
+    arrange(persnr,spell) |>
+    compute_and_overwrite()
+
+  log_success("-> tage_lst variable created",
+              namespace = "siab_bio")
+  log_success("Biographic variables script finished", namespace = "siab_bio")
   #Return the connection so we can pipe prepare functions
   return(connection)
     

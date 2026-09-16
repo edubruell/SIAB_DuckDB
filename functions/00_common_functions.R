@@ -10,16 +10,18 @@ folder_reference_factory <- function(target_folder){
   stopifnot("Please set the path to a target_folder" = !is.null(target_folder))
   function(...){
     if (!missing(..1)) {
-      abs <- rprojroot:::is_absolute_path(..1)
-      if (all(abs)) {
-        return(path(...))
+      #Same test rprojroot uses internally, inlined so the factory does not
+      #depend on another package's unexported functions
+      absolute <- grepl("^[/\\\\~]|^[a-zA-Z]:[/\\\\]", ..1)
+      if (all(absolute)) {
+        return(file.path(...))
       }
-      if (any(abs)) {
-        stop("Combination of absolute and relative paths not supported.", 
+      if (any(absolute)) {
+        stop("Combination of absolute and relative paths not supported.",
              call. = FALSE)
       }
     }
-    rprojroot:::path(target_folder, ...)
+    file.path(target_folder, ...)
   }
 }
 

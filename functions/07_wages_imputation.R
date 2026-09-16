@@ -50,7 +50,7 @@ impute_wages <- function(connection, log_file = NULL){
   
   #Check whether there is no temp table
   if(dbExistsTable(connection, "tmp_imputation")){
-    log_warnings("Temporary table for wage imputation 'tmp_imputation' allready exsisted at start!")
+    log_warn("Temporary table for wage imputation 'tmp_imputation' already existed at start!", namespace = "impute_wages")
     dbRemoveTable(connection,  "tmp_imputation")
     log_info("-> 'tmp_imputation' table deleted to create new imputation run", namespace = "impute_wages")
     
@@ -273,14 +273,16 @@ impute_wages <- function(connection, log_file = NULL){
                as.factor(frau) + age + age_sq + age_old + age_sq_old + tage_job +
                tenure_sq,
              data=temp_tbl, dist='gaussian')
-    #Standard error of regression
-    se<-tfit[[8]]
-    #Regression prediction
+    #Standard error of regression, by name rather than by position
+    se <- tfit$scale
+    #Regression prediction. survreg drops rows with a missing model variable,
+    #while na.omit() drops rows with a missing value in any column, so predict
+    #on the frame we keep instead of assuming the two row sets coincide.
+    temp_tbl <- na.omit(temp_tbl)
     temp_tbl <- temp_tbl |>
-      na.omit() |>
-      mutate(xb00       = predict(tfit),
-             alpha00    = (ln_limit_assess4-xb00)/se,
-             imp_values =  xb00 + se * qnorm( runif(length(xb00)) * (1-pnorm(alpha00) ) + pnorm(alpha00)))
+      mutate(xb         = predict(tfit, newdata = temp_tbl),
+             alpha      = (ln_limit_assess4-xb)/se,
+             imp_values =  xb + se * qnorm( runif(n()) * (1-pnorm(alpha) ) + pnorm(alpha)))
     
     #Make sure the imputation produces no values below social security contribution
     assertion_below_social_security <- temp_tbl |>
@@ -289,7 +291,7 @@ impute_wages <- function(connection, log_file = NULL){
     
     if(!assertion_below_social_security){ 
      glue("Imputed wage(s) below censoring limit in year {plan_year} and education group {plan_educ_tmp} and east = {plan_east}") |>
-      log_warnings()
+      log_warn(namespace = "impute_wages")
     }
     
     #keep only what's needed 
@@ -346,17 +348,23 @@ impute_wages <- function(connection, log_file = NULL){
   # (in extremely rare cases imputed wages could by chance be inplausible high)
   #-----------------------------------------------------------------------------
   
+  #10_wages_imputation.do takes the 99th percentile of wage_imp, the level, not
+  #of its logarithm:
+  #  sum wage_imp, d
+  #  global maxWage = 10 * r(p99)
+  #10 seems awfully high for me as a cutoff.
+  #2 would seem more reasonable to exclude weirdly high observations
+  #But that's what's also in the original code
   max_wage_bound <- tbl(connection,"data") |>
-    #10 seems awfully high for me as a cutoff. 
-    #2 would seem more reasonable to exclude weirdly high observations
-    #But that's what's also in the original code
-    summarise(max_wage = quantile(ln_wage_imp,0.99)*10) |>
+    summarise(max_wage = quantile(wage_imp,0.99)*10) |>
     collect() |>
     pull(max_wage)
 
+  #ln_wage_imp is capped first, because a mutate() that reassigned wage_imp
+  #first would test the already capped value and never bind
   tbl(connection,"data") |>
-    mutate(ln_wage_imp = if_else(ln_wage_imp > max_wage_bound,max_wage_bound,ln_wage_imp),
-           wage_imp = if_else(ln_wage_imp > max_wage_bound,exp(max_wage_bound),wage_imp)) |>
+    mutate(ln_wage_imp = if_else(wage_imp > max_wage_bound,log(max_wage_bound),ln_wage_imp),
+           wage_imp    = if_else(wage_imp > max_wage_bound,max_wage_bound,wage_imp)) |>
     compute_and_overwrite()
   
   log_success(" ->  Implausibly high wages bounded", namespace = "impute_wages")

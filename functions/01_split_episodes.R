@@ -91,9 +91,9 @@ split_episodes <- function(connection, log_file = NULL){
     tbl(connection,"data") |>
       mutate(year_instance = year(begepi) - 1 + year_instance) |>
       mutate(
-        #Set the begin date of all clones to January 1st and use the copy instance year
+        #For all clone spells except the last of the clone group: set the end date to 31.12.
         endepi = if_else(year_instance<year(endepi), as.Date(paste0(as.integer(year_instance),"-12", "-31")), endepi),
-        #For all clone spell except the last of the clone group: set the end date to 31.12.
+        #Set the begin date of all clones to January 1st and use the copy instance year
         begepi = if_else(year_instance>year(begepi), as.Date(paste0(as.integer(year_instance),"-01", "-01")), begepi),
         #Update the variables 'jahr' and age
         year   = year(begepi),
