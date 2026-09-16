@@ -28,14 +28,14 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
 
-build_yearly_panel <- function(.connection, 
-                               .log_file = NULL,
-                               .cutoffMonth = 6,
-                               .cutoffDay   = 30){
+build_yearly_panel <- function(connection, 
+                               log_file = NULL,
+                               cutoff_month = 6,
+                               cutoff_day   = 30){
   
   # Remove old log file if it exists
-  if (!is.null(.log_file) && file.exists(.log_file)) {
-    file.remove(.log_file)
+  if (!is.null(log_file) && file.exists(log_file)) {
+    file.remove(log_file)
   }
   
   # Clear existing log appenders
@@ -45,8 +45,8 @@ build_yearly_panel <- function(.connection,
   log_appender(appender_console, namespace = "yearly_panel")
   
   # Initialize file logger if log_file is specified
-  if (!is.null(.log_file)) {
-    log_appender(appender_tee(file = .log_file), namespace = "yearly_panel")
+  if (!is.null(log_file)) {
+    log_appender(appender_tee(file = log_file), namespace = "yearly_panel")
   }
   
   
@@ -57,30 +57,30 @@ build_yearly_panel <- function(.connection,
   log_info("Generating aggregate employment outcomes: days employed, labor earnings ", namespace = "yearly_panel")
   
   #Durations of episodes
-  tbl(.connection, "data") %>%
-    window_order(persnr,year,begepi,endepi,quelle) %>%
-    group_by(persnr,year,begepi,endepi) %>%
+  tbl(connection, "data") |>
+    window_order(persnr,year,begepi,endepi,quelle) |>
+    group_by(persnr,year,begepi,endepi) |>
     mutate(dur_emp      = if_else(quelle == 1,endepi-begepi + 1,0),
            #16_yearly_panel.do also allows the legacy code quelle == 16, which
            #does not occur in SIAB 7523 v2
            dur_benefits = if_else(quelle == 2 | parallel_benefits == 1,endepi-begepi + 1,0)
-           ) %>%
-    group_by(persnr,year) %>%
+           ) |>
+    group_by(persnr,year) |>
     #Total time working, total time receiving UI benefits
     mutate(
       year_days_emp      = sum(dur_emp,na.rm=TRUE),
       year_days_benefits = sum(dur_benefits,na.rm=TRUE),
       #Earnings=wage*duration
       year_labor_earn    = sum(parallel_wage_imp*dur_emp,na.rm=TRUE)
-    ) %>%
-    ungroup() %>%
-    select(-dur_emp,-dur_benefits) %>%
+    ) |>
+    ungroup() |>
+    select(-dur_emp,-dur_benefits) |>
     compute_and_overwrite()
   
   log_success("->  year_days_emp, year_days_benefits and year_labor_earn generated", namespace = "yearly_panel")
   
   #Transfer dates into strictly ascending numbers
-  cutoff_num = 100 * .cutoffMonth + .cutoffDay
+  cutoff_num = 100 * cutoff_month + cutoff_day
   #This is an artefact of the original code being from STATA, duckdb should be able to handle dates directly but alas
   
   #-----------------------------------------------------------------------------
@@ -88,14 +88,14 @@ build_yearly_panel <- function(.connection,
   #-----------------------------------------------------------------------------
   log_info("Keep only episodes that include the cutoff date", namespace = "yearly_panel")
   
-  tbl(.connection, "data") %>%
+  tbl(connection, "data") |>
     mutate(#begin of episodes
            begepi_num = 100 * month(begepi) + day(begepi),
            #end of episodes
-           endepi_num = 100 * month(endepi) + day(endepi)) %>%
+           endepi_num = 100 * month(endepi) + day(endepi)) |>
     #Keep only episodes that include the cutoff date
-    filter(begepi_num <= cutoff_num & cutoff_num <= endepi_num) %>%
-    select(-begepi_num,-endepi_num) %>%
+    filter(begepi_num <= cutoff_num & cutoff_num <= endepi_num) |>
+    select(-begepi_num,-endepi_num) |>
     compute_and_overwrite()
 
   log_success("->  Only episodes including the cutoff data included", namespace = "yearly_panel")
@@ -108,26 +108,26 @@ build_yearly_panel <- function(.connection,
   #Get day and month into a string for easy conversion to duckdb date function
   md_string <- paste0(
     "-",
-    if_else(.cutoffMonth<10,paste0("0",floor(.cutoffMonth)),paste0(floor(.cutoffMonth))),
+    if_else(cutoff_month<10,paste0("0",floor(cutoff_month)),paste0(floor(cutoff_month))),
     "-",
-    floor(.cutoffDay)
+    floor(cutoff_day)
   )
   
-  tbl(.connection, "data") %>%
+  tbl(connection, "data") |>
       #Generate the cutoff-date as helper variable
       mutate(cu_date = as.Date(paste0(as.integer(year),md_string)),
              tage_bet = if_else(quelle==1,tage_bet - (endepi - cu_date),NA_integer_),
              tage_job = if_else(quelle==1,tage_job - (endepi - cu_date),NA_integer_),
              tage_erw = if_else(quelle==1 & !erwstat %in% c(102L, 121L, 122L, 141L, 144L),tage_erw - (endepi - cu_date),NA_integer_),
              #tage_lst = if_else(quelle==2 | parallel_benefits == 1, tage_lst - (endepi - cu_date),NA_integer_)                  
-             ) %>%
-    select(-cu_date) %>%
+             ) |>
+    select(-cu_date) |>
     compute_and_overwrite()
 
   log_success("-> Durations adjusted", namespace = "yearly_panel")
   log_success("Yearly panel file finished", namespace = "yearly_panel")
   
-  #Return the .connection so we can pipe prepare functions
-  return(.connection)
+  #Return the connection so we can pipe prepare functions
+  return(connection)
 
 }

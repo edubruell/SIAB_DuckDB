@@ -23,10 +23,10 @@
 # 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-generate_occupation_variables <- function(.connection, .log_file = NULL){
+generate_occupation_variables <- function(connection, log_file = NULL){
   # Remove old log file if it exists
-  if (!is.null(.log_file) && file.exists(.log_file)) {
-    file.remove(.log_file)
+  if (!is.null(log_file) && file.exists(log_file)) {
+    file.remove(log_file)
   }
   
   # Clear existing log appenders
@@ -36,43 +36,43 @@ generate_occupation_variables <- function(.connection, .log_file = NULL){
   log_appender(appender_console, namespace = "occ_vars")
   
   # Initialize file logger if log_file is specified
-  if (!is.null(.log_file)) {
-    log_appender(appender_tee(file = .log_file), namespace = "occ_vars")
+  if (!is.null(log_file)) {
+    log_appender(appender_tee(file = log_file), namespace = "occ_vars")
   }
   
   log_info("Occupation variable script started", namespace = "occ_vars")
   
   log_info("Reading the KldB-88 occupation table", namespace = "occ_vars")
   kldb88_2d <- read_csv(here("classifications", "kldb88_beruf.csv"),
-                        show_col_types = FALSE) %>%
+                        show_col_types = FALSE) |>
     select(beruf, occ_kldb88_2 = kldb88_2)
   
   #Report the codes that sit outside the KldB-88 structure and get no Berufsgruppe
-  kldb88_2d %>%
-    filter(is.na(occ_kldb88_2)) %>%
-    glue_data("beruf = {beruf} is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe") %>%
+  kldb88_2d |>
+    filter(is.na(occ_kldb88_2)) |>
+    glue_data("beruf = {beruf} is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe") |>
     walk(log_info, namespace = "occ_vars")
   
   log_info("Merging the 2-digit KldB-88 Berufsgruppe to beruf", namespace = "occ_vars")
-  tbl(.connection, "data") %>%
-    left_join(kldb88_2d, by = "beruf", copy = TRUE) %>%
+  tbl(connection, "data") |>
+    left_join(kldb88_2d, by = "beruf", copy = TRUE) |>
     compute_and_overwrite()
   
   log_success(" -> 2-digit occupation variable (occ_kldb88_2) added", namespace = "occ_vars")
   
   log_info("Reading the Blossfeld walkover", namespace = "occ_vars")
   occblo <- read_csv(here("classifications", "walkover_beruf_occblo.csv"),
-                     show_col_types = FALSE) %>%
+                     show_col_types = FALSE) |>
     select(beruf, occ_blo)
   
   log_info("Merging the Blossfeld classification to beruf", namespace = "occ_vars")
-  tbl(.connection, "data") %>%
-    left_join(occblo, by = "beruf", copy = TRUE) %>%
+  tbl(connection, "data") |>
+    left_join(occblo, by = "beruf", copy = TRUE) |>
     compute_and_overwrite()
   
   log_success("-> occ_blo variable added", namespace = "occ_vars")    
   log_success("Occupation variables script finished", namespace = "occ_vars")
   
-  #Return the .connection so we can pipe prepare functions
-  return(.connection)
+  #Return the connection so we can pipe prepare functions
+  return(connection)
 }

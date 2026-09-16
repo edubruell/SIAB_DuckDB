@@ -19,11 +19,11 @@
 #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-generate_limit_marginal <- function(.connection, .log_file = NULL){
+generate_limit_marginal <- function(connection, log_file = NULL){
   
   # Remove old log file if it exists
-  if (!is.null(.log_file) && file.exists(.log_file)) {
-    file.remove(.log_file)
+  if (!is.null(log_file) && file.exists(log_file)) {
+    file.remove(log_file)
   }
   
   # Clear existing log appenders
@@ -33,28 +33,28 @@ generate_limit_marginal <- function(.connection, .log_file = NULL){
   log_appender(appender_console, namespace = "limit_marginal")
   
   # Initialize file logger if log_file is specified
-  if (!is.null(.log_file)) {
-    log_appender(appender_tee(file = .log_file), namespace = "limit_marginal")
+  if (!is.null(log_file)) {
+    log_appender(appender_tee(file = log_file), namespace = "limit_marginal")
   }
   
   log_info("Reading limit_marginal values from csv", namespace = "limit_marginal")
   tbl_limit_marginal <- read_csv(here("classifications","limit_marginal.csv")) 
   
   log_info("Generating limit_marginal and marginal dummy in data", namespace ="limit_marginal")
-  tbl(.connection, "data") %>%
-    left_join(tbl_limit_marginal, by=c("east","year"), copy=TRUE) %>%
+  tbl(connection, "data") |>
+    left_join(tbl_limit_marginal, by=c("east","year"), copy=TRUE) |>
     mutate(marginal = case_when(
       is.na(tentgelt) | is.na(limit_marginal) ~ NA_real_,
       tentgelt <= limit_marginal ~ 1,
       tentgelt > limit_marginal ~ 0
-    )) %>%
+    )) |>
     compute_and_overwrite()
   
   log_success(" ->  limit_amarginal and marginal added", namespace = "limit_marginal")
   log_success("Marginal Part-Time Income Threshold and Flag affected records ", namespace = "limit_marginal")
   
-  #Return the .connection so we can pipe prepare functions
-  return(.connection)
+  #Return the connection so we can pipe prepare functions
+  return(connection)
   
 }   
   

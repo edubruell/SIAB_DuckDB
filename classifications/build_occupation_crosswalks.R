@@ -50,35 +50,35 @@ read_kldb88_structure <- function(url) {
   path  <- unzip(zipfile, files = inner, exdir = tempdir())
   # Nine lines of provenance header precede the column names.
   read_delim(path, delim = ";", skip = 8, col_types = cols(.default = col_character()),
-             locale = locale(encoding = "UTF-8")) %>%
-    set_names(c("code", "level", "title_de", "unit")) %>%
-    select(code, level, title_de) %>%
+             locale = locale(encoding = "UTF-8")) |>
+    set_names(c("code", "level", "title_de", "unit")) |>
+    select(code, level, title_de) |>
     mutate(level = as.integer(level))
 }
 
 kldb88 <- read_kldb88_structure(kldb_url)
 
-berufsordnung <- kldb88 %>%
-  filter(level == 4) %>%
+berufsordnung <- kldb88 |>
+  filter(level == 4) |>
   transmute(beruf = as.integer(code), kldb88_de = title_de)
 
-berufsgruppe <- kldb88 %>%
-  filter(level == 3) %>%
+berufsgruppe <- kldb88 |>
+  filter(level == 3) |>
   transmute(kldb88_2 = as.integer(code), kldb88_2_de = title_de)
 
-berufsbereich <- kldb88 %>%
-  filter(level == 1) %>%
+berufsbereich <- kldb88 |>
+  filter(level == 1) |>
   transmute(kldb88_1 = code, kldb88_1_de = title_de)
 
 # Level 1 is a roman numeral, so the parent of each Berufsgruppe is carried down
 # the file rather than derived from the code.
-hierarchy <- kldb88 %>%
-  filter(level %in% c(1, 3, 4)) %>%
+hierarchy <- kldb88 |>
+  filter(level %in% c(1, 3, 4)) |>
   # Level 1 codes are roman numerals, so only level-3 codes are made numeric.
   mutate(kldb88_1 = if_else(level == 1, code, NA_character_),
-         kldb88_2 = if_else(level == 3, suppressWarnings(as.integer(code)), NA_integer_)) %>%
-  fill(kldb88_1, kldb88_2) %>%
-  filter(level == 4) %>%
+         kldb88_2 = if_else(level == 3, suppressWarnings(as.integer(code)), NA_integer_)) |>
+  fill(kldb88_1, kldb88_2) |>
+  filter(level == 4) |>
   transmute(beruf = as.integer(code), kldb88_2, kldb88_1)
 
 # --- SIAB value labels and observed counts -----------------------------------
@@ -88,17 +88,17 @@ label_tables <- attr(siab_head, "label.table")
 
 label_tbl <- function(name, column) {
   tbl <- label_tables[[name]]
-  tibble(beruf = as.integer(tbl), !!column := names(tbl)) %>%
-    filter(beruf < 2000) %>%
+  tibble(beruf = as.integer(tbl), !!column := names(tbl)) |>
+    filter(beruf < 2000) |>
     # The labels repeat the code as a prefix: "011 Landwirte".
     mutate(!!column := str_remove(.data[[column]], "^\\s*\\d+\\s+"))
 }
 
-siab_labels <- label_tbl("beruf_de", "label_de") %>%
+siab_labels <- label_tbl("beruf_de", "label_de") |>
   left_join(label_tbl("beruf_en", "label_en"), by = "beruf")
 
-counts <- read.dta13(siab_file, convert.factors = FALSE, select.cols = "beruf") %>%
-  count(beruf, name = "n_siab") %>%
+counts <- read.dta13(siab_file, convert.factors = FALSE, select.cols = "beruf") |>
+  count(beruf, name = "n_siab") |>
   filter(!is.na(beruf), beruf < 2000)
 
 # --- The Blossfeld recode ----------------------------------------------------
@@ -151,32 +151,32 @@ expand_rule <- function(spec) {
   if (length(spec) == 1L) spec else seq(spec[1], spec[2])
 }
 
-blossfeld <- blossfeld_rules %>%
-  imap(~tibble(beruf = unlist(map(.x, expand_rule)), occ_blo = as.integer(.y))) %>%
+blossfeld <- blossfeld_rules |>
+  imap(~tibble(beruf = unlist(map(.x, expand_rule)), occ_blo = as.integer(.y))) |>
   bind_rows()
 
 stopifnot(!any(duplicated(blossfeld$beruf)))
 
 # --- Assemble and write ------------------------------------------------------
 
-kldb88_beruf <- siab_labels %>%
-  left_join(berufsordnung, by = "beruf") %>%
-  left_join(hierarchy,     by = "beruf") %>%
-  left_join(berufsgruppe,  by = "kldb88_2") %>%
-  left_join(berufsbereich, by = "kldb88_1") %>%
-  left_join(counts,        by = "beruf") %>%
+kldb88_beruf <- siab_labels |>
+  left_join(berufsordnung, by = "beruf") |>
+  left_join(hierarchy,     by = "beruf") |>
+  left_join(berufsgruppe,  by = "kldb88_2") |>
+  left_join(berufsbereich, by = "kldb88_1") |>
+  left_join(counts,        by = "beruf") |>
   mutate(in_kldb88 = !is.na(kldb88_de),
-         n_siab    = coalesce(n_siab, 0L)) %>%
+         n_siab    = coalesce(n_siab, 0L)) |>
   select(beruf, label_de, label_en, in_kldb88, kldb88_de,
-         kldb88_2, kldb88_2_de, kldb88_1, kldb88_1_de, n_siab) %>%
+         kldb88_2, kldb88_2_de, kldb88_1, kldb88_1_de, n_siab) |>
   arrange(beruf)
 
-walkover_beruf_occblo <- siab_labels %>%
-  select(beruf, label_de, label_en) %>%
-  left_join(blossfeld, by = "beruf") %>%
-  mutate(occ_blo = coalesce(occ_blo, 99L)) %>%
-  left_join(blossfeld_labels, by = "occ_blo") %>%
-  select(beruf, occ_blo, occ_blo_de, occ_blo_en, label_de, label_en) %>%
+walkover_beruf_occblo <- siab_labels |>
+  select(beruf, label_de, label_en) |>
+  left_join(blossfeld, by = "beruf") |>
+  mutate(occ_blo = coalesce(occ_blo, 99L)) |>
+  left_join(blossfeld_labels, by = "occ_blo") |>
+  select(beruf, occ_blo, occ_blo_de, occ_blo_en, label_de, label_en) |>
   arrange(beruf)
 
 write_csv(kldb88_beruf,          here("classifications", "kldb88_beruf.csv"))

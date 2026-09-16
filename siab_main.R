@@ -16,8 +16,8 @@ p_load(dplyr,  #For tidyverse compliant code
        )
 
 #Load common functions
-here("functions") %>%
-  dir() %>%
+here("functions") |>
+  dir() |>
   walk(~source(here("functions",.x)))
 
 
@@ -41,9 +41,9 @@ siab_orig <- tbl(con,"orig")
 #====================================================================
 
 #Generate year and age
-siab_orig %>%
+siab_orig |>
   mutate(year = year(begepi),
-         age  = year - gebjahr) %>%
+         age  = year - gebjahr) |>
   compute_and_overwrite("data")
 
 
@@ -52,30 +52,30 @@ siab_orig %>%
 #====================================================================
 
 #Prepare the SIAB-SUF with the built-in functions and write to the data table of he database
-con %>%
-  split_episodes(               .log_file = here("log","01_split_episodes.log")) %>%
-  generate_biographic_variables(.log_file = here("log","01_SIAB_Bio.log")) %>%
-  generate_occupation_variables(.log_file = here("log","02_occupations.log")) %>%
-  generate_educ_variable(       .log_file = here("log","03_education.log")) %>%
-  merge_basic_bhp(              .log_file = here("log","03b_bhp_basis.log"),
-                                .bhp_file = rawdata("SIAB_7523_v2_bhp_basis_v1.dta")) %>%
-  generate_limit_assess(        .log_file = here("log","04_wage_assesment_ceiling.log")) %>%
-  generate_limit_marginal(      .log_file = here("log","05_wages_marginal.log"))%>%
-  deflate_wages(                .log_file = here("log","06_wages_deflation.log")) %>%
-  impute_wages(                 .log_file = here("log","07_wages_imputation.log")) %>%
-  handle_parallel_episodes(     .log_file = here("log","08_parallel_episodes.log"),
-                                .handling = "wage") %>%
-  build_yearly_panel(           .log_file = here("log","09_yearly_panel.log"),
-                                .cutoffMonth = 6,
-                                .cutoffDay   = 30) %>%
+con |>
+  split_episodes(               log_file = here("log","01_split_episodes.log")) |>
+  generate_biographic_variables(log_file = here("log","01_SIAB_Bio.log")) |>
+  generate_occupation_variables(log_file = here("log","02_occupations.log")) |>
+  generate_educ_variable(       log_file = here("log","03_education.log")) |>
+  merge_basic_bhp(              log_file = here("log","03b_bhp_basis.log"),
+                                bhp_file = rawdata("SIAB_7523_v2_bhp_basis_v1.dta")) |>
+  generate_limit_assess(        log_file = here("log","04_wage_assesment_ceiling.log")) |>
+  generate_limit_marginal(      log_file = here("log","05_wages_marginal.log"))|>
+  deflate_wages(                log_file = here("log","06_wages_deflation.log")) |>
+  impute_wages(                 log_file = here("log","07_wages_imputation.log")) |>
+  handle_parallel_episodes(     log_file = here("log","08_parallel_episodes.log"),
+                                handling = "wage") |>
+  build_yearly_panel(           log_file = here("log","09_yearly_panel.log"),
+                                cutoff_month = 6,
+                                cutoff_day   = 30) |>
   #Print the head of the table in the last step
   tbl("data")
 
 
 
 #Cleanup intermediate database tables 
-dbListTables(con) %>%
-  purrr::discard(~{.x %in% c("orig","data")}) %>%
+dbListTables(con) |>
+  purrr::discard(~{.x %in% c("orig","data")}) |>
   walk(~dbRemoveTable(con, .x))
 
 #Only data and orig should remain as tables

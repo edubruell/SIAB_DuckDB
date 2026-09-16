@@ -6,8 +6,8 @@
 `%nin%` <- Negate(`%in%`)
 
 #Make custom folder reference functions like here compatible with typical siab paths
-folder_reference_factory <- function(.target_folder){
-  stopifnot("Please set the path to a .target_folder" = !is.null(.target_folder))
+folder_reference_factory <- function(target_folder){
+  stopifnot("Please set the path to a target_folder" = !is.null(target_folder))
   function(...){
     if (!missing(..1)) {
       abs <- rprojroot:::is_absolute_path(..1)
@@ -19,7 +19,7 @@ folder_reference_factory <- function(.target_folder){
              call. = FALSE)
       }
     }
-    rprojroot:::path(.target_folder, ...)
+    rprojroot:::path(target_folder, ...)
   }
 }
 
@@ -32,10 +32,10 @@ quick_year = function(dates) {
 }
 
 #Simple input validation for functions
-validate_inputs <- function(.predicates) {
+validate_inputs <- function(predicates) {
   # Use lapply to iterate over predicates and stop on the first failure
-  results <- lapply(names(.predicates), function(error_msg) {
-    if (!.predicates[[error_msg]]) {
+  results <- lapply(names(predicates), function(error_msg) {
+    if (!predicates[[error_msg]]) {
       stop(error_msg)
     }
   })
@@ -46,14 +46,14 @@ validate_inputs <- function(.predicates) {
 #1. Database related functions
 #====================================================================
 
-compute_and_overwrite <- function(.query,.table="data"){
+compute_and_overwrite <- function(query,target_table="data"){
   #Check whether there is no temp table
   if(dbExistsTable(con, "temp")){
     stop("Temporary table 'temp' allready exsists")
   }
   
   #Compute query
-  .query %>%
+  query |>
     compute(name = "temp", temporary = FALSE)
   
   #Did the query compute
@@ -63,12 +63,12 @@ compute_and_overwrite <- function(.query,.table="data"){
   
   
   # Ensure the "data" table is dropped if it exists
-  if (dbExistsTable(con, .table)) {
-    dbRemoveTable(con, .table)
+  if (dbExistsTable(con, target_table)) {
+    dbRemoveTable(con, target_table)
   }
   
   #Rename the query
-  rename_sql <- glue('ALTER TABLE temp RENAME TO {.table}') 
+  rename_sql <- glue('ALTER TABLE temp RENAME TO {target_table}') 
   dbExecute(con, rename_sql)
   invisible(NULL)
 }

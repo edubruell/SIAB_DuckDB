@@ -25,11 +25,11 @@
 # 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-generate_limit_assess <- function(.connection, .log_file = NULL){
+generate_limit_assess <- function(connection, log_file = NULL){
   
   # Remove old log file if it exists
-  if (!is.null(.log_file) && file.exists(.log_file)) {
-    file.remove(.log_file)
+  if (!is.null(log_file) && file.exists(log_file)) {
+    file.remove(log_file)
   }
   
   # Clear existing log appenders
@@ -39,8 +39,8 @@ generate_limit_assess <- function(.connection, .log_file = NULL){
   log_appender(appender_console, namespace = "wa_ceiling")
   
   # Initialize file logger if log_file is specified
-  if (!is.null(.log_file)) {
-    log_appender(appender_tee(file = .log_file), namespace = "wa_ceiling")
+  if (!is.null(log_file)) {
+    log_appender(appender_tee(file = log_file), namespace = "wa_ceiling")
   }
   
   log_info("Reading limit_assess values from csv", namespace = "wa_ceiling")
@@ -49,7 +49,7 @@ generate_limit_assess <- function(.connection, .log_file = NULL){
   
   log_info("Generating east and the limit_assess", namespace ="wa_ceiling")
  
-  tbl(.connection, "data") %>%
+  tbl(connection, "data") |>
     mutate(east = case_when(
              #West: Berlin until 1991, following 06_wages_assessment_ceiling.do
              ao_bula == 11 & year < 1992 ~ 0,
@@ -58,14 +58,14 @@ generate_limit_assess <- function(.connection, .log_file = NULL){
              #West: Schleswig-Holstein, Hamburg, Lower Saxony, Bremen, North Rhine-Westphalia, Hesse, Rhineland-Palatinate, Baden-Wuerttemberg, Bavaria, Saarland
              ao_bula < 11 ~ 0, 
              TRUE ~ NA_real_
-           ))   %>%
-    left_join(wa_ceiling, by=c("east","year"), copy=TRUE) %>%    
+           ))   |>
+    left_join(wa_ceiling, by=c("east","year"), copy=TRUE) |>    
     compute_and_overwrite()
   
   log_success(" -> east and limit_assess added", namespace = "wa_ceiling")
   log_success("Wage assesment ceiling file finished", namespace = "wa_ceiling")
   
-  #Return the .connection so we can pipe prepare functions
-  return(.connection)
+  #Return the connection so we can pipe prepare functions
+  return(connection)
   
 }
