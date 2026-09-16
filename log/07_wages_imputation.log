@@ -1,44 +1,44 @@
-INFO [2026-09-16 21:14:03] Modify assessment limit and flag censored wages
-SUCCESS [2026-09-16 21:14:04]  ->  limit_assess4, ln_limit_assess4 and cens added
-INFO [2026-09-16 21:14:04] 371605 BeH wages (92%) are below the wage assessment limit
-INFO [2026-09-16 21:14:04] 30337 BeH wages (8%) are above the wage assessment limit
-INFO [2026-09-16 21:14:04] --------------------
-INFO [2026-09-16 21:14:04] 7.027% of wages are censored for Missing Education
-INFO [2026-09-16 21:14:04] 7.651% of wages are censored for Low Education
-INFO [2026-09-16 21:14:04] 7.708% of wages are censored for Medium Education
-INFO [2026-09-16 21:14:04] 7.159% of wages are censored for High Education
-INFO [2026-09-16 21:14:04] --------------------
-INFO [2026-09-16 21:14:04] For the highly educated in age range 18 to 25 7.527% of wages are censored
-INFO [2026-09-16 21:14:04] For the highly educated in age range 25 to 30 7.782% of wages are censored
-INFO [2026-09-16 21:14:04] For the highly educated in age range 30 to 35 7.718% of wages are censored
-INFO [2026-09-16 21:14:04] For the highly educated in age range 35 to 40 7.098% of wages are censored
-INFO [2026-09-16 21:14:04] For the highly educated in age range 40 to 45 7.419% of wages are censored
-INFO [2026-09-16 21:14:04] For the highly educated in age range 45 to 50 6.901% of wages are censored
-INFO [2026-09-16 21:14:04] For the highly educated in age range 50 to 55 6.859% of wages are censored
-INFO [2026-09-16 21:14:04] For the highly educated in age range 55 to 60 6.139% of wages are censored
-INFO [2026-09-16 21:14:04] --------------------
-INFO [2026-09-16 21:14:04] 0.88% of wages are censored for Missing FT-Info employees
-INFO [2026-09-16 21:14:04] 10.32% of wages are censored for Fulltime employees
-INFO [2026-09-16 21:14:04] 0.57% of wages are censored for Parttime employees
-INFO [2026-09-16 21:14:04] --------------------
-INFO [2026-09-16 21:14:04] 7.5466% of wages of Men are censored 
-INFO [2026-09-16 21:14:04] 7.5487% of wages of Women are censored 
-INFO [2026-09-16 21:14:04] --------------------
-INFO [2026-09-16 21:14:04] Preapering dependent variable for imputation
-SUCCESS [2026-09-16 21:14:05]  ->  wage, ln_wage and ln_wage_cens variables added
-INFO [2026-09-16 21:14:05] Preapering control variables for imputation
-SUCCESS [2026-09-16 21:14:05]  ->  Controls variables for imputation added
-INFO [2026-09-16 21:14:05] Imputation plan: 294 year/education/east cells, 1975 to 2023
-INFO [2026-09-16 21:14:05] Step 1: imputation on observables
-SUCCESS [2026-09-16 21:14:23]  ->  ln_wage_imp added
-INFO [2026-09-16 21:14:23] Leave-one-out means of the imputed wages
-SUCCESS [2026-09-16 21:14:28]  ->  ln_wage_mean_worker, only_one_obs, ln_wage_mean_firm and only_one_worker added
-INFO [2026-09-16 21:14:28] Step 2: imputation including the leave-one-out means
-SUCCESS [2026-09-16 21:14:45]  ->  ln_wage_imp2 added
-INFO [2026-09-16 21:14:45] Add imputed wages in levels
-SUCCESS [2026-09-16 21:14:46]  ->  wage_imp_int and wage_imp added
-INFO [2026-09-16 21:14:46] Imputed wages are bounded at 2809.96 EUR per day
-SUCCESS [2026-09-16 21:14:46]  ->  Implausibly high wages bounded and the second stage filled from the first
-INFO [2026-09-16 21:14:46] The following variables are deselected from the data for cleanup: educ_tmp, old, age_sq, age_old, age_sq_old, tenure_sq, ln_wage_mean_worker, only_one_obs, ln_wage_mean_firm, only_one_worker, limit_assess4, ln_limit_assess4, ln_wage, ln_wage_cens, wage_imp_int, ln_wage_imp and  ln_wage_imp2
-SUCCESS [2026-09-16 21:14:47]  ->  Cleanup finished
-SUCCESS [2026-09-16 21:14:47] Wage imputation file finished
+INFO [2026-09-16 22:20:37] Modify assessment limit and flag censored wages
+SUCCESS [2026-09-16 22:20:38]  ->  limit_assess4, ln_limit_assess4 and cens added
+INFO [2026-09-16 22:20:38] 371605 BeH wages (92%) are below the wage assessment limit
+INFO [2026-09-16 22:20:38] 30337 BeH wages (8%) are above the wage assessment limit
+INFO [2026-09-16 22:20:38] --------------------
+INFO [2026-09-16 22:20:38] 7.027% of wages are censored for Missing Education
+INFO [2026-09-16 22:20:38] 7.651% of wages are censored for Low Education
+INFO [2026-09-16 22:20:38] 7.708% of wages are censored for Medium Education
+INFO [2026-09-16 22:20:38] 7.159% of wages are censored for High Education
+INFO [2026-09-16 22:20:38] --------------------
+INFO [2026-09-16 22:20:38] For the highly educated in age range 18 to 25 7.527% of wages are censored
+INFO [2026-09-16 22:20:38] For the highly educated in age range 25 to 30 7.782% of wages are censored
+INFO [2026-09-16 22:20:38] For the highly educated in age range 30 to 35 7.718% of wages are censored
+INFO [2026-09-16 22:20:38] For the highly educated in age range 35 to 40 7.098% of wages are censored
+INFO [2026-09-16 22:20:38] For the highly educated in age range 40 to 45 7.419% of wages are censored
+INFO [2026-09-16 22:20:38] For the highly educated in age range 45 to 50 6.901% of wages are censored
+INFO [2026-09-16 22:20:38] For the highly educated in age range 50 to 55 6.859% of wages are censored
+INFO [2026-09-16 22:20:38] For the highly educated in age range 55 to 60 6.139% of wages are censored
+INFO [2026-09-16 22:20:38] --------------------
+INFO [2026-09-16 22:20:38] 0.88% of wages are censored for Missing FT-Info employees
+INFO [2026-09-16 22:20:38] 10.32% of wages are censored for Fulltime employees
+INFO [2026-09-16 22:20:38] 0.57% of wages are censored for Parttime employees
+INFO [2026-09-16 22:20:38] --------------------
+INFO [2026-09-16 22:20:38] 7.5466% of wages of Men are censored 
+INFO [2026-09-16 22:20:38] 7.5487% of wages of Women are censored 
+INFO [2026-09-16 22:20:38] --------------------
+INFO [2026-09-16 22:20:38] Preapering dependent variable for imputation
+SUCCESS [2026-09-16 22:20:39]  ->  wage, ln_wage and ln_wage_cens variables added
+INFO [2026-09-16 22:20:39] Preapering control variables for imputation
+SUCCESS [2026-09-16 22:20:39]  ->  Controls variables for imputation added
+INFO [2026-09-16 22:20:39] Imputation plan: 294 year/education/east cells, 1975 to 2023
+INFO [2026-09-16 22:20:39] Step 1: imputation on observables
+SUCCESS [2026-09-16 22:20:57]  ->  ln_wage_imp added
+INFO [2026-09-16 22:20:57] Leave-one-out means of the imputed wages
+SUCCESS [2026-09-16 22:21:01]  ->  ln_wage_mean_worker, only_one_obs, ln_wage_mean_firm and only_one_worker added
+INFO [2026-09-16 22:21:01] Step 2: imputation including the leave-one-out means
+SUCCESS [2026-09-16 22:21:19]  ->  ln_wage_imp2 added
+INFO [2026-09-16 22:21:19] Add imputed wages in levels
+SUCCESS [2026-09-16 22:21:19]  ->  wage_imp_int and wage_imp added
+INFO [2026-09-16 22:21:20] Imputed wages are bounded at 2828.33 EUR per day
+SUCCESS [2026-09-16 22:21:20]  ->  Implausibly high wages bounded and the second stage filled from the first
+INFO [2026-09-16 22:21:20] The following variables are deselected from the data for cleanup: educ_tmp, old, age_sq, age_old, age_sq_old, tenure_sq, ln_wage_mean_worker, only_one_obs, ln_wage_mean_firm, only_one_worker, limit_assess4, ln_limit_assess4, ln_wage, ln_wage_cens, wage_imp_int, ln_wage_imp and  ln_wage_imp2
+SUCCESS [2026-09-16 22:21:21]  ->  Cleanup finished
+SUCCESS [2026-09-16 22:21:21] Wage imputation file finished

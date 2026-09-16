@@ -48,6 +48,17 @@ if (!"orig" %in% dbListTables(con)) {
 # The same per-step column lists tests/fixtures/make_fixtures.R uses, with the
 # R names where they differ from the Stata ones. `jahr` is `year` in the port.
 key <- c("persnr", "spell", "begepi")
+
+# The two late steps that drop part of the key. The Stata side drops `spell` in
+# 15_parallel_episodes.do and `begepi` in 16_yearly_panel.do; the R port keeps
+# the columns, so the narrower key here is what makes the two halves joinable.
+step_key <- list(
+  "15_parallel_episodes" = c("persnr", "begepi"),
+  "16_yearly_panel"      = c("persnr", "year")
+)
+
+key_for <- function(step) if (is.null(step_key[[step]])) key else step_key[[step]]
+
 touched <- list(
   "01_split_episodes"           = c("begepi", "endepi", "begepi_orig",
                                     "endepi_orig", "year", "age"),
@@ -84,14 +95,30 @@ touched <- list(
                                     "feff_2017_2023",
                                     "peff_1985_1992", "peff_1993_2000",
                                     "peff_2001_2008", "peff_2009_2016",
-                                    "peff_2017_2023")
+                                    "peff_2017_2023"),
+  # 13_industries_1digit.do has no R counterpart, so no dump is written for it.
+  # The R port reaches occ_blo in generate_occupation_variables(), which runs
+  # far earlier than the reference's 14_occ_blossfeld.do; the column is dumped
+  # here, at the position the reference creates it, so the two are comparable.
+  "14_occ_blossfeld"            = c("beruf", "occ_blo"),
+  "15_parallel_episodes"        = c("quelle", "tage_bet", "wage_imp", "nspell",
+                                    "parallel_jobs", "parallel_wage",
+                                    "parallel_wage_imp", "parallel_benefits"),
+  # begepi and endepi have no Stata counterpart here: 16_yearly_panel.do drops
+  # both and the port keeps them. They ride along so a test can check that every
+  # surviving episode really does cover the cutoff date.
+  "16_yearly_panel"             = c("quelle", "erwstat", "parallel_benefits",
+                                    "year_days_emp", "year_days_benefits",
+                                    "year_labor_earn",
+                                    "tage_bet", "tage_job", "tage_erw",
+                                    "tage_lst", "begepi", "endepi")
 )
 
 dump_step <- function(step) {
   cols <- touched[[step]]
   present <- colnames(tbl(con, "data"))
-  wanted <- intersect(unique(c(key, cols)), present)
-  missing_cols <- setdiff(unique(c(key, cols)), present)
+  wanted <- intersect(unique(c(key_for(step), cols)), present)
+  missing_cols <- setdiff(unique(c(key_for(step), cols)), present)
 
   out <- file.path(dump_dir, paste0(step, ".parquet"))
   dbExecute(con, glue(
@@ -184,6 +211,26 @@ con |> merge_akm(log_file       = here("log", "07c_akm.log"),
                  akm_estab_file = file.path(akm_dir, "SIAB_7523_v2_akm_estab.dta"),
                  akm_pers_file  = file.path(akm_dir, "SIAB_7523_v2_akm_pers.dta"))
 dump_step("12_merge_AKM")
+
+# 13_industries_1digit.do is unported, so the chain skips it. The Blossfeld
+# occupations it is followed by were generated long ago, by
+# generate_occupation_variables() above; the dump is taken here so it sits at
+# the same point of the chain as the reference's own.
+dump_step("14_occ_blossfeld")
+
+# The reference's uncommented rule defines the main episode as the job with the
+# longest tenure, using the imputed wage only to break a tie. handling = "wage",
+# which run_testdata.R passes, sorts on the imputed wage first; those draws
+# differ between R and Stata by construction, so under that setting the two
+# sides would keep different episodes and nothing downstream would compare.
+con |> handle_parallel_episodes(log_file = here("log", "08_parallel_episodes.log"),
+                                handling = "tenure")
+dump_step("15_parallel_episodes")
+
+con |> build_yearly_panel(log_file     = here("log", "09_yearly_panel.log"),
+                          cutoff_month = 6,
+                          cutoff_day   = 30)
+dump_step("16_yearly_panel")
 
 #====================================================================
 #  Clean up

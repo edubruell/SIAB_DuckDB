@@ -177,7 +177,22 @@ siab_reference_query <- function(step, also = character(0), env = parent.frame()
 # The reference stores most generated variables as Stata `float`, which carries
 # about seven decimal digits, so a variable that is stored rather than recoded
 # needs a tolerance even when the arithmetic is identical.
-siab_column_diff <- function(query, column, r_column = column, tolerance = NULL) {
+# `key` is the column set the two halves join on. It defaults to the key every
+# step up to 12 shares. 15_parallel_episodes.do drops `spell` and
+# 16_yearly_panel.do drops `begepi`, so tests for those pass a narrower one.
+# Give it as a named vector where the two sides call a key column differently:
+# the name is the Stata column, the value the R one, as in c(persnr = "persnr",
+# jahr = "year") for the yearly panel.
+siab_key_on <- function(key) {
+  stata_names <- if (is.null(names(key))) key else names(key)
+  paste(
+    paste0("stata.", stata_names, " = r.", unname(key)),
+    collapse = " AND "
+  )
+}
+
+siab_column_diff <- function(query, column, r_column = column, tolerance = NULL,
+                             key = c("persnr", "spell", "begepi")) {
   predicate <- if (is.null(tolerance)) {
     paste0("stata.", column, " IS DISTINCT FROM r.", r_column)
   } else {
@@ -191,7 +206,25 @@ siab_column_diff <- function(query, column, r_column = column, tolerance = NULL)
   query(paste0(
     "SELECT count(*) AS shared, ",
     "       count(*) FILTER (WHERE ", predicate, ") AS differing ",
-    "FROM stata JOIN r USING (persnr, spell, begepi)"
+    "FROM stata JOIN r ON ", siab_key_on(key)
+  ))
+}
+
+# The same comparison for a column whose two sides cannot agree row by row,
+# because it is built from the imputed wage and both sides draw their own random
+# terms. Returns the mean and the two quartiles of each half over the shared
+# keys, so a test can bound the gap instead of demanding equality.
+siab_column_moments <- function(query, column, r_column = column,
+                                key = c("persnr", "spell", "begepi")) {
+  query(paste0(
+    "SELECT count(*) AS shared, ",
+    "       avg(stata.", column, ") AS stata_mean, ",
+    "       avg(r.", r_column, ") AS r_mean, ",
+    "       quantile_cont(stata.", column, ", 0.25) AS stata_q25, ",
+    "       quantile_cont(r.", r_column, ", 0.25) AS r_q25, ",
+    "       quantile_cont(stata.", column, ", 0.75) AS stata_q75, ",
+    "       quantile_cont(r.", r_column, ", 0.75) AS r_q75 ",
+    "FROM stata JOIN r ON ", siab_key_on(key)
   ))
 }
 

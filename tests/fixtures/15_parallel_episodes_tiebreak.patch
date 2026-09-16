@@ -1,0 +1,11 @@
+--- 15_parallel_episodes.do
++++ 15_parallel_episodes.do
+@@ -56,7 +56,7 @@
+ 	
+ */
+ 
+-gsort persnr begepi quelle -tage_bet -wage_imp		// define job with longest tenure as main episode
++gsort persnr begepi quelle -tage_bet -wage_imp spell		// define job with longest tenure as main episode  // TIE-BREAK ADDED
+ * gsort persnr begepi quelle -wage_imp -tage_bet	// define job with highest wage as main episode
+ * Note: Be aware of the fact that the sorting needs to be unambiguous. If there are still duplicates in the variables used in the gsort command, it is strongly advisable to add variables in the sorting such that the order of the spells is unique. Otherwise, the keep condition “by persnr begepi: keep if _n == 1” at the end of this do-file will contain arbitrary sorting, such that the sample selection might differ when running the code again.
+ 

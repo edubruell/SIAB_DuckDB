@@ -3,7 +3,9 @@
 # The step joins two crosswalks onto the 3-digit SIAB occupation code `beruf`:
 # the 2-digit KldB-88 Berufsgruppe (occ_kldb88_2) and the Blossfeld
 # classification (occ_blo). Both are left joins, so a code that is in neither
-# table has to come back as NA without losing the row.
+# table has to keep its row. occ_kldb88_2 then comes back as NA; occ_blo comes
+# back as 99, "not assignable", because the reference's recode closes with
+# `(else = 99)` and Stata's `else` covers missing values too.
 
 kldb_crosswalk <- function() {
   readr::read_csv(here::here("classifications", "kldb88_beruf.csv"),
@@ -41,7 +43,7 @@ test_that("a beruf outside both crosswalks keeps its row and gets NA", {
   expect_true(is.na(out$occ_kldb88_2[2]))
 })
 
-test_that("a missing beruf keeps its row and gets NA on both variables", {
+test_that("a missing beruf keeps its row, with no Berufsgruppe and occ_blo 99", {
   connection <- siab_db(data.frame(persnr = 1:2, beruf = c(11L, NA_integer_)))
 
   quietly_run(generate_occupation_variables(connection))
@@ -49,7 +51,18 @@ test_that("a missing beruf keeps its row and gets NA on both variables", {
 
   expect_equal(nrow(out), 2L)
   expect_true(is.na(out$occ_kldb88_2[2]))
-  expect_true(is.na(out$occ_blo[2]))
+  expect_equal(out$occ_blo[2], 99)
+})
+
+# Every benefit and job-search episode arrives here without an occupation, so
+# this branch covers a third of the test data rather than an edge case.
+test_that("a beruf outside the Blossfeld walkover also gets occ_blo 99", {
+  connection <- siab_db(data.frame(persnr = 1:2, beruf = c(11L, 998L)))
+
+  quietly_run(generate_occupation_variables(connection))
+  out <- siab_collect(connection, "persnr")
+
+  expect_equal(out$occ_blo[2], 99)
 })
 
 test_that("neither join duplicates a row", {

@@ -22,6 +22,9 @@
 	  - turns on all five of step 11's switches and both of step 12's, which the
 	    master leaves off because the files behind them have to be requested
 	    separately; the test data carries every file step 11 wants
+	  - runs steps 13 to 16 with the master's own switches on, so the chain
+	    reaches the parallel episodes and the yearly panel; 17_clean_up.do is
+	    not run, because its three working lines change no value
 	  - fabricates the two AKM files step 12 reads, which no FDZ test product
 	    supplies, from the shape the FDZ methodology report describes. See
 	    tests/fixtures/make_synth_akm.do. The effects are noise, so step 12 is
@@ -30,13 +33,22 @@
 	Everything else, including the pre-step block that restricts the sources and
 	generates jahr and age, is copied from 00_master_SIAB.do unchanged.
 
-	One deviation from "the reference is never edited"
-	--------------------------------------------------
-	03_SIAB_bio.do has been changed in ten places, each marked in the file with
-	`// TIE-BREAK ADDED`. The reference lives in local_context/, which is not in
-	this repo, so the change is committed here as a patch instead:
+	Two deviations from "the reference is never edited"
+	---------------------------------------------------
+	03_SIAB_bio.do has been changed in ten places and 15_parallel_episodes.do in
+	one, each marked in the file with `// TIE-BREAK ADDED`. The reference lives
+	in local_context/, which is not in this repo, so the changes are committed
+	here as patches instead:
 
 	    tests/fixtures/03_SIAB_bio_tiebreak.patch
+	    tests/fixtures/15_parallel_episodes_tiebreak.patch
+
+	The second adds `spell` as the last key of the gsort that defines the main
+	episode. Without it the step keeps an arbitrary row in 1,945 of the test
+	data's 479,806 person-episode groups, which are tied on quelle, tage_bet and
+	wage_imp together, and neither Stata nor the R port is reproducible there.
+	The step's own comment beside that line asks for exactly this. The R port
+	carries the same last key, in functions/08_parallel_episodes.R.
 
 	From a clean clone, put the published reference in
 	local_context/stata_reference/origin_EastGermanWageStructure/, keep a copy as
@@ -44,6 +56,8 @@
 
 	    patch local_context/stata_reference/origin_EastGermanWageStructure/03_SIAB_bio.do \
 	        < tests/fixtures/03_SIAB_bio_tiebreak.patch
+	    patch local_context/stata_reference/origin_EastGermanWageStructure/15_parallel_episodes.do \
+	        < tests/fixtures/15_parallel_episodes_tiebreak.patch
 
 	Without it the fixtures cannot be reproduced, because anz_lst and tage_lst
 	come out differently on every run.
@@ -240,6 +254,38 @@ global AKM_pers  = 1
 
 do "${prog}/12_merge_AKM.do"
 save "${dump}/12_merge_AKM.dta", replace
+
+* 13_industries_1digit.do and 14_occ_blossfeld.do sit between the AKM merge and
+* the parallel episodes. Both only add columns and neither drops a row, so the
+* chain to step 15 runs through them as published, with the master's own
+* settings, which turn all three mappings on.
+global destatis = 1
+global estpanel = 1
+
+do "${prog}/13_industries_1digit.do"
+save "${dump}/13_industries_1digit.dta", replace
+
+global blossfeld = 1
+
+do "${prog}/14_occ_blossfeld.do"
+save "${dump}/14_occ_blossfeld.dta", replace
+
+* 15_parallel_episodes.do keeps one episode per person and episode start. The
+* rule is the one the reference leaves uncommented: longest tenure first, the
+* imputed wage only as a tie-break. The R port has to be called with
+* handling = "tenure" to match it; its other setting sorts on the imputed wage,
+* which is drawn at random on both sides and therefore picks different rows.
+global parallel_vars = 1
+
+do "${prog}/15_parallel_episodes.do"
+save "${dump}/15_parallel_episodes.dta", replace
+
+do "${prog}/16_yearly_panel.do"
+save "${dump}/16_yearly_panel.dta", replace
+
+* 17_clean_up.do has three working lines: sort, xtset and compress. None of them
+* changes a value, so there is nothing for the R port to reproduce and nothing
+* to compare. It is not run here.
 
 dis "fixture dumps written to ${dump}"
 dis "$S_DATE $S_TIME"

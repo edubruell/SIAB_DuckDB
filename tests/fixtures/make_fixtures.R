@@ -38,6 +38,18 @@ dir.create(fixture_dir, showWarnings = FALSE, recursive = TRUE)
 # runs over a year boundary into one row per calendar year.
 key <- c("persnr", "spell", "begepi")
 
+# Two late steps drop part of that key. 15_parallel_episodes.do keeps one
+# episode per person and episode start and drops `spell` on its way out;
+# 16_yearly_panel.do then keeps one episode per person and year and drops
+# `begepi` as well. Each is still unique on what is left, and the check below
+# proves it on every conversion.
+step_key <- list(
+  "15_parallel_episodes" = c("persnr", "begepi"),
+  "16_yearly_panel"      = c("persnr", "jahr")
+)
+
+key_for <- function(step) if (is.null(step_key[[step]])) key else step_key[[step]]
+
 # The columns each step writes or changes, in the order the reference creates
 # them. A step is compared on these and on the key, not on the columns it
 # carries through untouched.
@@ -83,6 +95,32 @@ touched <- list(
                                     "peff_1985_1992", "peff_1993_2000",
                                     "peff_2001_2008", "peff_2009_2016",
                                     "peff_2017_2023")
+  ,
+  # 13_industries_1digit.do maps the time-consistent three-digit industry to two
+  # one-digit codes. It has no R counterpart, so the fixture is written for the
+  # port to compare against later; test-reference-unported.R skips on it.
+  "13_industries_1digit"        = c("w93_3_gen", "industry1_destatis",
+                                    "industry1_estpanel"),
+  # 14_occ_blossfeld.do recodes `beruf` into the Blossfeld classification. The R
+  # port does this far earlier, in generate_occupation_variables(), so the two
+  # sides reach the same column from different positions in the pipeline.
+  "14_occ_blossfeld"            = c("beruf", "occ_blo"),
+  # 15_parallel_episodes.do keeps the main episode and aggregates over the
+  # parallel ones it drops. parallel_wage_imp sums the imputed wage, whose draws
+  # differ between the two sides by construction, so it is the one column of the
+  # step compared as a distribution rather than row by row.
+  "15_parallel_episodes"        = c("quelle", "tage_bet", "wage_imp", "nspell",
+                                    "parallel_jobs", "parallel_wage",
+                                    "parallel_wage_imp", "parallel_benefits"),
+  # 16_yearly_panel.do keeps the episode covering 30 June of each year, totals
+  # the days and earnings over the whole year, and trims the four duration
+  # counters at the cutoff. year_labor_earn is built from parallel_wage_imp and
+  # inherits its draws.
+  "16_yearly_panel"             = c("quelle", "erwstat", "parallel_benefits",
+                                    "year_days_emp", "year_days_benefits",
+                                    "year_labor_earn",
+                                    "tage_bet", "tage_job", "tage_erw",
+                                    "tage_lst")
 )
 
 
@@ -130,7 +168,8 @@ written <- imap(touched, function(cols, step) {
          ". Run tests/fixtures/make_fixtures.do first.")
   }
 
-  wanted <- unique(c(key, cols))
+  step_keys <- key_for(step)
+  wanted <- unique(c(step_keys, cols))
   tab <- read.dta13(dump, select.cols = wanted, convert.factors = FALSE)
 
   missing_cols <- setdiff(wanted, names(tab))
@@ -141,8 +180,9 @@ written <- imap(touched, function(cols, step) {
   tab <- tab[wanted]
   tab <- as_stata_dates(tab, step)
 
-  if (anyDuplicated(tab[key]) > 0) {
-    stop("The key persnr/spell/begepi is not unique after ", step, ".")
+  if (anyDuplicated(tab[step_keys]) > 0) {
+    stop("The key ", paste(step_keys, collapse = "/"),
+         " is not unique after ", step, ".")
   }
 
   out <- file.path(fixture_dir, paste0(step, ".parquet"))

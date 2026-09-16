@@ -66,8 +66,15 @@ generate_occupation_variables <- function(connection, log_file = NULL){
     select(beruf, occ_blo)
   
   log_info("Merging the Blossfeld classification to beruf", namespace = "occ_vars")
+  # 14_occ_blossfeld.do closes its recode with `(else = 99)`, and Stata's `else`
+  # covers missing values as well as unmatched ones. An episode with no beruf at
+  # all, which is every benefit and job-search spell, therefore leaves the
+  # reference carrying 99, "not assignable", rather than missing. The coalesce
+  # reproduces that; without it the two sides differ on 121,073 of the test
+  # data's 505,050 rows.
   tbl(connection, "data") |>
     left_join(occblo, by = "beruf", copy = TRUE) |>
+    mutate(occ_blo = coalesce(occ_blo, 99L)) |>
     compute_and_overwrite()
   
   log_success("-> occ_blo variable added", namespace = "occ_vars")    

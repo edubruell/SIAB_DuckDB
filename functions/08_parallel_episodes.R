@@ -67,18 +67,26 @@ handle_parallel_episodes <- function(connection,
   # Identify main episode (by sorting data accordingly)
   #------------------------------------------------------
   
+ # 15_parallel_episodes.do warns beside its own sort that the order has to be
+ # unambiguous, because the step then keeps the first row of each person and
+ # episode start. On the FDZ test data 1,945 of 479,806 groups are tied on
+ # quelle, tage_bet and wage_imp together, and the kept row there is whatever
+ # the database happens to return. `spell` closes it: the key persnr, spell,
+ # begepi is unique, so spell is unique within a person and episode start. The
+ # reference carries the same last key, as tests/fixtures/15_parallel_episodes_tiebreak.patch.
+
  # define job with longest tenure as main episode
   if(handling!="wage"){
     log_info("Job with longest tenure is defined as main episode", namespace ="parallel")
       set_sort_order <- function(query){
-        window_order(query ,persnr,begepi,quelle,desc(tage_bet),desc(wage_imp))
+        window_order(query ,persnr,begepi,quelle,desc(tage_bet),desc(wage_imp),spell)
       }
   }
   #define job with highest wage as main episode
   if(handling=="wage"){
     log_info("Job with highest wage  is defined as main episode", namespace ="parallel")
     set_sort_order <- function(query){
-      window_order(query ,persnr,begepi,quelle,desc(wage_imp),desc(tage_bet))
+      window_order(query ,persnr,begepi,quelle,desc(wage_imp),desc(tage_bet),spell)
     }
   }
   

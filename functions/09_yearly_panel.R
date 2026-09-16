@@ -122,7 +122,12 @@ build_yearly_panel <- function(connection,
              overhang = as.integer(endepi - cu_date),
              tage_bet = if_else(quelle==1,tage_bet - overhang,tage_bet),
              tage_job = if_else(quelle==1,tage_job - overhang,tage_job),
-             tage_erw = if_else(quelle==1 & !erwstat %in% c(102L, 121L, 122L, 141L, 144L),tage_erw - overhang,tage_erw),
+             #Stata's inlist() returns 0 for a missing argument, so `!inlist(erwstat, ...)`
+             #is true where erwstat is missing and the reference trims the counter.
+             #SQL's NOT IN returns NULL there instead, which if_else() turns into a
+             #missing tage_erw: 966 rows of the test data, all quelle 1 with no
+             #erwstat. The coalesce puts the Stata reading back.
+             tage_erw = if_else(quelle==1 & !coalesce(erwstat %in% c(102L, 121L, 122L, 141L, 144L), FALSE),tage_erw - overhang,tage_erw),
              #16_yearly_panel.do also allows the legacy code quelle == 16, which
              #does not occur in SIAB 7523 v2
              tage_lst = if_else(quelle==2 | parallel_benefits == 1,tage_lst - overhang,tage_lst)

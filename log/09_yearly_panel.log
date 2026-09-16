@@ -1,7 +1,7 @@
-INFO [2026-09-16 21:13:41] Generating aggregate employment outcomes: days employed, labor earnings 
-SUCCESS [2026-09-16 21:14:59] ->  year_days_emp, year_days_benefits and year_labor_earn generated
-INFO [2026-09-16 21:14:59] Keep only episodes that include the cutoff date
-SUCCESS [2026-09-16 21:15:00] ->  Only episodes including the cutoff data included
-INFO [2026-09-16 21:15:00] Adjust durations to end at cutoff date
-SUCCESS [2026-09-16 21:15:01] -> Durations adjusted
-SUCCESS [2026-09-16 21:15:01] Yearly panel file finished
+INFO [2026-09-16 22:21:35] Generating aggregate employment outcomes: days employed, labor earnings 
+SUCCESS [2026-09-16 22:21:37] ->  year_days_emp, year_days_benefits and year_labor_earn generated
+INFO [2026-09-16 22:21:37] Keep only episodes that include the cutoff date
+SUCCESS [2026-09-16 22:21:38] ->  Only episodes including the cutoff data included
+INFO [2026-09-16 22:21:38] Adjust durations to end at cutoff date
+SUCCESS [2026-09-16 22:21:40] -> Durations adjusted
+SUCCESS [2026-09-16 22:21:40] Yearly panel file finished
