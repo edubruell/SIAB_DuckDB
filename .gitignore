@@ -1,0 +1,17 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+
+# Working material, never committed
+local_context/
+local/
+CLAUDE.md
+
+# Test data and build artefacts
+*.duckdb
+*.duckdb.wal
+test_data_ein_bet.dta
+test_data_job.dta
+README.html

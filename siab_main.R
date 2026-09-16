@@ -9,6 +9,7 @@ p_load(dplyr,  #For tidyverse compliant code
        stringr,#String-interpolation and regex  
        glue,   #For concatenating strings and glue_data used for logs
        data.table, #Needed only for the old readin-part (remove dependency)
+       readstata13, #Reading the Basic Establishment File for the BHP merge
        here,   #Project folder navigation
        logger, #Creating logs
        survival #Survival contains the censored normal regression needed for the imputation
@@ -20,8 +21,9 @@ here("functions") %>%
   walk(~source(here("functions",.x)))
 
 
-#Set folder
-dbfolder <- folder_reference_factory("/share/siabdb")
+#Set folders
+dbfolder  <- folder_reference_factory("/Users/ebr/data/siab_db")
+rawdata   <- folder_reference_factory("/Users/ebr/data/siab_raw")
 
 # Open DuckDB connection
 con <- dbConnect(duckdb::duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
@@ -55,12 +57,14 @@ con %>%
   generate_biographic_variables(.log_file = here("log","01_SIAB_Bio.log")) %>%
   generate_occupation_variables(.log_file = here("log","02_occupations.log")) %>%
   generate_educ_variable(       .log_file = here("log","03_education.log")) %>%
+  merge_basic_bhp(              .log_file = here("log","03b_bhp_basis.log"),
+                                .bhp_file = rawdata("SIAB_7523_v2_bhp_basis_v1.dta")) %>%
   generate_limit_assess(        .log_file = here("log","04_wage_assesment_ceiling.log")) %>%
   generate_limit_marginal(      .log_file = here("log","05_wages_marginal.log"))%>%
   deflate_wages(                .log_file = here("log","06_wages_deflation.log")) %>%
   impute_wages(                 .log_file = here("log","07_wages_imputation.log")) %>%
   handle_parallel_episodes(     .log_file = here("log","08_parallel_episodes.log"),
-                                .handling = "wage") con %>%
+                                .handling = "wage") %>%
   build_yearly_panel(           .log_file = here("log","09_yearly_panel.log"),
                                 .cutoffMonth = 6,
                                 .cutoffDay   = 30) %>%
