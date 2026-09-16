@@ -97,8 +97,8 @@ touched <- list(
                                     "peff_2017_2023")
   ,
   # 13_industries_1digit.do maps the time-consistent three-digit industry to two
-  # one-digit codes. It has no R counterpart, so the fixture is written for the
-  # port to compare against later; test-reference-unported.R skips on it.
+  # one-digit codes. The port builds both in generate_industry_variables(),
+  # right after the basic BHP merge that brings w93_3_gen in.
   "13_industries_1digit"        = c("w93_3_gen", "industry1_destatis",
                                     "industry1_estpanel"),
   # 14_occ_blossfeld.do recodes `beruf` into the Blossfeld classification. The R

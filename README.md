@@ -7,9 +7,7 @@ This project is a reimplementation of the data preparation process for the Sampl
 
 ### Which SIAB version this targets
 
-The target is the **SIAB 7523 v2** delivery, the weakly anonymous extract covering 1975 to 2023. There is no input-format switch and no branch for other versions.
-
-Earlier releases of this code were written for the SIAB-R7514 Scientific Use File, a more heavily anonymised regional file ending in 2014, and they carried workarounds for variables that file suppresses. Those workarounds have been removed, because 7523 v2 delivers a real establishment identifier and the full industry and occupation codes. The migration is being finished on the branch `siab-7523-migration`, where the key names `persnr_siab` and `betnr_siab` are still being brought in.
+The target is the **SIAB 7523 v2**, the weakly anonymous extract covering 1975 to 2023.
 
 ### Advantages of Using DuckDB
 
@@ -57,7 +55,7 @@ The file `stata_to_db_batch_read.R` in the project main folder contains all code
 - `handle_parallel_episodes()`: Handles parallel episodes.
 - `build_yearly_panel()`: Builds the yearly panel.
 
-Two further merges, `merge_annual_bhp()` and `merge_akm()`, sit commented out in `siab_main.R`. Both read files that have to be requested from the FDZ on top of the SIAB itself, which is why the STATA reference switches them off as well. Uncomment either call once the files are in place.
+Two further merges, `merge_annual_bhp()` and `merge_akm()`, sit commented out in `siab_main.R`. Both read files that have to be requested from the FDZ on top of the SIAB itself. Uncomment either call once the files are in place.
 
 Each of these steps logs its progress to the specified log files.
 

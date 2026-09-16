@@ -96,7 +96,12 @@ touched <- list(
                                     "peff_1985_1992", "peff_1993_2000",
                                     "peff_2001_2008", "peff_2009_2016",
                                     "peff_2017_2023"),
-  # 13_industries_1digit.do has no R counterpart, so no dump is written for it.
+  # 13_industries_1digit.do maps the time-consistent three-digit industry to two
+  # one-digit codes. The port builds both in generate_industry_variables(),
+  # directly after the basic BHP merge that brings w93_3_gen in; the dump is
+  # taken here, where the reference creates the columns.
+  "13_industries_1digit"        = c("w93_3_gen", "industry1_destatis",
+                                    "industry1_estpanel"),
   # The R port reaches occ_blo in generate_occupation_variables(), which runs
   # far earlier than the reference's 14_occ_blossfeld.do; the column is dumped
   # here, at the position the reference creates it, so the two are comparable.
@@ -168,6 +173,11 @@ con |> merge_basic_bhp(log_file = here("log", "03b_bhp_basis.log"),
                        bhp_file = testdata("SIAB_7523_v2_bhp_basis_v1.dta"))
 dump_step("04_merge_basic_BHP")
 
+# The industry mappings have no Stata counterpart at this position either: the
+# reference builds them in 13_industries_1digit.do, after the AKM merge. The
+# step runs here because w93_3_gen arrives with the merge above.
+con |> generate_industry_variables(log_file = here("log", "03c_industries.log"))
+
 con |> generate_educ_variable(log_file = here("log", "03_education.log"))
 dump_step("05_educ_broad")
 
@@ -212,10 +222,12 @@ con |> merge_akm(log_file       = here("log", "07c_akm.log"),
                  akm_pers_file  = file.path(akm_dir, "SIAB_7523_v2_akm_pers.dta"))
 dump_step("12_merge_AKM")
 
-# 13_industries_1digit.do is unported, so the chain skips it. The Blossfeld
-# occupations it is followed by were generated long ago, by
-# generate_occupation_variables() above; the dump is taken here so it sits at
-# the same point of the chain as the reference's own.
+# Both one-digit industries were generated far earlier, by
+# generate_industry_variables() after the basic BHP merge, and so were the
+# Blossfeld occupations, by generate_occupation_variables(). Nothing between
+# those positions and this one touches w93_3_gen or beruf, so the dumps are
+# taken here, at the point of the chain the reference creates each column.
+dump_step("13_industries_1digit")
 dump_step("14_occ_blossfeld")
 
 # The reference's uncommented rule defines the main episode as the job with the
