@@ -43,9 +43,13 @@ key <- c("persnr", "spell", "begepi")
 # 16_yearly_panel.do then keeps one episode per person and year and drops
 # `begepi` as well. Each is still unique on what is left, and the check below
 # proves it on every conversion.
+# 16_monthly_panel.do drops `begepi` as well but expands the data instead of
+# thinning it, to one row per person and calendar month, so its key is the
+# person, the year and the episode start cut to the month.
 step_key <- list(
   "15_parallel_episodes" = c("persnr", "begepi"),
-  "16_yearly_panel"      = c("persnr", "jahr")
+  "16_yearly_panel"      = c("persnr", "jahr"),
+  "16_monthly_panel"     = c("persnr", "jahr", "begepi_monthly")
 )
 
 key_for <- function(step) if (is.null(step_key[[step]])) key else step_key[[step]]
@@ -120,7 +124,19 @@ touched <- list(
                                     "year_days_emp", "year_days_benefits",
                                     "year_labor_earn",
                                     "tage_bet", "tage_job", "tage_erw",
-                                    "tage_lst")
+                                    "tage_lst"),
+  # 16_monthly_panel.do generates the same three yearly aggregates, then cuts
+  # every episode into one row per calendar month and keeps the month's 15th.
+  # `year` is the year of the month the row describes, which the step generates
+  # beside the `jahr` it inherits; after 01_split_episodes.do no episode crosses
+  # a year boundary, so the two always agree and the R port carries one column
+  # for both.
+  "16_monthly_panel"            = c("quelle", "erwstat", "parallel_benefits",
+                                    "year_days_emp", "year_days_benefits",
+                                    "year_labor_earn",
+                                    "tage_bet", "tage_job", "tage_erw",
+                                    "tage_lst",
+                                    "year", "month_num", "endepi_monthly")
 )
 
 

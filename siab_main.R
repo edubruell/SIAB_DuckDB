@@ -86,6 +86,12 @@ con |>
   build_yearly_panel(           log_file = here("log","09_yearly_panel.log"),
                                 cutoff_month = 6,
                                 cutoff_day   = 30) |>
+  # 16_monthly_panel.do is an alternative to the yearly panel, not a step after
+  # it: it cuts every episode into one row per calendar month and keeps the
+  # month's 15th. Swap the call above for this one to build that panel instead.
+  #
+  # build_monthly_panel(        log_file = here("log","09b_monthly_panel.log"),
+  #                             cutoff_day = 15) |>
   #Print the head of the table in the last step
   tbl("data")
 

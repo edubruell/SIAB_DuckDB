@@ -94,6 +94,11 @@ pipeline <- con |>
   build_yearly_panel(           log_file = here("log", "09_yearly_panel.log"),
                                 cutoff_month = 6,
                                 cutoff_day   = 30)
+  # 16_monthly_panel.do is an alternative to the yearly panel, not a step after
+  # it. Swap the call above for the one below to build the monthly panel:
+  #
+  # build_monthly_panel(        log_file   = here("log", "09b_monthly_panel.log"),
+  #                             cutoff_day = 15)
 
 #====================================================================
 #  3. Clean up and report

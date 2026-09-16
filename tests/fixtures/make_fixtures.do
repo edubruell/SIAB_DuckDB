@@ -25,6 +25,9 @@
 	  - runs steps 13 to 16 with the master's own switches on, so the chain
 	    reaches the parallel episodes and the yearly panel; 17_clean_up.do is
 	    not run, because its three working lines change no value
+	  - runs 16_monthly_panel.do as well, from the step 15 data again, because
+	    it is an alternative to 16_yearly_panel.do rather than a step after it,
+	    and sets its switch $monthly_vars, which the master never defines
 	  - fabricates the two AKM files step 12 reads, which no FDZ test product
 	    supplies, from the shape the FDZ methodology report describes. See
 	    tests/fixtures/make_synth_akm.do. The effects are noise, so step 12 is
@@ -282,6 +285,19 @@ save "${dump}/15_parallel_episodes.dta", replace
 
 do "${prog}/16_yearly_panel.do"
 save "${dump}/16_yearly_panel.dta", replace
+
+* 16_monthly_panel.do is an alternative to 16_yearly_panel.do, not a step after
+* it: both start from the step 15 data and the master calls neither. The dump
+* above is therefore reloaded here, so the monthly panel is built from the same
+* input the yearly one was. The step's own switch, $monthly_vars, has no default
+* in 00_master_SIAB.do, which never runs the step; it is turned on here so the
+* three yearly aggregates the block generates are compared as well.
+use "${dump}/15_parallel_episodes.dta", clear
+
+global monthly_vars = 1
+
+do "${prog}/16_monthly_panel.do"
+save "${dump}/16_monthly_panel.dta", replace
 
 * 17_clean_up.do has three working lines: sort, xtset and compress. None of them
 * changes a value, so there is nothing for the R port to reproduce and nothing

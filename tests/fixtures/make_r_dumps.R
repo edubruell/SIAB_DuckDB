@@ -54,7 +54,8 @@ key <- c("persnr", "spell", "begepi")
 # the columns, so the narrower key here is what makes the two halves joinable.
 step_key <- list(
   "15_parallel_episodes" = c("persnr", "begepi"),
-  "16_yearly_panel"      = c("persnr", "year")
+  "16_yearly_panel"      = c("persnr", "year"),
+  "16_monthly_panel"     = c("persnr", "year", "begepi_monthly")
 )
 
 key_for <- function(step) if (is.null(step_key[[step]])) key else step_key[[step]]
@@ -116,7 +117,19 @@ touched <- list(
                                     "year_days_emp", "year_days_benefits",
                                     "year_labor_earn",
                                     "tage_bet", "tage_job", "tage_erw",
-                                    "tage_lst", "begepi", "endepi")
+                                    "tage_lst", "begepi", "endepi"),
+  # The monthly panel is an alternative to the yearly one, so its dump is taken
+  # from a second run over the same step 15 data. `year` carries the reference's
+  # `jahr` and its `year` at once: the reference generates a second year column
+  # from the month, and after 01_split_episodes.do no episode crosses a year
+  # boundary, so the two agree row by row.
+  "16_monthly_panel"            = c("quelle", "erwstat", "parallel_benefits",
+                                    "year_days_emp", "year_days_benefits",
+                                    "year_labor_earn",
+                                    "tage_bet", "tage_job", "tage_erw",
+                                    "tage_lst",
+                                    "month", "month_num", "endepi_monthly",
+                                    "begepi", "endepi")
 )
 
 dump_step <- function(step) {
@@ -245,10 +258,26 @@ con |> handle_parallel_episodes(log_file = here("log", "08_parallel_episodes.log
                                 handling = "tenure")
 dump_step("15_parallel_episodes")
 
+# 16_yearly_panel.do and 16_monthly_panel.do are alternatives: both start from
+# the step 15 data and the reference master calls neither. The step 15 state is
+# therefore kept aside here, so the monthly panel can be built from the same
+# input the yearly one was, exactly as tests/fixtures/make_fixtures.do reloads
+# the step 15 dump for it.
+dbExecute(con, "CREATE TABLE parallel_episodes AS SELECT * FROM data")
+
 con |> build_yearly_panel(log_file     = here("log", "09_yearly_panel.log"),
                           cutoff_month = 6,
                           cutoff_day   = 30)
 dump_step("16_yearly_panel")
+
+dbExecute(con, "DROP TABLE data")
+dbExecute(con, "ALTER TABLE parallel_episodes RENAME TO data")
+
+# The reference hardcodes the 15th of the month as the cutoff, which is the
+# port's default.
+con |> build_monthly_panel(log_file   = here("log", "09b_monthly_panel.log"),
+                           cutoff_day = 15)
+dump_step("16_monthly_panel")
 
 #====================================================================
 #  Clean up

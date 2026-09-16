@@ -57,6 +57,8 @@ The file `stata_to_db_batch_read.R` in the project main folder contains all code
 - `handle_parallel_episodes()`: Handles parallel episodes.
 - `build_yearly_panel()`: Builds the yearly panel.
 
+`build_monthly_panel()` is an alternative to the last step rather than a step after it: it cuts every episode into one row per calendar month and keeps the month's 15th, where the yearly panel keeps one episode per year. Both start from the output of `handle_parallel_episodes()`, so a pipeline calls one or the other. The call sits commented out in `siab_main.R`, next to the yearly one.
+
 Two further merges, `merge_annual_bhp()` and `merge_akm()`, sit commented out in `siab_main.R`. Both read files that have to be requested from the FDZ on top of the SIAB itself. Uncomment either call once the files are in place.
 
 Each of these steps logs its progress to the specified log files.

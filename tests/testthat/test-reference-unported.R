@@ -9,6 +9,11 @@
 # generate_industry_variables(); its comparison lives in
 # test-reference-13_industries.R.
 #
+# 16_monthly_panel.do was ported on 2026-09-16, into build_monthly_panel(); its
+# comparison lives in test-reference-16_monthly_panel.R. It is an alternative to
+# 16_yearly_panel.do rather than a step after it, so both fixtures are taken
+# from separate runs over the step 15 data.
+#
 # The master's source restriction was ported on 2026-09-16, so the R output is
 # no longer a superset: both sides carry 505,050 rows on the test data. The
 # row-set equality is checked in test-reference-01_split_episodes.R.
