@@ -1,0 +1,343 @@
+beruf,occ_blo,occ_blo_de,occ_blo_en,label_de,label_en
+11,1,AGR-Agrarberufe,AGR-Agricultural occupations,Landwirte,Farmers
+12,1,AGR-Agrarberufe,AGR-Agricultural occupations,Weinbauern,Winegrowers
+21,1,AGR-Agrarberufe,AGR-Agricultural occupations,Tierzuechter,Animal breeders
+22,1,AGR-Agrarberufe,AGR-Agricultural occupations,Fischer,Fishermen
+31,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Verwalter in der Landwirtschaft und Tierzucht,Managers in agriculture and animal breeding
+32,5,ING-Ingenieure,ING-Engineers,"Agraringenieure, Landwirtschaftsberater","Agricultural engineers, agriculture advisors"
+41,1,AGR-Agrarberufe,AGR-Agricultural occupations,Landarbeitskraefte,Land workers
+42,1,AGR-Agrarberufe,AGR-Agricultural occupations,Melker,Milkers
+43,1,AGR-Agrarberufe,AGR-Agricultural occupations,"Familieneigene Landarbeitskraefte, a.n.g.","Family-member land workers, n.e.c."
+44,1,AGR-Agrarberufe,AGR-Agricultural occupations,Tierpfleger und verwandte Berufe,Animal keepers and related occupations
+51,1,AGR-Agrarberufe,AGR-Agricultural occupations,"Gaertner, Gartenarbeiter","Gardeners, garden workers"
+52,5,ING-Ingenieure,ING-Engineers,"Gartenarchitekten, Gartenverwalter","Garden architects, garden managers"
+53,1,AGR-Agrarberufe,AGR-Agricultural occupations,Floristen,Florists
+61,1,AGR-Agrarberufe,AGR-Agricultural occupations,"Forstverwalter, Foerster, Jaeger","Forestry managers, foresters, hunters"
+62,1,AGR-Agrarberufe,AGR-Agricultural occupations,"Waldarbeiter, Waldnutzer","Forest workers, forest cultivators"
+71,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Bergleute,Miners
+72,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Maschinen-, Elektro-, Schiesshauer","Mechanical, electrical, face workers, shot firers"
+81,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Steinbrecher,Stone crushers
+82,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Erden-, Kies-, Sandgewinner","Earth, gravel, sand quarriers"
+83,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Erdoel-, Erdgasgewinner","Oil, natural gas quarriers"
+91,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Mineralaufbereiter, Mineralbrenner","Mineral preparers, mineral burners"
+101,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Steinbearbeiter,Stone preparers
+102,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Edelsteinbearbeiter,Jewel preparers
+111,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Branntsteinhersteller,"Stoneware, earthenware makers"
+112,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Formstein-, Betonhersteller","Shaped brick, concrete block makers"
+121,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Keramiker,Ceramics workers
+131,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Glasmassehersteller,Frit makers
+132,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Hohlglasmacher,Hollow glassware makers
+133,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Flachglasmacher,Flat glass makers
+134,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Glasblaeser (vor der Lampe),Glass blowers (lamps)
+135,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Glasbearbeiter, Glasveredler","Glass processors, glass finishers"
+141,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Chemiebetriebswerker,Chemical plant operatives
+142,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Chemielaborwerker,Chemical laboratory workers
+143,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Gummihersteller, -verarbeiter","Rubber makers, processors"
+144,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Vulkaniseure,Vulcanisers
+151,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Kunststoffverarbeiter,Plastics processors
+161,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Papier-, Zellstoffhersteller","Paper, cellulose makers"
+162,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Verpackungsmittelhersteller,Packaging makers
+163,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Buchbinderberufe,Book binding occupations
+164,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Sonstige Papierverarbeiter,Other paper products makers
+171,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Schriftsetzer,"Type setters, compositors"
+172,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Druckstockhersteller,Printed goods makers
+173,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Buchdrucker (Hochdruck),Printers (letterpress)
+174,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Flach-, Tiefdrucker","Printers (flat, gravure)"
+175,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Spezialdrucker, Siebdrucker","Special printers, screeners"
+176,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Vervielfaeltiger,Copiers
+177,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Druckerhelfer,Printer's assistants
+181,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Holzaufbereiter,Wood preparers
+182,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Holzverformer und zugehoerige Berufe,Wood moulders and related occupations
+183,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Holzwarenmacher,Wood products makers
+184,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Korb-, Flechtwarenmacher",Basket and wicker products makers
+191,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Eisen-, Metallerzeuger, Schmelzer","Iron, metal producers, melters"
+192,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Walzer,Rollers
+193,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Metallzieher,Metal drawers
+201,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Former, Kernmacher","Moulders, coremakers"
+202,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Formgiesser,Mould casters
+203,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Halbzeugputzer und sonstige Formgiesserberufe,Semi-finished product fettlers and other mould casting occupations
+211,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Blechpresser, -zieher, -stanzer","Sheet metal pressers, drawers, stampers"
+212,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Drahtverformer, -verarbeiter","Wire moulders, processors"
+213,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Sonstige Metallverformer (spanlose Verformung),Other metal moulders (non-cutting deformation)
+221,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Dreher,Turners
+222,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Fraeser,Drillers
+223,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Hobler,Planers
+224,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Bohrer,Borers
+225,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Metallschleifer,Metal grinders
+226,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Uebrige spanende Berufe,Other metal-cutting occupations
+231,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Metallpolierer,Metal polishers
+232,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Graveure, Ziseleure","Engravers, chasers"
+233,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Metallvergueter,Metal finishers
+234,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Galvaniseure, Metallfaerber","Galvanisers, metal colourers"
+235,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Emaillierer, Feuerverzinker und andere Metalloberflaechenveredler","Enamellers, zinc platers and other metal surface finishers"
+241,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Schweisser, Brennschneider","Welders, oxy-acetylene cutters"
+242,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Loeter,Solderers
+243,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Nieter,Riveters
+244,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Metallkleber und uebrige Metallverbinder,Metal bonders and other metal connectors
+251,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Stahlschmiede,Steel smiths
+252,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Behaelterbauer, Kupferschmiede und verwandte Berufe","Container builders, coppersmiths and related occupations"
+261,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Feinblechner,Sheet metal workers
+262,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Rohrinstallateure,Plumbers
+263,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Rohrnetzbauer, Rohrschlosser","Pipe, tubing fitters"
+270,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Schlosser, o.n.A.","Locksmiths, not specified"
+271,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Bauschlosser,Building fitters
+272,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Blech-, Kunststoffschlosser","Sheet metal, plastics fitters"
+273,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Maschinenschlosser,Engine fitters
+274,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Betriebsschlosser, Reparaturschlosser","Plant fitters, maintenance fitters"
+275,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Stahlbauschlosser, Eisenschiffbauer","Steel structure fitters, metal shipbuilders"
+281,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Kraftfahrzeuginstandsetzer,Motor vehicle repairers
+282,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Landmaschineninstandsetzer,Agricultural machinery repairers
+283,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Flugzeugmechaniker,Aircraft mechanics
+284,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Feinmechaniker,Precision mechanics
+285,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Sonstige Mechaniker,Other mechanics
+286,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Uhrmacher,"Watch-, clockmakers"
+291,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Werkzeugmacher,Toolmakers
+301,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Metallfeinbauer, a.n.g.",Precision fitters n.e.c.
+302,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Edelmetallschmiede,Precious metal smiths
+303,4,TEC-Techniker,TEC-Technicians,Zahntechniker,Dental technicians
+304,4,TEC-Techniker,TEC-Technicians,Augenoptiker,Opthalmic opticians
+305,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Musikinstrumentenbauer,Musical instrument makers
+306,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Puppenmacher, Modellbauer, Praeparatoren","Doll makers, model makers, taxidermists"
+311,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Elektroinstallateure, -monteure","Electrical fitters, mechanics"
+312,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Fernmeldemonteure, -handwerker","Telecommunications mechanics, craftsmen"
+313,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Elektromotoren-, Transformatorenbauer","Electric motor, transformer fitters"
+314,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Elektrogeraetebauer,Electrical appliance fitters
+315,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Funk-, Tongeraetemechaniker","Radio, sound equipment mechanics"
+321,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Elektrogeraete-, Elektroteilemontierer","Electrical appliance, electrical parts assemblers"
+322,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Sonstige Montierer,Other assemblers
+323,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Metallarbeiter, o.n.A.",Metal workers (no further specification)
+331,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Spinner, Spinnvorbereiter","Spinners, fibre preparers"
+332,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Spuler, Zwirner, Seiler","Spoolers, twisters, ropemakers"
+341,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Webvorbereiter,Weaving preparers
+342,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Weber,Weavers
+343,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Tuftingwarenmacher,Tufted goods makers
+344,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Maschenwarenfertiger,Machined goods makers
+345,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Filzmacher, Hutstumpenmacher","Felt makers, hat body makers"
+346,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Textilverflechter,Textile processing operatives (braiders)
+351,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Schneider,Cutters
+352,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Oberbekleidungsnaeher,Clothing sewers
+353,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Waescheschneider, Waeschenaeher","Laundry cutters, sewers"
+354,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Sticker,Embroiderers
+355,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Hut-, Muetzenmacher","Hat, cap makers"
+356,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Naeher, a.n.g.","Sewers, n.e.c."
+357,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Sonstige Textilverarbeiter,Other textile processing operatives
+361,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Textilfaerber,Textile dyers
+362,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Textilausruester,Textile finishers
+371,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Lederhersteller, Darmsaitenmacher","Leather makers, catgut string makers"
+372,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Schuhmacher,Shoemakers
+373,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Schuhwarenhersteller,Footwear makers
+374,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Groblederwarenhersteller, Bandagisten","Coarse leather goods finishers, truss makers"
+375,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Feinlederwarenhersteller,Fine leather goods makers
+376,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Lederbekleidungshersteller und sonstige Lederverarbeiter,Leather clothing makers and other leather processing operatives
+377,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Handschuhmacher,Hand shoemakers
+378,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Fellverarbeiter,Skin processing operatives
+391,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Backwarenhersteller,Bakery goods makers
+392,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Konditoren,Confectioners (pastry)
+401,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Fleischer,Butchers
+402,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Fleisch-, Wurstwarenhersteller","Meat, sausage goods makers"
+403,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Fischverarbeiter,Fish processing operatives
+411,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Koeche,Cooks
+412,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Fertiggerichte-, Obst-, Gemuesekonservierer, -zubereiter","Ready-to-serve meals, fruit, vegetable preservers, preparers"
+421,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Weinkuefer,Wine coopers
+422,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Brauer, Maelzer","Brewers, maltsters"
+423,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Sonstige Getraenkehersteller, Koster","Other beverage makers, tasters"
+424,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Tabakwarenmacher,Tobacco goods makers
+431,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Milch-, Fettverarbeiter","Milk, fat processing operatives"
+432,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Mehl-, Naehrmittelhersteller","Flour, food processors"
+433,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Zucker-, Suesswaren-, Speiseeishersteller","Sugar, sweets, ice-cream makers"
+441,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Maurer,Bricklayers
+442,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Betonbauer,Concrete workers
+451,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Zimmerer,Carpenters
+452,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Dachdecker,Roofers
+453,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Geruestbauer,Scaffolders
+461,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Pflasterer, Steinsetzer",Paviors
+462,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Strassenbauer,Road makers
+463,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Gleisbauer,Tracklayers
+464,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Sprengmeister (ausser Schiesshauer),Explosives men (except shotfirers)
+465,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Kultur-, Wasserbauwerker","Land improvement, hydraulic engineering workers"
+466,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Sonstige Tiefbauer,Other civil engineering workers
+470,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Bauhilfsarbeiter,"Building labourer, general"
+471,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Erdbewegungsarbeiter,Earth movers
+472,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Sonstige Bauhilfsarbeiter, Bauhelfer, a.n.g.","Other building labourers, building assistants, n.e.c."
+481,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Stukkateure, Gipser, Verputzer","Stucco workers, plasterers, rough casters"
+482,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Isolierer, Abdichter","Insulators, proofers"
+483,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Fliesenleger,Tile setters
+484,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Ofensetzer, Luftheizungsbauer","Furnace setter, air heating installers"
+485,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Glaser,Glaziers
+486,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Estrich-, Terrazzoleger","Screed, terrazzo layers"
+491,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Raumausstatter,Room equippers
+492,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Polsterer, Matratzenhersteller","Upholsterers, mattress makers"
+501,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Tischler,Carpenters
+502,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Modelltischler, Formentischler","Model, form carpenters"
+503,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Stellmacher, Boettcher","Cartwrights, wheelwrights, coopers"
+504,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Sonstige Holz-, Sportgeraetebauer",Other wood and sports equipment makers
+511,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Maler, Lackierer (Ausbau)","Painters, lacquerers (construction)"
+512,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Warenmaler, -lackierer","Goods painters, lacquerers"
+513,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Holzoberflaechenveredler, Furnierer","Wood surface finishers, veneerers"
+514,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Kerammaler, Glasmaler","Ceramics, glass painters"
+521,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Warenpruefer, -sortierer, a.n.g.","Goods examiners, sorters, n.e.c."
+522,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Warenaufmacher, Versandfertigmacher","Packagers, goods receivers, despatchers"
+531,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Hilfsarbeiter ohne naehere Taetigkeitsangabe,Assistants (no further specification)
+541,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,Energiemaschinisten,Generator machinists
+542,3,QMB-Qual. manuelle Berufe,QMB-Skilled manual occupations,"Foerdermaschinisten, Seilbahnmaschinisten","Winding engine drivers, aerial ropeway machinists"
+543,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Sonstige Maschinisten,Other machinists
+544,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Kranfuehrer,Crane drivers
+545,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Erdbewegungsmaschinenfuehrer,Earthmoving plant drivers
+546,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Baumaschinenfuehrer,Construction machine attendants
+547,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Maschinenwaerter, Maschinistenhelfer","Machine attendants, machinists' helpers"
+548,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,Heizer,Stokers
+549,2,EMB-Einfache manuelle Berufe,EMB-Unskilled manual occupations,"Maschineneinrichter, o.n.A.",Machine setters (no further specification)
+555,99,NO-Nicht zuordenbar,NO-Not assignable,Behinderte,Disabled
+601,5,ING-Ingenieure,ING-Engineers,Ingenieure des Maschinen- und Fahrzeugbaues,"Mechanical, motor engineers"
+602,5,ING-Ingenieure,ING-Engineers,Elektroingenieure,Electrical engineers
+603,5,ING-Ingenieure,ING-Engineers,"Architekten, Bauingenieure","Architects, civil engineers"
+604,5,ING-Ingenieure,ING-Engineers,Vermessungsingenieure,Survey engineers
+605,5,ING-Ingenieure,ING-Engineers,"Bergbau-, Huetten-, Giessereiingenieure","Mining, metallurgy, foundry engineers"
+606,5,ING-Ingenieure,ING-Engineers,Uebrige Fertigungsingenieure,Other manufacturing engineers
+607,5,ING-Ingenieure,ING-Engineers,Sonstige Ingenieure,Other engineers
+611,5,ING-Ingenieure,ING-Engineers,"Chemiker, Chemieingenieure","Chemists, chemical engineers"
+612,5,ING-Ingenieure,ING-Engineers,"Physiker, Physikingenieure, Mathematiker","Physicists, physics engineers, mathematicians"
+621,4,TEC-Techniker,TEC-Technicians,Maschinenbautechniker,Mechanical engineering technicians
+622,4,TEC-Techniker,TEC-Technicians,Techniker des Elektofaches,Electrical engineering technicians
+623,4,TEC-Techniker,TEC-Technicians,Bautechniker,Building technicians
+624,4,TEC-Techniker,TEC-Technicians,Vermessungstechniker,Measurement technicians
+625,4,TEC-Techniker,TEC-Technicians,"Bergbau-, Huetten-, Giessereitechniker","Mining, metallurgy, foundry technicians"
+626,4,TEC-Techniker,TEC-Technicians,"Chemietechniker, Physikotechniker","Chemistry, physics technicians"
+627,4,TEC-Techniker,TEC-Technicians,Uebrige Fertigungstechniker,Remaining manufacturing technicians
+628,4,TEC-Techniker,TEC-Technicians,Sonstige Techniker,Other technicians
+629,4,TEC-Techniker,TEC-Technicians,"Industriemeister, Werkmeister","Foremen, master mechanics"
+631,4,TEC-Techniker,TEC-Technicians,Biologisch-technische Sonderfachkraefte,Biological specialists
+632,4,TEC-Techniker,TEC-Technicians,Physikalisch- und mathematisch-technische Sonderfachkraefte,Physical and mathematical specialists
+633,4,TEC-Techniker,TEC-Technicians,Chemielaboranten,Chemical laboratory assistants
+634,4,TEC-Techniker,TEC-Technicians,Photolaboranten,Photo laboratory assistants
+635,4,TEC-Techniker,TEC-Technicians,Technische Zeichner,Technical draughtspersons
+666,99,NO-Nicht zuordenbar,NO-Not assignable,Rehabilitanden,Rehabilitants
+681,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,"Gross- und Einzelhandelskaufleute, Einkaeufer","Wholesale and retail trade buyers, buyers"
+682,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,Verkaeufer,Salespersons
+683,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,"Verlagskaufleute, Buchhaendler","Publishing house dealers, booksellers"
+684,7,QDI-Qual. Dienste,QDI-Skilled services,Drogisten,Druggists/chemists (pharmacy)
+685,6,EDI-Einfache Dienste,EDI-Unskilled services,Apothekenhelferinnen,Pharmacy aids
+686,6,EDI-Einfache Dienste,EDI-Unskilled services,Tankwarte,Service-station attendants
+687,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,"Handelsvertreter, Reisende","Commercial agents, travellers"
+688,6,EDI-Einfache Dienste,EDI-Unskilled services,Ambulante Haendler,Mobile traders
+691,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Bankfachleute,Bank specialists
+692,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Bausparkassenfachleute,Building society specialists
+693,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Krankenversicherungsfachleute (nicht Sozialversicherung),Health insurance specialists (not social security)
+694,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,"Lebens-, Sachversicherungsfachleute","Life, property insurance specialists"
+701,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Speditionskaufleute,Forwarding business dealers
+702,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Fremdenverkehrsfachleute,Tourism specialists
+703,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Werbefachleute,Publicity occupations
+704,7,QDI-Qual. Dienste,QDI-Skilled services,"Makler, Grundstuecksverwalter","Brokers, property managers"
+705,7,QDI-Qual. Dienste,QDI-Skilled services,"Vermieter, Vermittler, Versteigerer","Landlords, agents, auctioneers"
+706,6,EDI-Einfache Dienste,EDI-Unskilled services,"Geldeinnehmer, -auszahler, Kartenverkaeufer, -kontrolleure","Cash collectors, cashiers, ticket sellers, inspectors"
+711,7,QDI-Qual. Dienste,QDI-Skilled services,Schienenfahrzeugfuehrer,Railway engine drivers
+712,7,QDI-Qual. Dienste,QDI-Skilled services,"Eisenbahnbetriebsregler, -schaffner","Railway controllers, conductors"
+713,6,EDI-Einfache Dienste,EDI-Unskilled services,"Sonstige Fahrbetriebsregler, Schaffner","Other traffic controllers, conductors"
+714,6,EDI-Einfache Dienste,EDI-Unskilled services,Kraftfahrzeugfuehrer,Motor vehicle drivers
+715,6,EDI-Einfache Dienste,EDI-Unskilled services,Kutscher,Coachmen
+716,6,EDI-Einfache Dienste,EDI-Unskilled services,Strassenwarte,Street attendants
+721,4,TEC-Techniker,TEC-Technicians,Nautiker,Navigating ships officers
+722,4,TEC-Techniker,TEC-Technicians,"Technische Schiffsoffiziere, Schiffsmaschinisten","Technical ships officers, ships engineers"
+723,6,EDI-Einfache Dienste,EDI-Unskilled services,Decksleute in der Seeschiffahrt,Deck seamen
+724,6,EDI-Einfache Dienste,EDI-Unskilled services,Binnenschiffer,Inland boatmen
+725,6,EDI-Einfache Dienste,EDI-Unskilled services,Sonstige Wasserverkehrsberufe,Other water transport occupations
+726,5,ING-Ingenieure,ING-Engineers,Luftverkehrsberufe,Air transport occupations
+731,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,Posthalter,Post masters
+732,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,Postverteiler,Postal deliverers
+733,4,TEC-Techniker,TEC-Technicians,Funker,Radio operators
+734,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,Telefonisten,Telephonists
+741,6,EDI-Einfache Dienste,EDI-Unskilled services,"Lagerverwalter, Magaziner","Warehouse managers, warehousemen"
+742,6,EDI-Einfache Dienste,EDI-Unskilled services,Transportgeraetefuehrer,Transportation equipment drivers
+743,6,EDI-Einfache Dienste,EDI-Unskilled services,"Stauer, Moebelpacker","Stowers, furniture packers"
+744,6,EDI-Einfache Dienste,EDI-Unskilled services,"Lager-, Transportarbeiter","Stores, transport workers"
+751,12,MAN-Manager,MAN-Managers,"Unternehmer, Geschaeftsfuehrer, Geschaeftsbereichsleiter","Entrepreneurs, managing directors, divisional managers"
+752,12,MAN-Manager,MAN-Managers,"Unternehmensberater, Organisatoren","Management consultants, organisors"
+753,12,MAN-Manager,MAN-Managers,"Wirtschaftspruefer, Steuerberater","Chartered accountants, tax advisers"
+761,12,MAN-Manager,MAN-Managers,"Abgeordnete, Minister, Wahlbeamte","Members of Parliament, Ministers, elected officials"
+762,12,MAN-Manager,MAN-Managers,Leitende und administrativ entscheidende Verwaltungsfachleute,Senior government officials
+763,12,MAN-Manager,MAN-Managers,"Verbandsleiter, Funktionaere","Association leaders, officials"
+771,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,"Kalkulatoren, Berechner","Cost accountants, valuers"
+772,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Buchhalter,Accountants
+773,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,Kassierer,Cashiers
+774,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Datenverarbeitungsfachleute,Data processing specialists
+781,11,QVB-Qual. kaufm. u. Verwaltungsberufe,QVB-Skilled com. and admin. occupations,Buerofachkraefte,Office specialists
+782,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,"Stenographen, Stenotypisten, Maschinenschreiber","Stenographers, shorthand-typists, typists"
+783,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,Datentypisten,Data typists
+784,10,EVB-Einfache kaufm. u. Verwaltungsberufe,EVB-Unskilled com. and admin. occupations,Buerohilfskraefte,Office auxiliary workers
+791,6,EDI-Einfache Dienste,EDI-Unskilled services,"Werkschutzleute, Detektive","Factory guards, detectives"
+792,6,EDI-Einfache Dienste,EDI-Unskilled services,"Waechter, Aufseher","Watchmen, custodians"
+793,6,EDI-Einfache Dienste,EDI-Unskilled services,"Pfoertner, Hauswarte","Doormen, caretakers"
+794,6,EDI-Einfache Dienste,EDI-Unskilled services,"Haus-, Gewerbediener",Domestic and non-domestic servants
+801,7,QDI-Qual. Dienste,QDI-Skilled services,"Soldaten, Grenzschutz-, Polizeibedienstete","Soldiers, border guards, police officers"
+802,7,QDI-Qual. Dienste,QDI-Skilled services,Berufsfeuerwehrleute,Firefighters
+803,7,QDI-Qual. Dienste,QDI-Skilled services,Sicherheitskontrolleure,Safety testers
+804,7,QDI-Qual. Dienste,QDI-Skilled services,Schornsteinfeger,Chimney sweeps
+805,6,EDI-Einfache Dienste,EDI-Unskilled services,Gesundheitssichernde Berufe,Health-protecting occupations
+811,9,PROF-Professionen,PROF-Professions,Rechtsfinder,Arbitrators
+812,7,QDI-Qual. Dienste,QDI-Skilled services,Rechtspfleger,Judicial administrators
+813,9,PROF-Professionen,PROF-Professions,"Rechtsvertreter, -berater","Legal representatives, advisors"
+814,7,QDI-Qual. Dienste,QDI-Skilled services,Rechtsvollstrecker,Judicial enforcers
+821,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,Publizisten,Journalists
+822,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Dolmetscher, Uebersetzer","Interpreters, translators"
+823,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Bibliothekare, Archivare, Museumsfachleute","Librarians, archivists, museum specialists"
+831,7,QDI-Qual. Dienste,QDI-Skilled services,Musiker,Musicians
+832,7,QDI-Qual. Dienste,QDI-Skilled services,Darstellende Kuenstler,Artists' agents
+833,7,QDI-Qual. Dienste,QDI-Skilled services,"Bildende Kuenstler, Graphiker","Visual, commercial artists"
+834,7,QDI-Qual. Dienste,QDI-Skilled services,"Dekorationen-, Schildermaler","Scenery, sign painters"
+835,7,QDI-Qual. Dienste,QDI-Skilled services,"Kuenstlerische und zugeordnete Berufe der Buehnen-, Bild- und Tontechnik","Artistic and assisting occupations (stage, video and audio)"
+836,7,QDI-Qual. Dienste,QDI-Skilled services,"Raum-, Schauwerbegestalter","Interior, exhibition designers, window dressers"
+837,7,QDI-Qual. Dienste,QDI-Skilled services,Photographen,Photographers
+838,6,EDI-Einfache Dienste,EDI-Unskilled services,"Artisten, Berufssportler, kuenstlerische Hilfsberufe","Performers, professional sportsmen, auxiliary artistic occupations"
+841,9,PROF-Professionen,PROF-Professions,Aerzte,Physicians
+842,9,PROF-Professionen,PROF-Professions,Zahnaerzte,Dentists
+843,9,PROF-Professionen,PROF-Professions,Tieraerzte,Veterinary surgeons
+844,9,PROF-Professionen,PROF-Professions,Apotheker,Pharmacists
+851,7,QDI-Qual. Dienste,QDI-Skilled services,Heilpraktiker,Non-medical practitioners
+852,7,QDI-Qual. Dienste,QDI-Skilled services,"Masseure, Krankengymnasten und verwandte Berufe","Masseurs, physiotherapists and related occupations"
+853,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Krankenschwestern, -pfleger, Hebammen","Nurses, midwives"
+854,7,QDI-Qual. Dienste,QDI-Skilled services,Helfer in der Krankenpflege,Nursing assistants
+855,7,QDI-Qual. Dienste,QDI-Skilled services,"Diaetassistenten, Pharmazeutisch-technische Assistenten","Dietary assistants, pharmaceutical assistants"
+856,7,QDI-Qual. Dienste,QDI-Skilled services,Sprechstundenhelfer,Medical receptionists
+857,4,TEC-Techniker,TEC-Technicians,Medizinallaboranten,Medical laboratory assistants
+861,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Sozialarbeiter, Sozialpfleger","Social workers, care workers"
+862,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Heimleiter, Sozialpaedagogen","Home wardens, social work teachers"
+863,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Arbeits-, Berufsberater","Work, vocational advisers"
+864,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Kindergaertnerinnen, Kinderpflegerinnen","Nursery teachers, child nurses"
+871,9,PROF-Professionen,PROF-Professions,"Hochschullehrer, Dozenten an hoeheren Fachschulen und Akademien","University teachers, lecturers at higher technical schools and academies"
+872,9,PROF-Professionen,PROF-Professions,Gymnasiallehrer,Gymnasium teachers
+873,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Real-, Volks-, Sonderschullehrer","Primary, secondary (basic), special school teachers"
+874,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Fachschul-, Berufsschul-, Werklehrer","Technical, vocational, factory instructors"
+875,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,"Lehrer fuer musische Faecher, a.n.g.","Music teachers, n.e.c."
+876,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,Sportlehrer,Sports teachers
+877,8,SEMI-Semiprofessionen,SEMI-Semiprofessions,Sonstige Lehrer,Other teachers
+881,9,PROF-Professionen,PROF-Professions,"Wirtschafts- und Sozialwissenschaftler, a.n.g., Statistiker","Economic and social scientists, statisticians"
+882,9,PROF-Professionen,PROF-Professions,"Geisteswissenschaftler, a.n.g.","Humanities specialists, n.e.c."
+883,5,ING-Ingenieure,ING-Engineers,"Naturwissenschaftler, a.n.g.",Scientists n.e.c.
+888,99,NO-Nicht zuordenbar,NO-Not assignable,Pflegepersonen,Nursing staff
+891,9,PROF-Professionen,PROF-Professions,Seelsorger,Ministers of religion
+892,7,QDI-Qual. Dienste,QDI-Skilled services,Angehoerige geistlicher Orden und Mutterhaeuser ohne Angabe einer Berufs,Members of religious orders without specific occupation
+893,7,QDI-Qual. Dienste,QDI-Skilled services,"Seelsorge-, Kulthelfer",Religious care helpers
+901,7,QDI-Qual. Dienste,QDI-Skilled services,Friseure,Hairdressers
+902,7,QDI-Qual. Dienste,QDI-Skilled services,Sonstige Koerperpfleger,Other body care occupations
+911,6,EDI-Einfache Dienste,EDI-Unskilled services,"Gastwirte, Hoteliers, Gaststaettenkaufleute","Restaurant, inn, bar keepers, hotel proprietors, catering trade dealers"
+912,6,EDI-Einfache Dienste,EDI-Unskilled services,"Kellner, Stewards","Waiters, stewards"
+913,6,EDI-Einfache Dienste,EDI-Unskilled services,Uebrige Gaestebetreuer,Others attending on guests
+921,7,QDI-Qual. Dienste,QDI-Skilled services,Hauswirtschaftsverwalter,Housekeeping managers
+922,7,QDI-Qual. Dienste,QDI-Skilled services,Verbraucherberater,Consumer advisors
+923,6,EDI-Einfache Dienste,EDI-Unskilled services,Hauswirtschaftliche Betreuer,Other housekeeping attendants
+924,6,EDI-Einfache Dienste,EDI-Unskilled services,Mit Haushaltsscheckverfahren gemeldete Arbeitnehmer,Employees by household cheque procedure
+931,6,EDI-Einfache Dienste,EDI-Unskilled services,"Waescher, Plaetter","Laundry workers, pressers"
+932,6,EDI-Einfache Dienste,EDI-Unskilled services,"Textilreiniger, Faerber und Chemischreiniger","Textile cleaners, dyers and dry cleaners"
+933,6,EDI-Einfache Dienste,EDI-Unskilled services,"Raum-, Hausratreiniger",Household cleaners
+934,6,EDI-Einfache Dienste,EDI-Unskilled services,"Glas-, Gebaeudereiniger","Glass, buildings cleaners"
+935,6,EDI-Einfache Dienste,EDI-Unskilled services,"Strassenreiniger, Abfallbeseitiger","Street cleaners, refuse disposers"
+936,6,EDI-Einfache Dienste,EDI-Unskilled services,"Fahrzeugreiniger, -pfleger","Vehicle cleaners, servicers"
+937,6,EDI-Einfache Dienste,EDI-Unskilled services,"Maschinen-, Behaelterreiniger und verwandte Berufe","Machinery, container cleaners and related occupations"
+971,99,NO-Nicht zuordenbar,NO-Not assignable,"Mithelfende Familienangehoerige ausserhalb der Landwirtschaft, a.n.g.","Non-agricultural family assistants, n.e.c."
+981,99,NO-Nicht zuordenbar,NO-Not assignable,Auszubildende mit noch nicht feststehendem Ausbildungsberuf,Trainees with recognised training occupation still to be specified
+982,99,NO-Nicht zuordenbar,NO-Not assignable,"Praktikanten, Volontaere mit noch nicht feststehendem Beruf","Interns, unpaid trainees with recognised training occupation still to be specified"
+983,99,NO-Nicht zuordenbar,NO-Not assignable,Arbeitskraefte (arbeitsuchend) mit noch nicht bestimmtem Beruf,Workforce (job seekers) with occupation still to be specified
+991,99,NO-Nicht zuordenbar,NO-Not assignable,Arbeitskraefte ohne Angabe,Workforce not further specified
+995,99,NO-Nicht zuordenbar,NO-Not assignable,Vorruhestands- Altersuebergangsgeldbezieher,Recipients of early retirement pension
+996,99,NO-Nicht zuordenbar,NO-Not assignable,Altersteilzeitarbeitende Arbeitnehmer,Employees in partial retirement
+997,99,NO-Nicht zuordenbar,NO-Not assignable,Ausgleichsgeldbezieher,Recipients of compensations allowance

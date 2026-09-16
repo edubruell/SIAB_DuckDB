@@ -72,8 +72,8 @@ impute_wages <- function(.connection, .log_file = NULL){
       #Flag censored wages:
       cens = case_when(
         #only flag BeH spells (quelle == 1)
-        wage_defl <= limit_assess4 & quelle_gr == 1 ~ 0L,
-        wage_defl  > limit_assess4 & quelle_gr == 1 ~ 1L, 
+        wage_defl <= limit_assess4 & quelle == 1 ~ 0L,
+        wage_defl  > limit_assess4 & quelle == 1 ~ 1L, 
         .default=NA_integer_
       )
   ) %>%
@@ -87,7 +87,7 @@ impute_wages <- function(.connection, .log_file = NULL){
   
   #overall censoring
   tbl(.connection, "data") %>%
-    filter(quelle_gr == 1, !is.na(cens)) %>%
+    filter(quelle == 1, !is.na(cens)) %>%
     count(cens) %>%
     collect() %>%
     mutate(cens = factor(cens, levels=c(0,1),labels = c("below the wage assessment limit","above the wage assessment limit")),
@@ -98,7 +98,7 @@ impute_wages <- function(.connection, .log_file = NULL){
 
   #Censoring by education
   tbl(.connection, "data") %>%
-    filter(quelle_gr == 1, !is.na(cens)) %>%
+    filter(quelle == 1, !is.na(cens)) %>%
     count(cens,educ)  %>%
     collect() %>%
     pivot_wider(id_cols="educ",values_from="n",names_from="cens",names_prefix = "cens") %>%
@@ -125,7 +125,7 @@ impute_wages <- function(.connection, .log_file = NULL){
   
   # Use cut function to create the age categories
   tbl(.connection, "data") %>%
-    filter(quelle_gr == 1, !is.na(cens),educ==3L,age<=60,age>=18) %>%
+    filter(quelle == 1, !is.na(cens),educ==3L,age<=60,age>=18) %>%
     mutate(age_category = cut(age, 
                               breaks = age_breaks, 
                               labels = age_labels, 
@@ -144,7 +144,7 @@ impute_wages <- function(.connection, .log_file = NULL){
   
   #censoring by fulltime/part-time
   tbl(.connection, "data") %>%
-    filter(quelle_gr == 1, !is.na(cens))  %>%
+    filter(quelle == 1, !is.na(cens))  %>%
     group_by(teilzeit) %>%
     summarise(share_censored = mean(cens, na.rm=TRUE)) %>%
     collect() %>%
@@ -160,7 +160,7 @@ impute_wages <- function(.connection, .log_file = NULL){
     
   #censoring by gender
   tbl(.connection, "data") %>%
-    filter(quelle_gr == 1, !is.na(cens))  %>%
+    filter(quelle == 1, !is.na(cens))  %>%
     group_by(frau) %>%
     summarise(share_censored = mean(cens, na.rm=TRUE)) %>%
     collect() %>%
@@ -181,8 +181,8 @@ impute_wages <- function(.connection, .log_file = NULL){
   tbl(.connection, "data") %>%
     mutate(
       #Daily wage, not imputed, top-coded wages replaced by assessment ceiling (-4 EUR)
-      wage = case_when(quelle_gr == 1   & wage_defl <= limit_assess4 ~ wage_defl,
-                       quelle_gr == 1   & wage_defl >  limit_assess4 ~ limit_assess4,
+      wage = case_when(quelle == 1   & wage_defl <= limit_assess4 ~ wage_defl,
+                       quelle == 1   & wage_defl >  limit_assess4 ~ limit_assess4,
                        .default=NA_real_),
       ln_wage = if_else(wage!=0,log(wage),NA_real_),
       ln_wage_cens = if_else(cens == 0,ln_wage,NA_real_)
@@ -245,7 +245,7 @@ impute_wages <- function(.connection, .log_file = NULL){
       filter(year==.year,
              educ_tmp==.educ_tmp,
              east==.east,
-             quelle_gr==1,
+             quelle==1,
              #excluding marginal wages
              marginal ==0) %>%
       select(persnr,spell,begepi,endepi,all_of(controls_imputation),ln_wage,cens,ln_limit_assess4) %>%

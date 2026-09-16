@@ -58,10 +58,12 @@ build_yearly_panel <- function(.connection,
   
   #Durations of episodes
   tbl(.connection, "data") %>%
-    window_order(persnr,year,begepi,endepi,quelle_gr) %>%
+    window_order(persnr,year,begepi,endepi,quelle) %>%
     group_by(persnr,year,begepi,endepi) %>%
-    mutate(dur_emp      = if_else(quelle_gr == 1,endepi-begepi + 1,0),
-           dur_benefits = if_else(quelle_gr == 2 | parallel_benefits == 1,endepi-begepi + 1,0)
+    mutate(dur_emp      = if_else(quelle == 1,endepi-begepi + 1,0),
+           #16_yearly_panel.do also allows the legacy code quelle == 16, which
+           #does not occur in SIAB 7523 v2
+           dur_benefits = if_else(quelle == 2 | parallel_benefits == 1,endepi-begepi + 1,0)
            ) %>%
     group_by(persnr,year) %>%
     #Total time working, total time receiving UI benefits
@@ -114,10 +116,10 @@ build_yearly_panel <- function(.connection,
   tbl(.connection, "data") %>%
       #Generate the cutoff-date as helper variable
       mutate(cu_date = as.Date(paste0(as.integer(year),md_string)),
-             tage_bet = if_else(quelle_gr==1,tage_bet - (endepi - cu_date),NA_integer_),
-             tage_job = if_else(quelle_gr==1,tage_job - (endepi - cu_date),NA_integer_),
-             tage_erw = if_else(quelle_gr==1 & erwstat_gr != 2,tage_erw - (endepi - cu_date),NA_integer_),
-             #tage_lst = if_else(quelle_gr==2 | parallel_benefits == 1, tage_lst - (endepi - cu_date),NA_integer_)                  
+             tage_bet = if_else(quelle==1,tage_bet - (endepi - cu_date),NA_integer_),
+             tage_job = if_else(quelle==1,tage_job - (endepi - cu_date),NA_integer_),
+             tage_erw = if_else(quelle==1 & !erwstat %in% c(102L, 121L, 122L, 141L, 144L),tage_erw - (endepi - cu_date),NA_integer_),
+             #tage_lst = if_else(quelle==2 | parallel_benefits == 1, tage_lst - (endepi - cu_date),NA_integer_)                  
              ) %>%
     select(-cu_date) %>%
     compute_and_overwrite()

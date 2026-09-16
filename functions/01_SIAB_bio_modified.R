@@ -89,8 +89,8 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
   log_info("Adding level1 (PER EPISODE AND SOURCE) and level2 (PER EPISODE) observation counters ", namespace = "siab_bio")
   
   tbl(.connection, "data") %>%
-    group_by(persnr, begepi, quelle_gr) %>%
-    window_order(persnr, begepi, quelle_gr) %>%
+    group_by(persnr, begepi, quelle) %>%
+    window_order(persnr, begepi, quelle) %>%
     #OBSERVATION COUNTER PER EPISODE AND SOURCE
     mutate(level1 = row_number() - 1) %>%
     group_by(persnr, begepi) %>%
@@ -98,7 +98,7 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
     #OBSERVATION COUNTER PER EPISODE
     mutate(level2 = row_number() - 1) %>%
     ungroup() %>%
-    arrange(persnr, begepi, quelle_gr) %>%
+    arrange(persnr, begepi, quelle) %>%
     compute_and_overwrite()
   
   log_success("-> Observation counters added", namespace = "siab_bio")
@@ -122,13 +122,14 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
   tbl(.connection, "data") %>%
     mutate(
       # TAG VOCATIONAL TRAINING
-      azubi = if_else(erwstat_gr == 2, 1L, 0L),
-      emp = if_else(quelle_gr == 1 & azubi == 0, 1L, 0L)
+      # 03_SIAB_bio.do: inlist(erwstat, 102, 121, 122, 141)
+      azubi = if_else(erwstat %in% c(102L, 121L, 122L, 141L), 1L, 0L),
+      emp = if_else(quelle == 1 & azubi == 0, 1L, 0L)
     ) %>%
     group_by(persnr, emp) %>%
     window_order(persnr, emp, begorig) %>%
     mutate(ein_erw=first(begorig)) %>%
-    arrange(persnr, begepi, quelle_gr) %>%
+    arrange(persnr, begepi, quelle) %>%
     compute_and_overwrite()
   
   log_success("-> First day in employment (ein_erw variable) created", 
@@ -154,7 +155,7 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
     window_order(persnr, begepi, nrE) %>%
     mutate(tage_erw = cumsum(d)) %>%
     ungroup() %>%
-    arrange(persnr, begepi, quelle_gr) %>%
+    arrange(persnr, begepi, quelle) %>%
     select(-d,-emp,-nrE)%>%
     compute_and_overwrite()
     
@@ -168,31 +169,24 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
   log_info("Computing first day and number of days in establishment", 
            namespace = "siab_bio")
   
-  #For the SUF we only have bnn and not a betnr
-  #bnn is a person-specific counter for firms!
-  #Numbers the establishments in a person’s working life in ascending order.
-  # Example: The first establishment in which a person was employed receives the
-  #     value 1. If the person moves to a different establishment, this establishment
-  #     receives the value 2, etc. If the person returns to an establishment in which they
-  #     were previously employed, then this establishment is given the value that applied
-  #     for the first period of employment there (e.g., 2). If a person returns to the first
-  #     establishment after just one change of establishment, this would result in the
-  #     sequence 1-2-1 for the variable “bnn” over time. Establishment numbers that are
-  #     missing in the original data are set to missing (.z) in the SIAB-R 7521.
+  #SIAB 7523 v2 carries a real establishment identifier (betnr, from betnr_siab),
+  #so the grouping is by establishment as in 03_SIAB_bio.do. The SUF this code
+  #was written for had only betnr, a person-specific counter that numbered the
+  #establishments in one working life in order of first appearance.
   
   tbl(.connection, "data") %>%
     # First day in establishment (ein_bet)
-    group_by(persnr, bnn) %>%
+    group_by(persnr, betnr) %>%
     mutate(ein_bet = min(begepi)) %>%
-    group_by(persnr, bnn, begepi, endepi) %>%
-    window_order(persnr,bnn,begepi,endepi,spell) %>%
+    group_by(persnr, betnr, begepi, endepi) %>%
+    window_order(persnr,betnr,begepi,endepi,spell) %>%
     mutate(nrB   = row_number(),
            dauer = if_else(nrB == 1, as.integer(endepi -begepi + 1), 0L)) %>%
-    group_by(persnr, bnn) %>%
-    window_order(persnr,bnn,spell) %>%
+    group_by(persnr, betnr) %>%
+    window_order(persnr,betnr,spell) %>%
     # Number of days in establishment (tage_bet)
     mutate(tage_bet = cumsum(dauer),
-           tage_bet = if_else(is.na(bnn),NA_integer_,tage_bet)) %>%
+           tage_bet = if_else(is.na(betnr),NA_integer_,tage_bet)) %>%
     ungroup() %>%
     select(-dauer) %>%
     arrange(persnr, begepi) %>%
@@ -210,21 +204,22 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
            namespace = "siab_bio")
   
   tbl(.connection, "data") %>%
-    mutate(ein_job = if_else(!is.na(bnn),begepi,NA)) %>%
-    window_order(persnr,azubi,bnn,spell) %>%
+    mutate(ein_job = if_else(!is.na(betnr),begepi,NA)) %>%
+    window_order(persnr,azubi,betnr,spell) %>%
     mutate(job = if_else(persnr == lag(persnr) & 
-                         bnn    == lag(bnn) & 
-                         azubi  == lag(azubi) & !is.na(bnn),1L,NA_integer_)
+                         betnr    == lag(betnr) & 
+                         azubi  == lag(azubi) & !is.na(betnr),1L,NA_integer_)
     ) %>%
     ungroup() %>%
-    window_order(persnr,azubi,bnn,begepi,spell) %>%
-    group_by(persnr,azubi,bnn,begepi) %>%
+    window_order(persnr,azubi,betnr,begepi,spell) %>%
+    group_by(persnr,azubi,betnr,begepi) %>%
     #Tag job endings of main spell by grund
-    #Grund_gr levels
-    #0: Deregistration due to end of employment
-    #3: Deregistration due to interruption of employment for more than one month (also industrial conflict/dispute) (since '99)
-    #5: Simultaneous registration and deregistration due to end of employment (since '99)
-    mutate(end = if_else(first(grund_gr) %in% c(0, 3, 5), 1L, NA)) %>%
+    #grund levels, following 03_SIAB_bio.do: inlist(grund[1], 130, 134, 140, 149)
+    #130: Deregistration due to end of employment
+    #134: Deregistration due to interruption of employment for more than one month
+    #140: Simultaneous registration and deregistration due to end of employment
+    #149: Deregistration due to death
+    mutate(end = if_else(first(grund) %in% c(130L, 134L, 140L, 149L), 1L, NA)) %>%
     ungroup() %>%
     mutate(gap     = if_else(job==1,as.integer(begepi - lag(endepi) - 1), NA_integer_),
           #COUNT AS NEW JOB IF EMPLOYER REPORTED END OF EMPLOYMENT AND GAP > 92 DAYS
@@ -236,7 +231,7 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
     mutate(job_ep = cumsum(job_ep_switch),
            job_ep = if_else(is.na(job),NA,job_ep)
            ) %>%
-    window_order(persnr,azubi,bnn,begepi,spell) %>%
+    window_order(persnr,azubi,betnr,begepi,spell) %>%
     mutate(job_ep = if_else(!is.na(lead(job_ep)) & is.na(job_ep),lead(job_ep), job_ep)) %>%
     group_by(persnr,job_ep) %>%
     mutate(ein_job = min(ein_job),
@@ -256,8 +251,8 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
            namespace = "siab_bio")
   
   tbl(.connection, "data") %>%
-    window_order(persnr, azubi, bnn, begepi,spell) %>%
-    group_by(persnr, azubi, bnn, begepi) %>%
+    window_order(persnr, azubi, betnr, begepi,spell) %>%
+    group_by(persnr, azubi, betnr, begepi) %>%
     mutate(nrA = row_number(),
       jobdauer = as.integer(endepi - begepi + 1),
       #Do not count duration in secondary jobs
@@ -265,7 +260,7 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
       jobdauer  = if_else(is.na(jobdauer), 0L,jobdauer)
     ) %>%
     ungroup() %>%
-    window_order(persnr, azubi, bnn, begepi,spell) %>%
+    window_order(persnr, azubi, betnr, begepi,spell) %>%
     group_by(persnr, job_ep) %>%
     mutate(
       jobdauer = cumsum(jobdauer),
@@ -287,7 +282,8 @@ generate_biographic_variables <- function(.connection, .log_file = NULL){
            namespace = "siab_bio")
   
   tbl(.connection, "data") %>%
-    mutate(quelleL = if_else(quelle_gr %in% c(2, 16), 1L, 0L)) %>%
+    #Benefit spells, following 03_SIAB_bio.do: inlist(quelle, 2, 3)
+    mutate(quelleL = if_else(quelle %in% c(2L, 3L), 1L, 0L)) %>%
     window_order(persnr, begepi, quelleL,spell) %>%
     group_by(persnr, begepi, quelleL) %>%
     mutate(nrL = row_number()) %>%

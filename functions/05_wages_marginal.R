@@ -44,9 +44,9 @@ generate_limit_marginal <- function(.connection, .log_file = NULL){
   tbl(.connection, "data") %>%
     left_join(tbl_limit_marginal, by=c("east","year"), copy=TRUE) %>%
     mutate(marginal = case_when(
-      is.na(tentgelt_gr) | is.na(limit_marginal) ~ NA_real_,
-      tentgelt_gr <= limit_marginal ~ 1,
-      tentgelt_gr > limit_marginal ~ 0
+      is.na(tentgelt) | is.na(limit_marginal) ~ NA_real_,
+      tentgelt <= limit_marginal ~ 1,
+      tentgelt > limit_marginal ~ 0
     )) %>%
     compute_and_overwrite()
   

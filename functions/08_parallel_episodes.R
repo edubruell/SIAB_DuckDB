@@ -71,14 +71,14 @@ handle_parallel_episodes <- function(.connection,
   if(.handling!="wage"){
     log_info("Job with longest tenure is defined as main episode", namespace ="parallel")
       set_sort_order <- function(.tbl){
-        window_order(.tbl ,persnr,begepi,quelle_gr,desc(tage_bet),desc(wage_imp))
+        window_order(.tbl ,persnr,begepi,quelle,desc(tage_bet),desc(wage_imp))
       }
   }
   #define job with highest wage as main episode
   if(.handling=="wage"){
     log_info("Job with highest wage  is defined as main episode", namespace ="parallel")
     set_sort_order <- function(.tbl){
-      window_order(.tbl ,persnr,begepi,quelle_gr,desc(wage_imp),desc(tage_bet))
+      window_order(.tbl ,persnr,begepi,quelle,desc(wage_imp),desc(tage_bet))
     }
   }
   
@@ -89,10 +89,10 @@ handle_parallel_episodes <- function(.connection,
   log_info("Generating info on parallel jobs and keeping only the main spell", namespace = "parallel")
   
   tbl(.connection, "data") %>%
-    mutate(tmp_jobs     =  as.integer(quelle_gr == 1),
-           tmp_benefits = as.integer(quelle_gr == 2),
-           tmp_wage =  if_else(quelle_gr==1 & !is.na(tentgelt_gr), tentgelt_gr, 0),
-           tmp_wage_imp =  if_else(quelle_gr==1 & !is.na(wage_imp), wage_imp, 0)) %>%
+    mutate(tmp_jobs     =  as.integer(quelle == 1),
+           tmp_benefits = as.integer(quelle == 2),
+           tmp_wage =  if_else(quelle==1 & !is.na(tentgelt), tentgelt, 0),
+           tmp_wage_imp =  if_else(quelle==1 & !is.na(wage_imp), wage_imp, 0)) %>%
     group_by(persnr,begepi) %>%
     set_sort_order() %>%
     mutate(

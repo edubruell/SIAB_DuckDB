@@ -1,0 +1,343 @@
+beruf,label_de,label_en,in_kldb88,kldb88_de,kldb88_2,kldb88_2_de,kldb88_1,kldb88_1_de,n_siab
+11,Landwirte,Farmers,TRUE,Landwirte,1,Landwirte,I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",705
+12,Weinbauern,Winegrowers,TRUE,Weinbauern,1,Landwirte,I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",85
+21,Tierzuechter,Animal breeders,TRUE,Tierzüchter,2,"Tierzüchter, Fischereiberufe",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",183
+22,Fischer,Fishermen,TRUE,Fischer,2,"Tierzüchter, Fischereiberufe",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",27
+31,Verwalter in der Landwirtschaft und Tierzucht,Managers in agriculture and animal breeding,TRUE,Verwalter in der Landwirtschaft und Tierzucht,3,"Verwalter, Berater in der Landwirtschaft und Tierzucht",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",68
+32,"Agraringenieure, Landwirtschaftsberater","Agricultural engineers, agriculture advisors",TRUE,"Agraringenieure, Landwirtschaftsberater",3,"Verwalter, Berater in der Landwirtschaft und Tierzucht",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",165
+41,Landarbeitskraefte,Land workers,TRUE,Landarbeitskräfte,4,"Landwirtschaftliche Arbeitskräfte, Tierpfleger",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",3237
+42,Melker,Milkers,TRUE,Melker,4,"Landwirtschaftliche Arbeitskräfte, Tierpfleger",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",46
+43,"Familieneigene Landarbeitskraefte, a.n.g.","Family-member land workers, n.e.c.",TRUE,"Familieneigene Landarbeitskräfte, a.n.g.",4,"Landwirtschaftliche Arbeitskräfte, Tierpfleger",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",30
+44,Tierpfleger und verwandte Berufe,Animal keepers and related occupations,TRUE,Tierpfleger und verwandte Berufe,4,"Landwirtschaftliche Arbeitskräfte, Tierpfleger",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",346
+51,"Gaertner, Gartenarbeiter","Gardeners, garden workers",TRUE,"Gärtner, Gartenarbeiter",5,Gartenbauer,I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",3736
+52,"Gartenarchitekten, Gartenverwalter","Garden architects, garden managers",TRUE,"Gartenarchitekten, Gartenverwalter",5,Gartenbauer,I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",202
+53,Floristen,Florists,TRUE,Floristen,5,Gartenbauer,I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",456
+61,"Forstverwalter, Foerster, Jaeger","Forestry managers, foresters, hunters",TRUE,"Forstverwalter, Förster, Jäger",6,"Forst-, Jagdberufe",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",95
+62,"Waldarbeiter, Waldnutzer","Forest workers, forest cultivators",TRUE,"Waldarbeiter, Waldnutzer",6,"Forst-, Jagdberufe",I,"Pflanzenbauer, Tierzüchter, Fischereiberufe",547
+71,Bergleute,Miners,TRUE,Bergleute,7,Bergleute,II,"Bergleute, Mineralgewinner",559
+72,"Maschinen-, Elektro-, Schiesshauer","Mechanical, electrical, face workers, shot firers",TRUE,"Maschinen-, Elektro-, Schießhauer",7,Bergleute,II,"Bergleute, Mineralgewinner",97
+81,Steinbrecher,Stone crushers,TRUE,Steinbrecher,8,"Mineral-, Erdöl-, Erdgasgewinner",II,"Bergleute, Mineralgewinner",32
+82,"Erden-, Kies-, Sandgewinner","Earth, gravel, sand quarriers",TRUE,"Erden-, Kies-, Sandgewinner",8,"Mineral-, Erdöl-, Erdgasgewinner",II,"Bergleute, Mineralgewinner",53
+83,"Erdoel-, Erdgasgewinner","Oil, natural gas quarriers",TRUE,"Erdöl-, Erdgasgewinner",8,"Mineral-, Erdöl-, Erdgasgewinner",II,"Bergleute, Mineralgewinner",28
+91,"Mineralaufbereiter, Mineralbrenner","Mineral preparers, mineral burners",TRUE,"Mineralaufbereiter, Mineralbrenner",9,Mineralaufbereiter,II,"Bergleute, Mineralgewinner",50
+101,Steinbearbeiter,Stone preparers,TRUE,Steinbearbeiter,10,Steinbearbeiter,III,Fertigungsberufe,264
+102,Edelsteinbearbeiter,Jewel preparers,TRUE,Edelsteinbearbeiter,10,Steinbearbeiter,III,Fertigungsberufe,15
+111,Branntsteinhersteller,"Stoneware, earthenware makers",TRUE,Branntsteinhersteller,11,Baustoffhersteller,III,Fertigungsberufe,242
+112,"Formstein-, Betonhersteller","Shaped brick, concrete block makers",TRUE,"Formstein-, Betonhersteller",11,Baustoffhersteller,III,Fertigungsberufe,313
+121,Keramiker,Ceramics workers,TRUE,Keramiker,12,Keramiker,III,Fertigungsberufe,293
+131,Glasmassehersteller,Frit makers,TRUE,Glasmassehersteller,13,Glasmacher,III,Fertigungsberufe,26
+132,Hohlglasmacher,Hollow glassware makers,TRUE,Hohlglasmacher,13,Glasmacher,III,Fertigungsberufe,294
+133,Flachglasmacher,Flat glass makers,TRUE,Flachglasmacher,13,Glasmacher,III,Fertigungsberufe,51
+134,Glasblaeser (vor der Lampe),Glass blowers (lamps),TRUE,Glasbläser (vor der Lampe),13,Glasmacher,III,Fertigungsberufe,1
+135,"Glasbearbeiter, Glasveredler","Glass processors, glass finishers",TRUE,"Glasbearbeiter, Glasveredler",13,Glasmacher,III,Fertigungsberufe,292
+141,Chemiebetriebswerker,Chemical plant operatives,TRUE,Chemiebetriebswerker,14,Chemiearbeiter,III,Fertigungsberufe,1999
+142,Chemielaborwerker,Chemical laboratory workers,TRUE,Chemielaborwerker,14,Chemiearbeiter,III,Fertigungsberufe,433
+143,"Gummihersteller, -verarbeiter","Rubber makers, processors",TRUE,"Gummihersteller, -verarbeiter",14,Chemiearbeiter,III,Fertigungsberufe,934
+144,Vulkaniseure,Vulcanisers,TRUE,Vulkaniseure,14,Chemiearbeiter,III,Fertigungsberufe,122
+151,Kunststoffverarbeiter,Plastics processors,TRUE,Kunststoffverarbeiter,15,Kunststoffverarbeiter,III,Fertigungsberufe,2025
+161,"Papier-, Zellstoffhersteller","Paper, cellulose makers",TRUE,"Papier-, Zellstoffhersteller",16,"Papierhersteller, -verarbeiter",III,Fertigungsberufe,507
+162,Verpackungsmittelhersteller,Packaging makers,TRUE,Verpackungsmittelhersteller,16,"Papierhersteller, -verarbeiter",III,Fertigungsberufe,416
+163,Buchbinderberufe,Book binding occupations,TRUE,Buchbinderberufe,16,"Papierhersteller, -verarbeiter",III,Fertigungsberufe,582
+164,Sonstige Papierverarbeiter,Other paper products makers,TRUE,Sonstige Papierverarbeiter,16,"Papierhersteller, -verarbeiter",III,Fertigungsberufe,389
+171,Schriftsetzer,"Type setters, compositors",TRUE,Schriftsetzer,17,Drucker,III,Fertigungsberufe,319
+172,Druckstockhersteller,Printed goods makers,TRUE,Druckstockhersteller,17,Drucker,III,Fertigungsberufe,216
+173,Buchdrucker (Hochdruck),Printers (letterpress),TRUE,Buchdrucker (Hochdruck),17,Drucker,III,Fertigungsberufe,204
+174,"Flach-, Tiefdrucker","Printers (flat, gravure)",TRUE,"Flach-, Tiefdrucker",17,Drucker,III,Fertigungsberufe,314
+175,"Spezialdrucker, Siebdrucker","Special printers, screeners",TRUE,"Spezialdrucker, Siebdrucker",17,Drucker,III,Fertigungsberufe,25
+176,Vervielfaeltiger,Copiers,TRUE,Vervielfältiger,17,Drucker,III,Fertigungsberufe,129
+177,Druckerhelfer,Printer's assistants,TRUE,Druckerhelfer,17,Drucker,III,Fertigungsberufe,716
+181,Holzaufbereiter,Wood preparers,TRUE,Holzaufbereiter,18,"Holzaufbereiter, Holzwarenfertiger und verwandte Berufe",III,Fertigungsberufe,904
+182,Holzverformer und zugehoerige Berufe,Wood moulders and related occupations,TRUE,Holzverformer und zugehörige Berufe,18,"Holzaufbereiter, Holzwarenfertiger und verwandte Berufe",III,Fertigungsberufe,26
+183,Holzwarenmacher,Wood products makers,TRUE,Holzwarenmacher,18,"Holzaufbereiter, Holzwarenfertiger und verwandte Berufe",III,Fertigungsberufe,55
+184,"Korb-, Flechtwarenmacher",Basket and wicker products makers,TRUE,"Korb-, Flechtwarenmacher",18,"Holzaufbereiter, Holzwarenfertiger und verwandte Berufe",III,Fertigungsberufe,11
+191,"Eisen-, Metallerzeuger, Schmelzer","Iron, metal producers, melters",TRUE,"Eisen-, Metallerzeuger, Schmelzer",19,"Metallerzeuger, Walzer",III,Fertigungsberufe,393
+192,Walzer,Rollers,TRUE,Walzer,19,"Metallerzeuger, Walzer",III,Fertigungsberufe,340
+193,Metallzieher,Metal drawers,TRUE,Metallzieher,19,"Metallerzeuger, Walzer",III,Fertigungsberufe,75
+201,"Former, Kernmacher","Moulders, coremakers",TRUE,"Former, Kernmacher",20,"Former, Formgießer",III,Fertigungsberufe,203
+202,Formgiesser,Mould casters,TRUE,Formgießer,20,"Former, Formgießer",III,Fertigungsberufe,217
+203,Halbzeugputzer und sonstige Formgiesserberufe,Semi-finished product fettlers and other mould casting occupations,TRUE,Halbzeugputzer und sonstige Formgießerberufe,20,"Former, Formgießer",III,Fertigungsberufe,433
+211,"Blechpresser, -zieher, -stanzer","Sheet metal pressers, drawers, stampers",TRUE,"Blechpresser, -zieher, -stanzer",21,Metallverformer (spanlos),III,Fertigungsberufe,407
+212,"Drahtverformer, -verarbeiter","Wire moulders, processors",TRUE,"Drahtverformer, -verarbeiter",21,Metallverformer (spanlos),III,Fertigungsberufe,1922
+213,Sonstige Metallverformer (spanlose Verformung),Other metal moulders (non-cutting deformation),TRUE,Sonstige Metallverformer (spanlose Verformung),21,Metallverformer (spanlos),III,Fertigungsberufe,184
+221,Dreher,Turners,TRUE,Dreher,22,Metallverformer (spanend),III,Fertigungsberufe,1385
+222,Fraeser,Drillers,TRUE,Fräser,22,Metallverformer (spanend),III,Fertigungsberufe,325
+223,Hobler,Planers,TRUE,Hobler,22,Metallverformer (spanend),III,Fertigungsberufe,54
+224,Bohrer,Borers,TRUE,Bohrer,22,Metallverformer (spanend),III,Fertigungsberufe,204
+225,Metallschleifer,Metal grinders,TRUE,Metallschleifer,22,Metallverformer (spanend),III,Fertigungsberufe,380
+226,Uebrige spanende Berufe,Other metal-cutting occupations,TRUE,Übrige spanende Berufe,22,Metallverformer (spanend),III,Fertigungsberufe,113
+231,Metallpolierer,Metal polishers,TRUE,Metallpolierer,23,"Metalloberflächenbearbeiter, -vergüter, - beschichter",III,Fertigungsberufe,116
+232,"Graveure, Ziseleure","Engravers, chasers",TRUE,"Graveure, Ziseleure",23,"Metalloberflächenbearbeiter, -vergüter, - beschichter",III,Fertigungsberufe,47
+233,Metallvergueter,Metal finishers,TRUE,Metallvergüter,23,"Metalloberflächenbearbeiter, -vergüter, - beschichter",III,Fertigungsberufe,175
+234,"Galvaniseure, Metallfaerber","Galvanisers, metal colourers",TRUE,"Galvaniseure, Metallfärber",23,"Metalloberflächenbearbeiter, -vergüter, - beschichter",III,Fertigungsberufe,378
+235,"Emaillierer, Feuerverzinker und andere Metalloberflaechenveredler","Enamellers, zinc platers and other metal surface finishers",TRUE,"Emaillierer, Feuerverzinker, a. Metalloberflächenveredler",23,"Metalloberflächenbearbeiter, -vergüter, - beschichter",III,Fertigungsberufe,40
+241,"Schweisser, Brennschneider","Welders, oxy-acetylene cutters",TRUE,"Schweißer, Brennschneider",24,Metallverbinder,III,Fertigungsberufe,993
+242,Loeter,Solderers,TRUE,Löter,24,Metallverbinder,III,Fertigungsberufe,183
+243,Nieter,Riveters,TRUE,Nieter,24,Metallverbinder,III,Fertigungsberufe,0
+244,Metallkleber und uebrige Metallverbinder,Metal bonders and other metal connectors,TRUE,Metallkleber und übrige Metallverbinder,24,Metallverbinder,III,Fertigungsberufe,22
+251,Stahlschmiede,Steel smiths,TRUE,Stahlschmiede,25,Schmiede,III,Fertigungsberufe,266
+252,"Behaelterbauer, Kupferschmiede und verwandte Berufe","Container builders, coppersmiths and related occupations",TRUE,"Behälterbauer, Kupferschmiede und verwandte Berufe",25,Schmiede,III,Fertigungsberufe,239
+261,Feinblechner,Sheet metal workers,TRUE,Feinblechner,26,"Feinblechner, Installateure",III,Fertigungsberufe,972
+262,Rohrinstallateure,Plumbers,TRUE,Rohrinstallateure,26,"Feinblechner, Installateure",III,Fertigungsberufe,2361
+263,"Rohrnetzbauer, Rohrschlosser","Pipe, tubing fitters",TRUE,"Rohrnetzbauer, Rohrschlosser",26,"Feinblechner, Installateure",III,Fertigungsberufe,473
+270,"Schlosser, o.n.A.","Locksmiths, not specified",TRUE,"Schlosser, o.n.A.",27,Schlosser,III,Fertigungsberufe,891
+271,Bauschlosser,Building fitters,TRUE,Bauschlosser,27,Schlosser,III,Fertigungsberufe,1168
+272,"Blech-, Kunststoffschlosser","Sheet metal, plastics fitters",TRUE,"Blech-, Kunststoffschlosser",27,Schlosser,III,Fertigungsberufe,381
+273,Maschinenschlosser,Engine fitters,TRUE,Maschinenschlosser,27,Schlosser,III,Fertigungsberufe,3094
+274,"Betriebsschlosser, Reparaturschlosser","Plant fitters, maintenance fitters",TRUE,"Betriebsschlosser, Reparaturschlosser",27,Schlosser,III,Fertigungsberufe,1704
+275,"Stahlbauschlosser, Eisenschiffbauer","Steel structure fitters, metal shipbuilders",TRUE,"Stahlbauschlosser, Eisenschiffbauer",27,Schlosser,III,Fertigungsberufe,1482
+281,Kraftfahrzeuginstandsetzer,Motor vehicle repairers,TRUE,Kraftfahrzeuginstandsetzer,28,Mechaniker,III,Fertigungsberufe,3471
+282,Landmaschineninstandsetzer,Agricultural machinery repairers,TRUE,Landmaschineninstandsetzer,28,Mechaniker,III,Fertigungsberufe,314
+283,Flugzeugmechaniker,Aircraft mechanics,TRUE,Flugzeugmechaniker,28,Mechaniker,III,Fertigungsberufe,130
+284,Feinmechaniker,Precision mechanics,TRUE,Feinmechaniker,28,Mechaniker,III,Fertigungsberufe,521
+285,Sonstige Mechaniker,Other mechanics,TRUE,Sonstige Mechaniker,28,Mechaniker,III,Fertigungsberufe,1025
+286,Uhrmacher,"Watch-, clockmakers",TRUE,Uhrmacher,28,Mechaniker,III,Fertigungsberufe,94
+291,Werkzeugmacher,Toolmakers,TRUE,Werkzeugmacher,29,Werkzeugmacher,III,Fertigungsberufe,1205
+301,"Metallfeinbauer, a.n.g.",Precision fitters n.e.c.,TRUE,"Metallfeinbauer, a.n.g.",30,Metallfeinbauer und zugeordnete Berufe,III,Fertigungsberufe,79
+302,Edelmetallschmiede,Precious metal smiths,TRUE,Edelmetallschmiede,30,Metallfeinbauer und zugeordnete Berufe,III,Fertigungsberufe,68
+303,Zahntechniker,Dental technicians,TRUE,Zahntechniker,30,Metallfeinbauer und zugeordnete Berufe,III,Fertigungsberufe,293
+304,Augenoptiker,Opthalmic opticians,TRUE,Augenoptiker,30,Metallfeinbauer und zugeordnete Berufe,III,Fertigungsberufe,261
+305,Musikinstrumentenbauer,Musical instrument makers,TRUE,Musikinstrumentenbauer,30,Metallfeinbauer und zugeordnete Berufe,III,Fertigungsberufe,42
+306,"Puppenmacher, Modellbauer, Praeparatoren","Doll makers, model makers, taxidermists",TRUE,"Puppenmacher, Modellbauer, Präparatoren",30,Metallfeinbauer und zugeordnete Berufe,III,Fertigungsberufe,122
+311,"Elektroinstallateure, -monteure","Electrical fitters, mechanics",TRUE,"Elektroinstallateure, -monteure",31,Elektriker,III,Fertigungsberufe,5119
+312,"Fernmeldemonteure, -handwerker","Telecommunications mechanics, craftsmen",TRUE,"Fernmeldemonteure, -handwerker",31,Elektriker,III,Fertigungsberufe,491
+313,"Elektromotoren-, Transformatorenbauer","Electric motor, transformer fitters",TRUE,"Elektromotoren-, Transformatorenbauer",31,Elektriker,III,Fertigungsberufe,424
+314,Elektrogeraetebauer,Electrical appliance fitters,TRUE,Elektrogerätebauer,31,Elektriker,III,Fertigungsberufe,2113
+315,"Funk-, Tongeraetemechaniker","Radio, sound equipment mechanics",TRUE,"Funk-, Tongerätemechaniker",31,Elektriker,III,Fertigungsberufe,307
+321,"Elektrogeraete-, Elektroteilemontierer","Electrical appliance, electrical parts assemblers",TRUE,"Elektrogeräte-, Elektroteilemontierer",32,"Montierer und Metallberufe, a.n.g.",III,Fertigungsberufe,2410
+322,Sonstige Montierer,Other assemblers,TRUE,Sonstige Montierer,32,"Montierer und Metallberufe, a.n.g.",III,Fertigungsberufe,2840
+323,"Metallarbeiter, o.n.A.",Metal workers (no further specification),TRUE,"Metallarbeiter, o.n.A.",32,"Montierer und Metallberufe, a.n.g.",III,Fertigungsberufe,2874
+331,"Spinner, Spinnvorbereiter","Spinners, fibre preparers",TRUE,"Spinner, Spinnvorbereiter",33,Spinnberufe,III,Fertigungsberufe,211
+332,"Spuler, Zwirner, Seiler","Spoolers, twisters, ropemakers",TRUE,"Spuler, Zwirner, Seiler",33,Spinnberufe,III,Fertigungsberufe,89
+341,Webvorbereiter,Weaving preparers,TRUE,Webvorbereiter,34,Textilhersteller,III,Fertigungsberufe,33
+342,Weber,Weavers,TRUE,Weber,34,Textilhersteller,III,Fertigungsberufe,205
+343,Tuftingwarenmacher,Tufted goods makers,TRUE,Tuftingwarenmacher,34,Textilhersteller,III,Fertigungsberufe,38
+344,Maschenwarenfertiger,Machined goods makers,TRUE,Maschenwarenfertiger,34,Textilhersteller,III,Fertigungsberufe,154
+345,"Filzmacher, Hutstumpenmacher","Felt makers, hat body makers",TRUE,"Filzmacher, Hutstumpenmacher",34,Textilhersteller,III,Fertigungsberufe,10
+346,Textilverflechter,Textile processing operatives (braiders),TRUE,Textilverflechter,34,Textilhersteller,III,Fertigungsberufe,2
+351,Schneider,Cutters,TRUE,Schneider,35,Textilverarbeiter,III,Fertigungsberufe,414
+352,Oberbekleidungsnaeher,Clothing sewers,TRUE,Oberbekleidungsnäher,35,Textilverarbeiter,III,Fertigungsberufe,1115
+353,"Waescheschneider, Waeschenaeher","Laundry cutters, sewers",TRUE,"Wäscheschneider, Wäschenäher",35,Textilverarbeiter,III,Fertigungsberufe,281
+354,Sticker,Embroiderers,TRUE,Sticker,35,Textilverarbeiter,III,Fertigungsberufe,18
+355,"Hut-, Muetzenmacher","Hat, cap makers",TRUE,"Hut-, Mützenmacher",35,Textilverarbeiter,III,Fertigungsberufe,94
+356,"Naeher, a.n.g.","Sewers, n.e.c.",TRUE,"Näher, a.n.g.",35,Textilverarbeiter,III,Fertigungsberufe,466
+357,Sonstige Textilverarbeiter,Other textile processing operatives,TRUE,Sonstige Textilverarbeiter,35,Textilverarbeiter,III,Fertigungsberufe,111
+361,Textilfaerber,Textile dyers,TRUE,Textilfärber,36,Textilveredler,III,Fertigungsberufe,32
+362,Textilausruester,Textile finishers,TRUE,Textilausrüster,36,Textilveredler,III,Fertigungsberufe,296
+371,"Lederhersteller, Darmsaitenmacher","Leather makers, catgut string makers",TRUE,"Lederhersteller, Darmsaitenmacher",37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,157
+372,Schuhmacher,Shoemakers,TRUE,Schuhmacher,37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,110
+373,Schuhwarenhersteller,Footwear makers,TRUE,Schuhwarenhersteller,37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,289
+374,"Groblederwarenhersteller, Bandagisten","Coarse leather goods finishers, truss makers",TRUE,"Groblederwarenhersteller, Bandagisten",37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,113
+375,Feinlederwarenhersteller,Fine leather goods makers,TRUE,Feinlederwarenhersteller,37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,11
+376,Lederbekleidungshersteller und sonstige Lederverarbeiter,Leather clothing makers and other leather processing operatives,TRUE,Lederbekleidungshersteller und sonstige Lederverarbeiter,37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,203
+377,Handschuhmacher,Hand shoemakers,TRUE,Handschuhmacher,37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,0
+378,Fellverarbeiter,Skin processing operatives,TRUE,Fellverarbeiter,37,"Lederhersteller, Leder- und Fellverarbeiter",III,Fertigungsberufe,62
+391,Backwarenhersteller,Bakery goods makers,TRUE,Backwarenhersteller,39,"Back-, Konditorwarenhersteller",III,Fertigungsberufe,1084
+392,Konditoren,Confectioners (pastry),TRUE,Konditoren,39,"Back-, Konditorwarenhersteller",III,Fertigungsberufe,456
+401,Fleischer,Butchers,TRUE,Fleischer,40,"Fleisch-, Fischverarbeiter",III,Fertigungsberufe,942
+402,"Fleisch-, Wurstwarenhersteller","Meat, sausage goods makers",TRUE,"Fleisch-, Wurstwarenhersteller",40,"Fleisch-, Fischverarbeiter",III,Fertigungsberufe,318
+403,Fischverarbeiter,Fish processing operatives,TRUE,Fischverarbeiter,40,"Fleisch-, Fischverarbeiter",III,Fertigungsberufe,96
+411,Koeche,Cooks,TRUE,Köche,41,Speisenbereiter,III,Fertigungsberufe,8757
+412,"Fertiggerichte-, Obst-, Gemuesekonservierer, -zubereiter","Ready-to-serve meals, fruit, vegetable preservers, preparers",TRUE,"Fertiggerichte-, Obst-, Gemüsekonservierer, -zubereiter",41,Speisenbereiter,III,Fertigungsberufe,141
+421,Weinkuefer,Wine coopers,TRUE,Weinküfer,42,"Getränke-, Genußmittelhersteller",III,Fertigungsberufe,56
+422,"Brauer, Maelzer","Brewers, maltsters",TRUE,"Brauer, Mälzer",42,"Getränke-, Genußmittelhersteller",III,Fertigungsberufe,100
+423,"Sonstige Getraenkehersteller, Koster","Other beverage makers, tasters",TRUE,"Sonstige Getränkehersteller, Koster",42,"Getränke-, Genußmittelhersteller",III,Fertigungsberufe,80
+424,Tabakwarenmacher,Tobacco goods makers,TRUE,Tabakwarenmacher,42,"Getränke-, Genußmittelhersteller",III,Fertigungsberufe,77
+431,"Milch-, Fettverarbeiter","Milk, fat processing operatives",TRUE,"Milch-, Fettverarbeiter",43,Übrige Ernährungsberufe,III,Fertigungsberufe,256
+432,"Mehl-, Naehrmittelhersteller","Flour, food processors",TRUE,"Mehl-, Nährmittelhersteller",43,Übrige Ernährungsberufe,III,Fertigungsberufe,1324
+433,"Zucker-, Suesswaren-, Speiseeishersteller","Sugar, sweets, ice-cream makers",TRUE,"Zucker-, Süßwaren-, Speiseeishersteller",43,Übrige Ernährungsberufe,III,Fertigungsberufe,379
+441,Maurer,Bricklayers,TRUE,Maurer,44,"Maurer, Betonbauer",III,Fertigungsberufe,3061
+442,Betonbauer,Concrete workers,TRUE,Betonbauer,44,"Maurer, Betonbauer",III,Fertigungsberufe,1085
+451,Zimmerer,Carpenters,TRUE,Zimmerer,45,"Zimmerer, Dachdecker, Gerüstbauer",III,Fertigungsberufe,757
+452,Dachdecker,Roofers,TRUE,Dachdecker,45,"Zimmerer, Dachdecker, Gerüstbauer",III,Fertigungsberufe,571
+453,Geruestbauer,Scaffolders,TRUE,Gerüstbauer,45,"Zimmerer, Dachdecker, Gerüstbauer",III,Fertigungsberufe,115
+461,"Pflasterer, Steinsetzer",Paviors,TRUE,"Pflasterer, Steinsetzer",46,"Straßen-, Tiefbauer",III,Fertigungsberufe,101
+462,Strassenbauer,Road makers,TRUE,Straßenbauer,46,"Straßen-, Tiefbauer",III,Fertigungsberufe,756
+463,Gleisbauer,Tracklayers,TRUE,Gleisbauer,46,"Straßen-, Tiefbauer",III,Fertigungsberufe,149
+464,Sprengmeister (ausser Schiesshauer),Explosives men (except shotfirers),TRUE,Sprengmeister (außer Schießhauer),46,"Straßen-, Tiefbauer",III,Fertigungsberufe,27
+465,"Kultur-, Wasserbauwerker","Land improvement, hydraulic engineering workers",TRUE,"Kultur-, Wasserbauwerker",46,"Straßen-, Tiefbauer",III,Fertigungsberufe,163
+466,Sonstige Tiefbauer,Other civil engineering workers,TRUE,Sonstige Tiefbauer,46,"Straßen-, Tiefbauer",III,Fertigungsberufe,874
+470,Bauhilfsarbeiter,"Building labourer, general",FALSE,NA,NA,NA,NA,NA,2115
+471,Erdbewegungsarbeiter,Earth movers,TRUE,Erdbewegungsarbeiter,47,Bauhilfsarbeiter,III,Fertigungsberufe,49
+472,"Sonstige Bauhilfsarbeiter, Bauhelfer, a.n.g.","Other building labourers, building assistants, n.e.c.",TRUE,"Sonstige Bauhilfsarbeiter, Bauhelfer, a.n.g.",47,Bauhilfsarbeiter,III,Fertigungsberufe,3028
+481,"Stukkateure, Gipser, Verputzer","Stucco workers, plasterers, rough casters",TRUE,"Stuckateure, Gipser, Verputzer",48,Bauausstatter,III,Fertigungsberufe,389
+482,"Isolierer, Abdichter","Insulators, proofers",TRUE,"Isolierer, Abdichter",48,Bauausstatter,III,Fertigungsberufe,655
+483,Fliesenleger,Tile setters,TRUE,Fliesenleger,48,Bauausstatter,III,Fertigungsberufe,514
+484,"Ofensetzer, Luftheizungsbauer","Furnace setter, air heating installers",TRUE,"Ofensetzer, Luftheizungsbauer",48,Bauausstatter,III,Fertigungsberufe,59
+485,Glaser,Glaziers,TRUE,Glaser,48,Bauausstatter,III,Fertigungsberufe,181
+486,"Estrich-, Terrazzoleger","Screed, terrazzo layers",TRUE,"Estrich-, Terrazzoleger",48,Bauausstatter,III,Fertigungsberufe,204
+491,Raumausstatter,Room equippers,TRUE,Raumausstatter,49,"Raumausstatter, Polsterer",III,Fertigungsberufe,420
+492,"Polsterer, Matratzenhersteller","Upholsterers, mattress makers",TRUE,"Polsterer, Matratzenhersteller",49,"Raumausstatter, Polsterer",III,Fertigungsberufe,259
+501,Tischler,Carpenters,TRUE,Tischler,50,"Tischler, Modellbauer",III,Fertigungsberufe,2556
+502,"Modelltischler, Formentischler","Model, form carpenters",TRUE,"Modelltischler, Formentischler",50,"Tischler, Modellbauer",III,Fertigungsberufe,97
+503,"Stellmacher, Boettcher","Cartwrights, wheelwrights, coopers",TRUE,"Stellmacher, Böttcher",50,"Tischler, Modellbauer",III,Fertigungsberufe,16
+504,"Sonstige Holz-, Sportgeraetebauer",Other wood and sports equipment makers,TRUE,"Sonstige Holz-, Sportgerätebauer",50,"Tischler, Modellbauer",III,Fertigungsberufe,115
+511,"Maler, Lackierer (Ausbau)","Painters, lacquerers (construction)",TRUE,"Maler, Lackierer (Ausbau)",51,"Maler, Lackierer und verwandte Berufe",III,Fertigungsberufe,2085
+512,"Warenmaler, -lackierer","Goods painters, lacquerers",TRUE,"Warenmaler, -lackierer",51,"Maler, Lackierer und verwandte Berufe",III,Fertigungsberufe,646
+513,"Holzoberflaechenveredler, Furnierer","Wood surface finishers, veneerers",TRUE,"Holzoberflächenveredler, Furnierer",51,"Maler, Lackierer und verwandte Berufe",III,Fertigungsberufe,53
+514,"Kerammaler, Glasmaler","Ceramics, glass painters",TRUE,"Kerammaler, Glasmaler",51,"Maler, Lackierer und verwandte Berufe",III,Fertigungsberufe,75
+521,"Warenpruefer, -sortierer, a.n.g.","Goods examiners, sorters, n.e.c.",TRUE,"Warenprüfer, -sortierer, a.n.g.",52,"Warenprüfer, Versandfertigmacher",III,Fertigungsberufe,1925
+522,"Warenaufmacher, Versandfertigmacher","Packagers, goods receivers, despatchers",TRUE,"Warenaufmacher, Versandfertigmacher",52,"Warenprüfer, Versandfertigmacher",III,Fertigungsberufe,4599
+531,Hilfsarbeiter ohne naehere Taetigkeitsangabe,Assistants (no further specification),TRUE,Hilfsarbeiter ohne nähere Tätigkeitsangabe,53,Hilfsarbeiter ohne nähere Tätigkeitsangabe,III,Fertigungsberufe,5289
+541,Energiemaschinisten,Generator machinists,TRUE,Energiemaschinisten,54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,224
+542,"Foerdermaschinisten, Seilbahnmaschinisten","Winding engine drivers, aerial ropeway machinists",TRUE,"Fördermaschinisten, Seilbahnmaschinisten",54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,101
+543,Sonstige Maschinisten,Other machinists,TRUE,Sonstige Maschinisten,54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,902
+544,Kranfuehrer,Crane drivers,TRUE,Kranführer,54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,318
+545,Erdbewegungsmaschinenfuehrer,Earthmoving plant drivers,TRUE,Erdbewegungsmaschinenführer,54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,254
+546,Baumaschinenfuehrer,Construction machine attendants,TRUE,Baumaschinenführer,54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,344
+547,"Maschinenwaerter, Maschinistenhelfer","Machine attendants, machinists' helpers",TRUE,"Maschinenwärter, Maschinistenhelfer",54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,316
+548,Heizer,Stokers,TRUE,Heizer,54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,221
+549,"Maschineneinrichter, o.n.A.",Machine setters (no further specification),TRUE,"Maschineneinrichter, o.n.A.",54,Maschinisten und zugehörige Berufe,III,Fertigungsberufe,770
+555,Behinderte,Disabled,FALSE,NA,NA,NA,NA,NA,672
+601,Ingenieure des Maschinen- und Fahrzeugbaues,"Mechanical, motor engineers",TRUE,Ingenieure des Maschinen- und Fahrzeugbaues,60,Ingenieure,IV,Technische Berufe,1721
+602,Elektroingenieure,Electrical engineers,TRUE,Elektroingenieure,60,Ingenieure,IV,Technische Berufe,1313
+603,"Architekten, Bauingenieure","Architects, civil engineers",TRUE,"Architekten, Bauingenieure",60,Ingenieure,IV,Technische Berufe,1620
+604,Vermessungsingenieure,Survey engineers,TRUE,Vermessungsingenieure,60,Ingenieure,IV,Technische Berufe,114
+605,"Bergbau-, Huetten-, Giessereiingenieure","Mining, metallurgy, foundry engineers",TRUE,"Bergbau-, Hütten-, Gießereiingenieure",60,Ingenieure,IV,Technische Berufe,91
+606,Uebrige Fertigungsingenieure,Other manufacturing engineers,TRUE,Übrige Fertigungsingenieure,60,Ingenieure,IV,Technische Berufe,373
+607,Sonstige Ingenieure,Other engineers,TRUE,Sonstige Ingenieure,60,Ingenieure,IV,Technische Berufe,3128
+611,"Chemiker, Chemieingenieure","Chemists, chemical engineers",TRUE,"Chemiker, Chemieingenieure",61,"Chemiker, Physiker, Mathematiker",IV,Technische Berufe,581
+612,"Physiker, Physikingenieure, Mathematiker","Physicists, physics engineers, mathematicians",TRUE,"Physiker, Physikingenieure, Mathematiker",61,"Chemiker, Physiker, Mathematiker",IV,Technische Berufe,285
+621,Maschinenbautechniker,Mechanical engineering technicians,TRUE,Maschinenbautechniker,62,Techniker,IV,Technische Berufe,2111
+622,Techniker des Elektofaches,Electrical engineering technicians,TRUE,Techniker des Elektrofaches,62,Techniker,IV,Technische Berufe,1644
+623,Bautechniker,Building technicians,TRUE,Bautechniker,62,Techniker,IV,Technische Berufe,661
+624,Vermessungstechniker,Measurement technicians,TRUE,Vermessungstechniker,62,Techniker,IV,Technische Berufe,285
+625,"Bergbau-, Huetten-, Giessereitechniker","Mining, metallurgy, foundry technicians",TRUE,"Bergbau-, Hütten-, Gießereitechniker",62,Techniker,IV,Technische Berufe,232
+626,"Chemietechniker, Physikotechniker","Chemistry, physics technicians",TRUE,"Chemietechniker, Physikotechniker",62,Techniker,IV,Technische Berufe,333
+627,Uebrige Fertigungstechniker,Remaining manufacturing technicians,TRUE,Übrige Fertigungstechniker,62,Techniker,IV,Technische Berufe,532
+628,Sonstige Techniker,Other technicians,TRUE,"Techniker, o.n.A",62,Techniker,IV,Technische Berufe,3153
+629,"Industriemeister, Werkmeister","Foremen, master mechanics",TRUE,"Industriemeister, Werkmeister",62,Techniker,IV,Technische Berufe,1776
+631,Biologisch-technische Sonderfachkraefte,Biological specialists,TRUE,Biologisch-technische Sonderfachkräfte,63,Technische Sonderfachkräfte,IV,Technische Berufe,420
+632,Physikalisch- und mathematisch-technische Sonderfachkraefte,Physical and mathematical specialists,TRUE,Physikalisch- und mathematisch-technische Sonderfachkräfte,63,Technische Sonderfachkräfte,IV,Technische Berufe,327
+633,Chemielaboranten,Chemical laboratory assistants,TRUE,Chemielaboranten,63,Technische Sonderfachkräfte,IV,Technische Berufe,561
+634,Photolaboranten,Photo laboratory assistants,TRUE,Photolaboranten,63,Technische Sonderfachkräfte,IV,Technische Berufe,226
+635,Technische Zeichner,Technical draughtspersons,TRUE,Technische Zeichner,63,Technische Sonderfachkräfte,IV,Technische Berufe,1357
+666,Rehabilitanden,Rehabilitants,FALSE,NA,NA,NA,NA,NA,745
+681,"Gross- und Einzelhandelskaufleute, Einkaeufer","Wholesale and retail trade buyers, buyers",TRUE,"Groß- und Einzelhandelskaufleute, Einkäufer",68,Warenkaufleute,V,Dienstleistungsberufe,6755
+682,Verkaeufer,Salespersons,TRUE,Verkäufer,68,Warenkaufleute,V,Dienstleistungsberufe,24081
+683,"Verlagskaufleute, Buchhaendler","Publishing house dealers, booksellers",TRUE,"Verlagskaufleute, Buchhändler",68,Warenkaufleute,V,Dienstleistungsberufe,862
+684,Drogisten,Druggists/chemists (pharmacy),TRUE,Drogisten,68,Warenkaufleute,V,Dienstleistungsberufe,598
+685,Apothekenhelferinnen,Pharmacy aids,TRUE,Apothekenhelferinnen,68,Warenkaufleute,V,Dienstleistungsberufe,371
+686,Tankwarte,Service-station attendants,TRUE,Tankwarte,68,Warenkaufleute,V,Dienstleistungsberufe,365
+687,"Handelsvertreter, Reisende","Commercial agents, travellers",TRUE,"Handelsvertreter, Reisende",68,Warenkaufleute,V,Dienstleistungsberufe,2349
+688,Ambulante Haendler,Mobile traders,TRUE,Ambulante Händler,68,Warenkaufleute,V,Dienstleistungsberufe,246
+691,Bankfachleute,Bank specialists,TRUE,Bankfachleute,69,"Bank-, Versicherungskaufleute",V,Dienstleistungsberufe,4146
+692,Bausparkassenfachleute,Building society specialists,TRUE,Bausparkassenfachleute,69,"Bank-, Versicherungskaufleute",V,Dienstleistungsberufe,90
+693,Krankenversicherungsfachleute (nicht Sozialversicherung),Health insurance specialists (not social security),TRUE,Krankenversicherungsfachleute (nicht Sozialversicherung),69,"Bank-, Versicherungskaufleute",V,Dienstleistungsberufe,256
+694,"Lebens-, Sachversicherungsfachleute","Life, property insurance specialists",TRUE,"Lebens-, Sachversicherungsfachleute",69,"Bank-, Versicherungskaufleute",V,Dienstleistungsberufe,1709
+701,Speditionskaufleute,Forwarding business dealers,TRUE,Speditionskaufleute,70,Andere Dienstleistungskaufleute und zugehörige Berufe,V,Dienstleistungsberufe,1564
+702,Fremdenverkehrsfachleute,Tourism specialists,TRUE,Fremdenverkehrsfachleute,70,Andere Dienstleistungskaufleute und zugehörige Berufe,V,Dienstleistungsberufe,742
+703,Werbefachleute,Publicity occupations,TRUE,Werbefachleute,70,Andere Dienstleistungskaufleute und zugehörige Berufe,V,Dienstleistungsberufe,2801
+704,"Makler, Grundstuecksverwalter","Brokers, property managers",TRUE,"Makler, Grundstücksverwalter",70,Andere Dienstleistungskaufleute und zugehörige Berufe,V,Dienstleistungsberufe,403
+705,"Vermieter, Vermittler, Versteigerer","Landlords, agents, auctioneers",TRUE,"Vermieter, Vermittler, Versteigerer",70,Andere Dienstleistungskaufleute und zugehörige Berufe,V,Dienstleistungsberufe,711
+706,"Geldeinnehmer, -auszahler, Kartenverkaeufer, -kontrolleure","Cash collectors, cashiers, ticket sellers, inspectors",TRUE,"Geldeinnehmer, -auszahler, Kartenverkäufer, -kontrolleure",70,Andere Dienstleistungskaufleute und zugehörige Berufe,V,Dienstleistungsberufe,1427
+711,Schienenfahrzeugfuehrer,Railway engine drivers,TRUE,Schienenfahrzeugführer,71,Berufe des Landverkehrs,V,Dienstleistungsberufe,316
+712,"Eisenbahnbetriebsregler, -schaffner","Railway controllers, conductors",TRUE,"Eisenbahnbetriebsregler, -schaffner",71,Berufe des Landverkehrs,V,Dienstleistungsberufe,664
+713,"Sonstige Fahrbetriebsregler, Schaffner","Other traffic controllers, conductors",TRUE,"Sonstige Fahrbetriebsregler, Schaffner",71,Berufe des Landverkehrs,V,Dienstleistungsberufe,458
+714,Kraftfahrzeugfuehrer,Motor vehicle drivers,TRUE,Kraftfahrzeugführer,71,Berufe des Landverkehrs,V,Dienstleistungsberufe,8098
+715,Kutscher,Coachmen,TRUE,Kutscher,71,Berufe des Landverkehrs,V,Dienstleistungsberufe,74
+716,Strassenwarte,Street attendants,TRUE,Straßenwarte,71,Berufe des Landverkehrs,V,Dienstleistungsberufe,147
+721,Nautiker,Navigating ships officers,TRUE,Nautiker,72,Berufe des Wasser- und Luftverkehrs,V,Dienstleistungsberufe,80
+722,"Technische Schiffsoffiziere, Schiffsmaschinisten","Technical ships officers, ships engineers",TRUE,"Technische Schiffsoffiziere, Schiffsmaschinisten",72,Berufe des Wasser- und Luftverkehrs,V,Dienstleistungsberufe,176
+723,Decksleute in der Seeschiffahrt,Deck seamen,TRUE,Decksleute in der Seeschiffahrt,72,Berufe des Wasser- und Luftverkehrs,V,Dienstleistungsberufe,150
+724,Binnenschiffer,Inland boatmen,TRUE,Binnenschiffer,72,Berufe des Wasser- und Luftverkehrs,V,Dienstleistungsberufe,235
+725,Sonstige Wasserverkehrsberufe,Other water transport occupations,TRUE,Sonstige Wasserverkehrsberufe,72,Berufe des Wasser- und Luftverkehrs,V,Dienstleistungsberufe,31
+726,Luftverkehrsberufe,Air transport occupations,TRUE,Luftverkehrsberufe,72,Berufe des Wasser- und Luftverkehrs,V,Dienstleistungsberufe,215
+731,Posthalter,Post masters,TRUE,Posthalter,73,Berufe des Nachrichtenverkehrs,V,Dienstleistungsberufe,110
+732,Postverteiler,Postal deliverers,TRUE,Postverteiler,73,Berufe des Nachrichtenverkehrs,V,Dienstleistungsberufe,4975
+733,Funker,Radio operators,TRUE,Funker,73,Berufe des Nachrichtenverkehrs,V,Dienstleistungsberufe,47
+734,Telefonisten,Telephonists,TRUE,Telefonisten,73,Berufe des Nachrichtenverkehrs,V,Dienstleistungsberufe,792
+741,"Lagerverwalter, Magaziner","Warehouse managers, warehousemen",TRUE,"Lagerverwalter, Magaziner",74,"Lagerverwalter, Lager-, Transportarbeiter",V,Dienstleistungsberufe,5411
+742,Transportgeraetefuehrer,Transportation equipment drivers,TRUE,Transportgeräteführer,74,"Lagerverwalter, Lager-, Transportarbeiter",V,Dienstleistungsberufe,833
+743,"Stauer, Moebelpacker","Stowers, furniture packers",TRUE,"Stauer, Möbelpacker",74,"Lagerverwalter, Lager-, Transportarbeiter",V,Dienstleistungsberufe,287
+744,"Lager-, Transportarbeiter","Stores, transport workers",TRUE,"Lager-, Transportarbeiter",74,"Lagerverwalter, Lager-, Transportarbeiter",V,Dienstleistungsberufe,15629
+751,"Unternehmer, Geschaeftsfuehrer, Geschaeftsbereichsleiter","Entrepreneurs, managing directors, divisional managers",TRUE,"Unternehmer, Geschäftsführer, Geschäftsbereichsleiter",75,"Unternehmer, Organisatoren, Wirtschaftsprüfer",V,Dienstleistungsberufe,6786
+752,"Unternehmensberater, Organisatoren","Management consultants, organisors",TRUE,"Unternehmensberater, Organisatoren",75,"Unternehmer, Organisatoren, Wirtschaftsprüfer",V,Dienstleistungsberufe,2657
+753,"Wirtschaftspruefer, Steuerberater","Chartered accountants, tax advisers",TRUE,"Wirtschaftsprüfer, Steuerberater",75,"Unternehmer, Organisatoren, Wirtschaftsprüfer",V,Dienstleistungsberufe,1379
+761,"Abgeordnete, Minister, Wahlbeamte","Members of Parliament, Ministers, elected officials",TRUE,"Abgeordnete, Minister, Wahlbeamte",76,"Abgeordnete, administrativ entscheidende Berufstätige",V,Dienstleistungsberufe,62
+762,Leitende und administrativ entscheidende Verwaltungsfachleute,Senior government officials,TRUE,"Leitende, administrativ entscheidende Verwaltungsfachleute",76,"Abgeordnete, administrativ entscheidende Berufstätige",V,Dienstleistungsberufe,1608
+763,"Verbandsleiter, Funktionaere","Association leaders, officials",TRUE,"Verbandsleiter, Funktionäre",76,"Abgeordnete, administrativ entscheidende Berufstätige",V,Dienstleistungsberufe,348
+771,"Kalkulatoren, Berechner","Cost accountants, valuers",TRUE,"Kalkulatoren, Berechner",77,"Rechnungskaufleute, Datenverarbeitungsfachleute",V,Dienstleistungsberufe,718
+772,Buchhalter,Accountants,TRUE,Buchhalter,77,"Rechnungskaufleute, Datenverarbeitungsfachleute",V,Dienstleistungsberufe,2589
+773,Kassierer,Cashiers,TRUE,Kassierer,77,"Rechnungskaufleute, Datenverarbeitungsfachleute",V,Dienstleistungsberufe,1471
+774,Datenverarbeitungsfachleute,Data processing specialists,TRUE,Datenverarbeitungsfachleute,77,"Rechnungskaufleute, Datenverarbeitungsfachleute",V,Dienstleistungsberufe,6078
+781,Buerofachkraefte,Office specialists,TRUE,Bürofachkräfte,78,"Bürofach-, Bürohilfskräfte",V,Dienstleistungsberufe,33753
+782,"Stenographen, Stenotypisten, Maschinenschreiber","Stenographers, shorthand-typists, typists",TRUE,"Stenographen, Stenotypisten, Maschinenschreiber",78,"Bürofach-, Bürohilfskräfte",V,Dienstleistungsberufe,3604
+783,Datentypisten,Data typists,TRUE,Datentypisten,78,"Bürofach-, Bürohilfskräfte",V,Dienstleistungsberufe,398
+784,Buerohilfskraefte,Office auxiliary workers,TRUE,Bürohilfskräfte,78,"Bürofach-, Bürohilfskräfte",V,Dienstleistungsberufe,8472
+791,"Werkschutzleute, Detektive","Factory guards, detectives",TRUE,"Werkschutzleute, Detektive",79,"Dienst-, Wachberufe",V,Dienstleistungsberufe,424
+792,"Waechter, Aufseher","Watchmen, custodians",TRUE,"Wächter, Aufseher",79,"Dienst-, Wachberufe",V,Dienstleistungsberufe,2698
+793,"Pfoertner, Hauswarte","Doormen, caretakers",TRUE,"Pförtner, Hauswarte",79,"Dienst-, Wachberufe",V,Dienstleistungsberufe,3364
+794,"Haus-, Gewerbediener",Domestic and non-domestic servants,TRUE,"Haus-, Gewerbediener",79,"Dienst-, Wachberufe",V,Dienstleistungsberufe,1106
+801,"Soldaten, Grenzschutz-, Polizeibedienstete","Soldiers, border guards, police officers",TRUE,"Soldaten, Grenzschutz-, Polizeibedienstete",80,Sicherheitswahrer,V,Dienstleistungsberufe,435
+802,Berufsfeuerwehrleute,Firefighters,TRUE,Berufsfeuerwehrleute,80,Sicherheitswahrer,V,Dienstleistungsberufe,94
+803,Sicherheitskontrolleure,Safety testers,TRUE,Sicherheitskontrolleure,80,Sicherheitswahrer,V,Dienstleistungsberufe,92
+804,Schornsteinfeger,Chimney sweeps,TRUE,Schornsteinfeger,80,Sicherheitswahrer,V,Dienstleistungsberufe,64
+805,Gesundheitssichernde Berufe,Health-protecting occupations,TRUE,Gesundheitssichernde Berufe,80,Sicherheitswahrer,V,Dienstleistungsberufe,253
+811,Rechtsfinder,Arbitrators,TRUE,Rechtsfinder,81,"Rechtswahrer, -berater",V,Dienstleistungsberufe,99
+812,Rechtspfleger,Judicial administrators,TRUE,Rechtspfleger,81,"Rechtswahrer, -berater",V,Dienstleistungsberufe,24
+813,"Rechtsvertreter, -berater","Legal representatives, advisors",TRUE,"Rechtsvertreter, -berater",81,"Rechtswahrer, -berater",V,Dienstleistungsberufe,1093
+814,Rechtsvollstrecker,Judicial enforcers,TRUE,Rechtsvollstrecker,81,"Rechtswahrer, -berater",V,Dienstleistungsberufe,96
+821,Publizisten,Journalists,TRUE,Publizisten,82,"Publizisten, Dolmetscher, Bibliothekare",V,Dienstleistungsberufe,695
+822,"Dolmetscher, Uebersetzer","Interpreters, translators",TRUE,"Dolmetscher, Übersetzer",82,"Publizisten, Dolmetscher, Bibliothekare",V,Dienstleistungsberufe,202
+823,"Bibliothekare, Archivare, Museumsfachleute","Librarians, archivists, museum specialists",TRUE,"Bibliothekare, Archivare, Museumsfachleute",82,"Publizisten, Dolmetscher, Bibliothekare",V,Dienstleistungsberufe,627
+831,Musiker,Musicians,TRUE,Musiker,83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,317
+832,Darstellende Kuenstler,Artists' agents,TRUE,Darstellende Künstler,83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,353
+833,"Bildende Kuenstler, Graphiker","Visual, commercial artists",TRUE,"Bildende Künstler, Graphiker",83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,1028
+834,"Dekorationen-, Schildermaler","Scenery, sign painters",TRUE,"Dekorationen-, Schildermaler",83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,33
+835,"Kuenstlerische und zugeordnete Berufe der Buehnen-, Bild- und Tontechnik","Artistic and assisting occupations (stage, video and audio)",TRUE,"Künstlerische, zugeord. Berufe d. Bühnen-, Bild- u.Tontechn.",83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,552
+836,"Raum-, Schauwerbegestalter","Interior, exhibition designers, window dressers",TRUE,"Raum-, Schauwerbegestalter",83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,157
+837,Photographen,Photographers,TRUE,Photographen,83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,271
+838,"Artisten, Berufssportler, kuenstlerische Hilfsberufe","Performers, professional sportsmen, auxiliary artistic occupations",TRUE,"Artisten, Berufssportler, künstlerische Hilfsberufe",83,Künstler und zugeordnete Berufe,V,Dienstleistungsberufe,519
+841,Aerzte,Physicians,TRUE,Ärzte,84,"Ärzte, Apotheker",V,Dienstleistungsberufe,1693
+842,Zahnaerzte,Dentists,TRUE,Zahnärzte,84,"Ärzte, Apotheker",V,Dienstleistungsberufe,267
+843,Tieraerzte,Veterinary surgeons,TRUE,Tierärzte,84,"Ärzte, Apotheker",V,Dienstleistungsberufe,171
+844,Apotheker,Pharmacists,TRUE,Apotheker,84,"Ärzte, Apotheker",V,Dienstleistungsberufe,257
+851,Heilpraktiker,Non-medical practitioners,TRUE,Heilpraktiker,85,Übrige Gesundheitsdienstberufe,V,Dienstleistungsberufe,161
+852,"Masseure, Krankengymnasten und verwandte Berufe","Masseurs, physiotherapists and related occupations",TRUE,"Masseure, Krankengymnasten und verwandte Berufe",85,Übrige Gesundheitsdienstberufe,V,Dienstleistungsberufe,1427
+853,"Krankenschwestern, -pfleger, Hebammen","Nurses, midwives",TRUE,"Krankenschwestern, -pfleger, Hebammen",85,Übrige Gesundheitsdienstberufe,V,Dienstleistungsberufe,4700
+854,Helfer in der Krankenpflege,Nursing assistants,TRUE,Helfer in der Krankenpflege,85,Übrige Gesundheitsdienstberufe,V,Dienstleistungsberufe,3569
+855,"Diaetassistenten, Pharmazeutisch-technische Assistenten","Dietary assistants, pharmaceutical assistants",TRUE,"Diätassistenten, Pharmazeutisch-technische Assistenten",85,Übrige Gesundheitsdienstberufe,V,Dienstleistungsberufe,300
+856,Sprechstundenhelfer,Medical receptionists,TRUE,Sprechstundenhelfer,85,Übrige Gesundheitsdienstberufe,V,Dienstleistungsberufe,3970
+857,Medizinallaboranten,Medical laboratory assistants,TRUE,Medizinallaboranten,85,Übrige Gesundheitsdienstberufe,V,Dienstleistungsberufe,1002
+861,"Sozialarbeiter, Sozialpfleger","Social workers, care workers",TRUE,"Sozialarbeiter, Sozialpfleger",86,Sozialpflegerische Berufe,V,Dienstleistungsberufe,5770
+862,"Heimleiter, Sozialpaedagogen","Home wardens, social work teachers",TRUE,"Heimleiter, Sozialpädagogen",86,Sozialpflegerische Berufe,V,Dienstleistungsberufe,2451
+863,"Arbeits-, Berufsberater","Work, vocational advisers",TRUE,"Arbeits-, Berufsberater",86,Sozialpflegerische Berufe,V,Dienstleistungsberufe,424
+864,"Kindergaertnerinnen, Kinderpflegerinnen","Nursery teachers, child nurses",TRUE,"Kindergärtnerinnen, Kinderpflegerinnen",86,Sozialpflegerische Berufe,V,Dienstleistungsberufe,5109
+871,"Hochschullehrer, Dozenten an hoeheren Fachschulen und Akademien","University teachers, lecturers at higher technical schools and academies",TRUE,"Hochschullehrer, Dozenten an höheren Fachschulen, Akademien",87,Lehrer,V,Dienstleistungsberufe,4806
+872,Gymnasiallehrer,Gymnasium teachers,TRUE,Gymnasiallehrer,87,Lehrer,V,Dienstleistungsberufe,578
+873,"Real-, Volks-, Sonderschullehrer","Primary, secondary (basic), special school teachers",TRUE,"Real-, Volks-, Sonderschullehrer",87,Lehrer,V,Dienstleistungsberufe,2686
+874,"Fachschul-, Berufsschul-, Werklehrer","Technical, vocational, factory instructors",TRUE,"Fachschul-, Berufsschul-, Werklehrer",87,Lehrer,V,Dienstleistungsberufe,1175
+875,"Lehrer fuer musische Faecher, a.n.g.","Music teachers, n.e.c.",TRUE,"Lehrer für musische Fächer, a.n.g.",87,Lehrer,V,Dienstleistungsberufe,162
+876,Sportlehrer,Sports teachers,TRUE,Sportlehrer,87,Lehrer,V,Dienstleistungsberufe,1324
+877,Sonstige Lehrer,Other teachers,TRUE,Sonstige Lehrer,87,Lehrer,V,Dienstleistungsberufe,1445
+881,"Wirtschafts- und Sozialwissenschaftler, a.n.g., Statistiker","Economic and social scientists, statisticians",TRUE,"Wirtschafts- und Sozialwissenschaftler, a.n.g., Statistiker",88,"Geistes- und naturwissenschaftliche Berufe, a.n.g.",V,Dienstleistungsberufe,2331
+882,"Geisteswissenschaftler, a.n.g.","Humanities specialists, n.e.c.",TRUE,"Geisteswissenschaftler, a.n.g.",88,"Geistes- und naturwissenschaftliche Berufe, a.n.g.",V,Dienstleistungsberufe,1893
+883,"Naturwissenschaftler, a.n.g.",Scientists n.e.c.,TRUE,"Naturwissenschaftler, a.n.g.",88,"Geistes- und naturwissenschaftliche Berufe, a.n.g.",V,Dienstleistungsberufe,923
+888,Pflegepersonen,Nursing staff,FALSE,NA,NA,NA,NA,NA,0
+891,Seelsorger,Ministers of religion,TRUE,Seelsorger,89,Seelsorger,V,Dienstleistungsberufe,202
+892,Angehoerige geistlicher Orden und Mutterhaeuser ohne Angabe einer Berufs,Members of religious orders without specific occupation,TRUE,"Angehörige geistl. Orden, Mutterhäuser ohne Beruf",89,Seelsorger,V,Dienstleistungsberufe,80
+893,"Seelsorge-, Kulthelfer",Religious care helpers,TRUE,"Seelsorge-, Kulthelfer",89,Seelsorger,V,Dienstleistungsberufe,310
+901,Friseure,Hairdressers,TRUE,Friseure,90,Körperpfleger,V,Dienstleistungsberufe,1606
+902,Sonstige Koerperpfleger,Other body care occupations,TRUE,Sonstige Körperpfleger,90,Körperpfleger,V,Dienstleistungsberufe,536
+911,"Gastwirte, Hoteliers, Gaststaettenkaufleute","Restaurant, inn, bar keepers, hotel proprietors, catering trade dealers",TRUE,"Gastwirte, Hoteliers, Gaststättenkaufleute",91,Gästebetreuer,V,Dienstleistungsberufe,2188
+912,"Kellner, Stewards","Waiters, stewards",TRUE,"Kellner, Stewards",91,Gästebetreuer,V,Dienstleistungsberufe,9360
+913,Uebrige Gaestebetreuer,Others attending on guests,TRUE,Übrige Gästebetreuer,91,Gästebetreuer,V,Dienstleistungsberufe,7778
+921,Hauswirtschaftsverwalter,Housekeeping managers,TRUE,Hauswirtschaftsverwalter,92,Hauswirtschaftliche Berufe,V,Dienstleistungsberufe,764
+922,Verbraucherberater,Consumer advisors,TRUE,Verbraucherberater,92,Hauswirtschaftliche Berufe,V,Dienstleistungsberufe,94
+923,Hauswirtschaftliche Betreuer,Other housekeeping attendants,TRUE,Hauswirtschaftliche Betreuer,92,Hauswirtschaftliche Berufe,V,Dienstleistungsberufe,3254
+924,Mit Haushaltsscheckverfahren gemeldete Arbeitnehmer,Employees by household cheque procedure,FALSE,NA,NA,NA,NA,NA,479
+931,"Waescher, Plaetter","Laundry workers, pressers",TRUE,"Wäscher, Plätter",93,Reinigungsberufe,V,Dienstleistungsberufe,938
+932,"Textilreiniger, Faerber und Chemischreiniger","Textile cleaners, dyers and dry cleaners",TRUE,"Textilreiniger, Färber und Chemischreiniger",93,Reinigungsberufe,V,Dienstleistungsberufe,114
+933,"Raum-, Hausratreiniger",Household cleaners,TRUE,"Raum-, Hausratreiniger",93,Reinigungsberufe,V,Dienstleistungsberufe,14368
+934,"Glas-, Gebaeudereiniger","Glass, buildings cleaners",TRUE,"Glas-, Gebäudereiniger",93,Reinigungsberufe,V,Dienstleistungsberufe,1639
+935,"Strassenreiniger, Abfallbeseitiger","Street cleaners, refuse disposers",TRUE,"Straßenreiniger, Abfallbeseitiger",93,Reinigungsberufe,V,Dienstleistungsberufe,605
+936,"Fahrzeugreiniger, -pfleger","Vehicle cleaners, servicers",TRUE,"Fahrzeugreiniger, -pfleger",93,Reinigungsberufe,V,Dienstleistungsberufe,1012
+937,"Maschinen-, Behaelterreiniger und verwandte Berufe","Machinery, container cleaners and related occupations",TRUE,"Maschinen-, Behälterreiniger und verwandte Berufe",93,Reinigungsberufe,V,Dienstleistungsberufe,804
+971,"Mithelfende Familienangehoerige ausserhalb der Landwirtschaft, a.n.g.","Non-agricultural family assistants, n.e.c.",TRUE,Mithelfende Familienangehörige außerhalb d. Landwirtschaft,97,"Mithelfende Familienangehörige außerhalb der Landwirtschaft, a.n.g.",VI,Sonstige Arbeitskräfte,63
+981,Auszubildende mit noch nicht feststehendem Ausbildungsberuf,Trainees with recognised training occupation still to be specified,TRUE,Auszubildende mit noch nicht feststehendem Ausbildungsberuf,98,Arbeitskräfte mit noch nicht bestimmtem Beruf,VI,Sonstige Arbeitskräfte,1687
+982,"Praktikanten, Volontaere mit noch nicht feststehendem Beruf","Interns, unpaid trainees with recognised training occupation still to be specified",TRUE,"Praktikanten, Volontäre mit noch nicht feststehendem Beruf",98,Arbeitskräfte mit noch nicht bestimmtem Beruf,VI,Sonstige Arbeitskräfte,2062
+983,Arbeitskraefte (arbeitsuchend) mit noch nicht bestimmtem Beruf,Workforce (job seekers) with occupation still to be specified,TRUE,Arbeitskräfte (arbeitsuchend) m.nicht bestimmtem Beruf,98,Arbeitskräfte mit noch nicht bestimmtem Beruf,VI,Sonstige Arbeitskräfte,517
+991,Arbeitskraefte ohne Angabe,Workforce not further specified,TRUE,Arbeitskräfte ohne nähere Tätigkeitsangabe,99,Arbeitskräfte ohne nähere Tätigkeitsangabe,VI,Sonstige Arbeitskräfte,2625
+995,Vorruhestands- Altersuebergangsgeldbezieher,Recipients of early retirement pension,FALSE,NA,NA,NA,NA,NA,132
+996,Altersteilzeitarbeitende Arbeitnehmer,Employees in partial retirement,FALSE,NA,NA,NA,NA,NA,149
+997,Ausgleichsgeldbezieher,Recipients of compensations allowance,FALSE,NA,NA,NA,NA,NA,68

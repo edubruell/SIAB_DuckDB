@@ -49,7 +49,7 @@ deflate_wages <- function(.connection, .log_file = NULL){
   tbl(.connection, "data") %>%
     left_join(tbl_cpi, by=c("year"), copy=TRUE) %>%
     mutate(
-      wage_defl           = 100 * tentgelt_gr / cpi,
+      wage_defl           = 100 * tentgelt / cpi,
       limit_marginal_defl = 100 * limit_marginal / cpi,
       limit_assess_defl   = 100 * limit_assess / cpi) %>%
     compute_and_overwrite()

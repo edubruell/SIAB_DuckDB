@@ -1,26 +1,27 @@
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   
-# 03.) Add occupation classifications for the beruf_gr variable in the SUF
+# 03.) Add occupation classifications for the beruf variable
 # 
 # Generates the variables:
-#   - kldb92_2: For all beruf_gr that have a unique walkover to a 2-digit occupation
-#                this adds the kldb92_2 digit code
-#   - occ_blo: For all variables that have a unique walkover to a blossfeld occupation
-#              this adds it. 
+#   - occ_kldb88_2: the 2-digit KldB-88 Berufsgruppe of the 3-digit beruf code
+#   - occ_blo: Blossfeld occupations
 # 
-# Keep in mind that neither of the walkovers is perfectly clean and you loose 
-# information from some occupations if you only use the onse with an unique walkover as here.
-# You can of course directly merge occupation-level data to 2- or 3-digit walkovers to 
-# beruf_gr available in the classifications-folder and then modify this file to merge
-# occupation level information
+# beruf in SIAB 7523 v2 is the 3-digit KldB-88 Berufsordnung, so both merges are
+# exact and no occupation is dropped for want of a unique match. The SUF variable
+# beruf_gr this step used to read was a lossy 120-category grouping that needed
+# the walkover files removed in 2026-09.
+# 
+# Codes 555, 666, 888, 971, 981, 982, 983, 991, 995, 996 and 997 are SIAB
+# administrative categories rather than occupations and take occ_blo = 99.
 # 
 # Author(s): Eduard Bruell
-# Original R/duckdb code for the SIAB-SUF
+# Original R/duckdb code for the SIAB
 # 
-# Version: 1.0
+# Version: 2.0
 # Created: 2024-06-01
+# Rewritten for SIAB 7523 v2: 2026-09-16
 # 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 generate_occupation_variables <- function(.connection, .log_file = NULL){
   # Remove old log file if it exists
@@ -41,65 +42,37 @@ generate_occupation_variables <- function(.connection, .log_file = NULL){
   
   log_info("Occupation variable script started", namespace = "occ_vars")
   
-  log_info("Reading KldB92 2-digit walkover to beruf_gr", namespace = "occ_vars")
-  #Uniquely identifiable 2-digit occupations
+  log_info("Reading the KldB-88 occupation table", namespace = "occ_vars")
+  kldb88_2d <- read_csv(here("classifications", "kldb88_beruf.csv"),
+                        show_col_types = FALSE) %>%
+    select(beruf, occ_kldb88_2 = kldb88_2)
   
-  walkover_kldb92_2d_beruf_gr <-  read_csv(here("classifications", "walkover_kldb92_2d_beruf_gr.csv"))
-  
-  #Output info an what 2-digit occupations are not uniquely identifiable via beruf_gr
-  log_info("Following KlDB 2-digit occupations have no unique walkover to beruf_gr and will not be added to the data:", namespace = "occ_vars")
-  walkover_kldb92_2d_beruf_gr %>%
-    filter(n_kldb92_2 != 1) %>%
-    select(occ_kldb92_2 = kldb92_2,beruf_gr,n_kldb92_2) %>%
-    group_by(beruf_gr) %>%
-    summarise(occ2_matched = str_c(occ_kldb92_2,collapse=",") %>%
-                str_replace(",([^,]*)$", " and \\1")) %>%
-    glue_data("beruf_gr = {beruf_gr} matches KldB-92-2digit occupations {occ2_matched}") %>%
+  #Report the codes that sit outside the KldB-88 structure and get no Berufsgruppe
+  kldb88_2d %>%
+    filter(is.na(occ_kldb88_2)) %>%
+    glue_data("beruf = {beruf} is a SIAB administrative code outside KldB-88 and gets no Berufsgruppe") %>%
     walk(log_info, namespace = "occ_vars")
   
-  #Get the unique walkover
-  unique_kldb_2d_walkover <- walkover_kldb92_2d_beruf_gr %>%
-    filter(n_kldb92_2 == 1) %>%
-    select(occ_kldb92_2 = kldb92_2,beruf_gr)
-  
-  #Merge it
-  log_info("Merging KldB92 2-digit walkover to beruf_gr", namespace = "occ_vars")
+  log_info("Merging the 2-digit KldB-88 Berufsgruppe to beruf", namespace = "occ_vars")
   tbl(.connection, "data") %>%
-    left_join(unique_kldb_2d_walkover, by="beruf_gr", copy=TRUE) %>%    
+    left_join(kldb88_2d, by = "beruf", copy = TRUE) %>%
     compute_and_overwrite()
   
-  log_success(" -> Uniquely identifiable 2-digit occupation varibale (occ_kldb92_2) added", namespace = "occ_vars")
+  log_success(" -> 2-digit occupation variable (occ_kldb88_2) added", namespace = "occ_vars")
   
-  log_info("Reading KldB92 2-digit walkover to Blossfeld occupation classification", namespace = "occ_vars")
-  #Uniquely identifiable 2-digit occupations
-  walkover_occblo_beruf_gr <- read_csv(here("classifications",
-                                           "walkover_occblo_beruf_gr.csv")) 
+  log_info("Reading the Blossfeld walkover", namespace = "occ_vars")
+  occblo <- read_csv(here("classifications", "walkover_beruf_occblo.csv"),
+                     show_col_types = FALSE) %>%
+    select(beruf, occ_blo)
   
-  #Output info an what Blossfeld occupations are not uniquely identifiable via beruf_gr
-  log_info("Following Blossfeld-classifications have no unique walkover to beruf_gr and will not be added to the data:", namespace = "occ_vars")
-  walkover_occblo_beruf_gr %>%
-    filter(n_occ_blo != 1) %>%
-    select(occ_blo,beruf_gr,n_occ_blo) %>%
-    group_by(beruf_gr) %>%
-    summarise(occblo_matched = str_c(occ_blo,collapse=",") %>%
-                str_replace(",([^,]*)$", " and \\1")) %>%
-    glue_data("beruf_gr = {beruf_gr} matches Blossfeld-classifications {occblo_matched}") %>%
-    walk(log_info, namespace = "occ_vars")
-  
-  #Get the unique ones
-  unique_occblo_walkover <- walkover_occblo_beruf_gr %>%
-    filter(n_occ_blo == 1) %>%
-    select(occ_blo,beruf_gr)
-  
+  log_info("Merging the Blossfeld classification to beruf", namespace = "occ_vars")
   tbl(.connection, "data") %>%
-    left_join(unique_occblo_walkover, by="beruf_gr", copy=TRUE) %>%    
+    left_join(occblo, by = "beruf", copy = TRUE) %>%
     compute_and_overwrite()
   
-  log_success("-> occ_blo variable added", 
-              namespace = "occ_vars")    
+  log_success("-> occ_blo variable added", namespace = "occ_vars")    
   log_success("Occupation variables script finished", namespace = "occ_vars")
   
   #Return the .connection so we can pipe prepare functions
   return(.connection)
 }
-
