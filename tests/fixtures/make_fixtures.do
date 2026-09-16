@@ -23,8 +23,20 @@
 	One deviation from "the reference is never edited"
 	--------------------------------------------------
 	03_SIAB_bio.do has been changed in ten places, each marked in the file with
-	`// TIE-BREAK ADDED`. The original is kept beside it as
-	03_SIAB_bio.do.unmodified, so the change is a one-line diff to audit.
+	`// TIE-BREAK ADDED`. The reference lives in local_context/, which is not in
+	this repo, so the change is committed here as a patch instead:
+
+	    tests/fixtures/03_SIAB_bio_tiebreak.patch
+
+	From a clean clone, put the published reference in
+	local_context/stata_reference/origin_EastGermanWageStructure/, keep a copy as
+	03_SIAB_bio.do.unmodified, and apply the patch before running this file:
+
+	    patch local_context/stata_reference/origin_EastGermanWageStructure/03_SIAB_bio.do \
+	        < tests/fixtures/03_SIAB_bio_tiebreak.patch
+
+	Without it the fixtures cannot be reproduced, because anz_lst and tage_lst
+	come out differently on every run.
 
 	Every one of the ten orders on `spell` and nothing further. After
 	01_split_episodes.do a spell that crosses a year boundary is one row per

@@ -5,16 +5,9 @@
 # the test skips with the reason, which makes the gap show up on every run
 # instead of living only in a note.
 #
-# The master's source restriction also explains why the R output is a strict
-# superset of the reference: it carries 615,670 rows against 505,050.
-
-test_that("the source restriction from the master do-file is ported", {
-  skip(paste(
-    "Not ported: 00_master_SIAB.do keeps only quelle 1, 2 and 3, the employment",
-    "history. The R pipeline keeps all seven sources, which is why its output is",
-    "a strict superset of the reference on the test data."
-  ))
-})
+# The master's source restriction was ported on 2026-09-16, so the R output is
+# no longer a superset: both sides carry 505,050 rows on the test data. The
+# row-set equality is checked in test-reference-01_split_episodes.R.
 
 test_that("09_restrictions.do is ported", {
   skip(paste(

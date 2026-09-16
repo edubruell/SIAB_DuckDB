@@ -1,5 +1,5 @@
-INFO [2026-09-16 17:44:15] Reallocation of one-time payments started
-SUCCESS [2026-09-16 17:44:17]  ->  episode_length is between 1 and 366 on every spell
-INFO [2026-09-16 17:44:17] 1601 spells receive a share of a one-time payment
-SUCCESS [2026-09-16 17:44:18]  ->  no spell lost wage in the reallocation
-SUCCESS [2026-09-16 17:44:19] Reallocation of one-time payments finished
+INFO [2026-09-16 19:17:47] Reallocation of one-time payments started
+SUCCESS [2026-09-16 19:17:50]  ->  episode_length is between 1 and 366 on every spell
+INFO [2026-09-16 19:17:50] 1601 spells receive a share of a one-time payment
+SUCCESS [2026-09-16 19:17:51]  ->  no spell lost wage in the reallocation
+SUCCESS [2026-09-16 19:17:52] Reallocation of one-time payments finished

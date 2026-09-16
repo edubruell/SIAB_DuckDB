@@ -1,5 +1,5 @@
-INFO [2026-09-16 17:44:13] Job with highest wage  is defined as main episode
-INFO [2026-09-16 17:44:13] Generating info on parallel jobs and keeping only the main spell
-SUCCESS [2026-09-16 17:45:34] -> parallel episodes handled
-SUCCESS [2026-09-16 17:45:35]  ->  Cleanup finished
-SUCCESS [2026-09-16 17:45:35] Parallel episodes file finished
+INFO [2026-09-16 19:17:45] Job with highest wage  is defined as main episode
+INFO [2026-09-16 19:17:45] Generating info on parallel jobs and keeping only the main spell
+SUCCESS [2026-09-16 19:19:02] -> parallel episodes handled
+SUCCESS [2026-09-16 19:19:03]  ->  Cleanup finished
+SUCCESS [2026-09-16 19:19:03] Parallel episodes file finished

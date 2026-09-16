@@ -18,11 +18,11 @@ test_that("every reference row exists in the R output with the same key", {
   expect_gt(counts$n_stata, 0L)
 })
 
-test_that("the R output carries extra rows only because two filters are not ported", {
-  # The reference drops benefit and other sources in the master's pre-step
-  # block, `keep if inlist(quelle,1,2,3)`, and the R pipeline does not. Until
-  # that filter is ported the R side is a strict superset. The test pins the
-  # direction of the gap, so a row that disappears from R still fails.
+test_that("the R output carries no row the reference does not have", {
+  # The reference drops the sources that are not employment history in the
+  # master's pre-step block, `keep if inlist(quelle,1,2,3)`, and the R pipeline
+  # now does the same. With the first test above, this pins the two key sets as
+  # equal: a row appearing on either side alone fails.
   query <- siab_reference_query("01_split_episodes")
 
   only_r <- query(
@@ -31,7 +31,7 @@ test_that("the R output carries extra rows only because two filters are not port
                                 SELECT persnr, spell, begepi FROM stata)"
   )$n
 
-  expect_gt(only_r, 0L)
+  expect_equal(only_r, 0L)
 })
 
 test_that("the split dates and the derived year and age match the reference exactly", {

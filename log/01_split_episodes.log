@@ -1,28 +1,18 @@
-INFO [2026-09-16 17:44:15] Episode splitting script started
-SUCCESS [2026-09-16 17:44:15] Variables for original episode start and end dates created
-INFO [2026-09-16 17:44:15] Checking how many observations span multiple years:
-INFO [2026-09-16 17:44:15] 541729 observations span 1 years
-INFO [2026-09-16 17:44:15] 30378 observations span 2 years
-INFO [2026-09-16 17:44:15] 4118 observations span 3 years
-INFO [2026-09-16 17:44:15] 1115 observations span 4 years
-INFO [2026-09-16 17:44:15] 213 observations span 5 years
-INFO [2026-09-16 17:44:15] 98 observations span 6 years
-INFO [2026-09-16 17:44:15] 38 observations span 7 years
-INFO [2026-09-16 17:44:15] 37 observations span 8 years
-INFO [2026-09-16 17:44:15] 18 observations span 9 years
-INFO [2026-09-16 17:44:15] 9 observations span 11 years
-INFO [2026-09-16 17:44:15] 6 observations span 10 years
-INFO [2026-09-16 17:44:15] 5 observations span 12 years
-INFO [2026-09-16 17:44:15] 4 observations span 13 years
-INFO [2026-09-16 17:44:15] 2 observations span 14 years
-INFO [2026-09-16 17:44:15] 2 observations span 17 years
-INFO [2026-09-16 17:44:15] 1 observations span 18 years
-INFO [2026-09-16 17:44:15] 1 observations span 16 years
-INFO [2026-09-16 17:44:15] 1 observations span 20 years
-INFO [2026-09-16 17:44:15] 1 observations span 15 years
-INFO [2026-09-16 17:44:15] Expanding observation that span n years n times
-SUCCESS [2026-09-16 17:44:15] -> Expansion plan written
-SUCCESS [2026-09-16 17:44:16] -> Data expanded to copy split episodes
-SUCCESS [2026-09-16 17:44:16] -> Copied entries updated with right endepi and begepi in the base table
-SUCCESS [2026-09-16 17:44:16] CLEANUP: Expansion plan deleted from database
-SUCCESS [2026-09-16 17:44:16] Episode splitting script finished
+INFO [2026-09-16 19:17:48] Episode splitting script started
+SUCCESS [2026-09-16 19:17:48] Variables for original episode start and end dates created
+INFO [2026-09-16 19:17:48] Checking how many observations span multiple years:
+INFO [2026-09-16 19:17:48] 464895 observations span 1 years
+INFO [2026-09-16 19:17:48] 18089 observations span 2 years
+INFO [2026-09-16 19:17:48] 2417 observations span 3 years
+INFO [2026-09-16 19:17:48] 625 observations span 4 years
+INFO [2026-09-16 19:17:48] 72 observations span 5 years
+INFO [2026-09-16 19:17:48] 20 observations span 6 years
+INFO [2026-09-16 19:17:48] 10 observations span 7 years
+INFO [2026-09-16 19:17:48] 6 observations span 8 years
+INFO [2026-09-16 19:17:48] 4 observations span 9 years
+INFO [2026-09-16 19:17:48] Expanding observation that span n years n times
+SUCCESS [2026-09-16 19:17:48] -> Expansion plan written
+SUCCESS [2026-09-16 19:17:49] -> Data expanded to copy split episodes
+SUCCESS [2026-09-16 19:17:49] -> Copied entries updated with right endepi and begepi in the base table
+SUCCESS [2026-09-16 19:17:49] CLEANUP: Expansion plan deleted from database
+SUCCESS [2026-09-16 19:17:49] Episode splitting script finished

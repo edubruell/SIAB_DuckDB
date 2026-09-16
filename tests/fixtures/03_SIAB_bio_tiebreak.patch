@@ -1,0 +1,80 @@
+--- local_context/stata_reference/origin_EastGermanWageStructure/03_SIAB_bio.do.unmodified	2026-09-16 17:39:30
++++ local_context/stata_reference/origin_EastGermanWageStructure/03_SIAB_bio.do	2026-09-16 17:40:08
+@@ -118,7 +118,7 @@
+ * FIRST DAY IN EMPLOYMENT  (ein_erw)    *
+ *---------------------------------------*
+ 
+-sort persnr spell
++sort persnr spell begepi // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ 
+ * TAG VOCATIONAL TRAINING
+ gen byte azubi = inlist(erwstat, 102, 121, 122, 141) & grund != 154 
+@@ -152,8 +152,8 @@
+ gen int d = endepi - begepi +1 if nrE == 1
+ 
+ * RUNNING TOTAL OF JOB DURATIONS
+-bysort persnr (begepi nrE): gen int tage_erw = sum(d)
+-sort persnr spell
++bysort persnr (begepi nrE spell): gen int tage_erw = sum(d) // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
++sort persnr spell begepi // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ drop d emp nrE
+ 
+ 
+@@ -161,7 +161,7 @@
+ * FIRST DAY IN ESTABLISHMENT (ein_bet) *
+ *--------------------------------------*
+ 
+-sort persnr betnr spell
++sort persnr betnr spell begepi // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ 
+ * TAG EMPLOYMENTS IN ESTABLISHMENTS (WITH VOCATIONAL TRAINING)
+ gen byte emp2 = 1 if quelle == 1 & !missing(betnr) & grund != 154
+@@ -185,7 +185,7 @@
+ gen int dauer = endepi - begepi +1 if nrB == 1
+ 
+ * RUNNING TOTAL OF DAYS IN ESTABLISHMENT
+-bysort persnr betnr (spell): gen int tage_bet = sum(dauer) if !missing(betnr)
++bysort persnr betnr (spell begepi): gen int tage_bet = sum(dauer) if !missing(betnr) // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ 
+ drop h2 emp2 nrB dauer
+ 
+@@ -211,7 +211,7 @@
+ * FIRST DAY IN JOB (ein_job) *
+ *----------------------------*
+ * SORT OBSERVATIONS BY PERSON, ESTABLISHMENT (VOCATIONAL TRAINING SEPARATE) AND EPISODE
+-sort persnr azubi betnr spell
++sort persnr azubi betnr spell begepi // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ 
+ * MARK SUBSEQUENT EPISODES OF JOB
+ * FIRST OBSERVATION IS SET TO MISSING
+@@ -304,7 +304,7 @@
+ bysort persnr begepi quelleL (quelle spell): gen byte nrL  = _n if quelleL
+ 
+ * COPY END DATE OF LAST BENEFIT RECEIPT TO SUBSEQUENT OBSERVATIONS
+-sort persnr spell
++sort persnr spell begepi // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ gen int ende_vor = .
+ replace ende_vor = endepi[_n-1] if quelleL[_n-1] & persnr == persnr[_n-1]
+ replace ende_vor = ende_vor[_n-1] if missing(ende_vor) & persnr == persnr[_n-1]
+@@ -315,7 +315,7 @@
+ gen byte lst = quelleL & nrL == 1 & (begepi - ende_vor > 10)
+ 
+ * RUNNING TOTAL OF BENEFIT RECEIPTS
+-gsort persnr begepi -lst
++gsort persnr begepi -lst spell // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ gen int anz_lst = lst
+ replace anz_lst = anz_lst[_n-1] + lst if persnr == persnr[_n-1]
+ drop ende_vor lst
+@@ -328,10 +328,10 @@
+ gen int lstdauer = endepi - begepi +1 if quelleL ==1 & nrL ==1 
+ 
+ * RUNNING TOTAL OF DAYS IN BENEFIT RECEIPT
+-bysort persnr (spell): gen int tage_lst = sum(lstdauer) if nrL ==1	| quelleL ==0
++bysort persnr (spell begepi): gen int tage_lst = sum(lstdauer) if nrL ==1	| quelleL ==0 // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ 
+ * FILL VARIABLE FOR PARALLEL OBSERVATIONS
+-bysort persnr begepi (nrL): replace tage_lst = tage_lst[1]
++bysort persnr begepi (nrL spell): replace tage_lst = tage_lst[1] // TIE-BREAK ADDED: see tests/fixtures/make_fixtures.do
+ 
+ drop lstdauer quelleL nrL 
+ 

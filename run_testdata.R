@@ -55,6 +55,9 @@ if (!"orig" %in% dbListTables(con)) {
 #====================================================================
 
 tbl(con, "orig") |>
+  # 00_master_SIAB.do keeps only the employment history before it generates
+  # jahr and age: `keep if inlist(quelle,1,2,3)`. Sources 4 to 7 are dropped.
+  filter(quelle %in% c(1L, 2L, 3L)) |>
   mutate(year = year(begepi),
          age  = year - gebjahr) |>
   compute_and_overwrite("data")

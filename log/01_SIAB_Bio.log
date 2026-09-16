@@ -1,19 +1,19 @@
-INFO [2026-09-16 17:44:15] Script to generate additional biographic variables from longitudinal data started
-INFO [2026-09-16 17:44:15] Adding level1 (PER EPISODE AND SOURCE) and level2 (PER EPISODE) observation counters 
-SUCCESS [2026-09-16 17:44:20] -> Observation counters added
-SUCCESS [2026-09-16 17:44:20] -> ASSERT: No missings in observation counters
-INFO [2026-09-16 17:44:20] Creating emp, azubi and ein_erw variables
-SUCCESS [2026-09-16 17:44:21] -> First day in employment (ein_erw variable) created
-INFO [2026-09-16 17:44:21] Computing number of days in employment
-SUCCESS [2026-09-16 17:44:22] -> Number of days in employment (tage_erw) variable created)
-INFO [2026-09-16 17:44:22] Computing first day and number of days in establishment
-SUCCESS [2026-09-16 17:44:24] -> First day and number of days in establishment variables created)
-INFO [2026-09-16 17:44:24] Computing first day and number of days in job
-SUCCESS [2026-09-16 17:44:27] -> ein_job and tage_job variables created
-INFO [2026-09-16 17:44:27] Computing number of benefit receipts
-SUCCESS [2026-09-16 17:44:29] -> anz_lst variable created
-INFO [2026-09-16 17:44:29] Computing number of days with benefit receipts
-SUCCESS [2026-09-16 17:44:31] -> tage_lst variable created
-INFO [2026-09-16 17:44:31] Blanking the establishment and job variables outside quelle 1
-SUCCESS [2026-09-16 17:44:32] -> Establishment and job variables blanked outside quelle 1
-SUCCESS [2026-09-16 17:44:32] Biographic variables script finished
+INFO [2026-09-16 19:17:47] Script to generate additional biographic variables from longitudinal data started
+INFO [2026-09-16 19:17:47] Adding level1 (PER EPISODE AND SOURCE) and level2 (PER EPISODE) observation counters 
+SUCCESS [2026-09-16 19:17:53] -> Observation counters added
+SUCCESS [2026-09-16 19:17:53] -> ASSERT: No missings in observation counters
+INFO [2026-09-16 19:17:53] Creating emp, azubi and ein_erw variables
+SUCCESS [2026-09-16 19:17:54] -> First day in employment (ein_erw variable) created
+INFO [2026-09-16 19:17:54] Computing number of days in employment
+SUCCESS [2026-09-16 19:17:55] -> Number of days in employment (tage_erw) variable created)
+INFO [2026-09-16 19:17:55] Computing first day and number of days in establishment
+SUCCESS [2026-09-16 19:17:57] -> First day and number of days in establishment variables created)
+INFO [2026-09-16 19:17:57] Computing first day and number of days in job
+SUCCESS [2026-09-16 19:17:59] -> ein_job and tage_job variables created
+INFO [2026-09-16 19:17:59] Computing number of benefit receipts
+SUCCESS [2026-09-16 19:18:01] -> anz_lst variable created
+INFO [2026-09-16 19:18:01] Computing number of days with benefit receipts
+SUCCESS [2026-09-16 19:18:02] -> tage_lst variable created
+INFO [2026-09-16 19:18:02] Blanking the establishment and job variables outside quelle 1
+SUCCESS [2026-09-16 19:18:03] -> Establishment and job variables blanked outside quelle 1
+SUCCESS [2026-09-16 19:18:03] Biographic variables script finished
