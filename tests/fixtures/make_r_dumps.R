@@ -62,7 +62,29 @@ touched <- list(
   "08_wages_deflation"          = c("tentgelt", "cpi", "wage_defl",
                                     "limit_marginal_defl", "limit_assess_defl"),
   "09_restrictions"             = character(0),
-  "10_wages_imputation"         = c("quelle", "cens", "wage", "wage_imp")
+  "10_wages_imputation"         = c("quelle", "cens", "wage", "wage_imp"),
+  # 11_merge_BHP.do merges five files, and the columns below are everything the
+  # test delivery's versions of them carry. `besch` is the one column two of the
+  # files share, which is where the merges' `update` option does real work.
+  # quelle rides along because only employment episodes carry an establishment
+  # number, and a test has no other way to check that nothing else matched.
+  "11_merge_BHP"                = c("quelle",
+                                    "az_f", "az_reg", "az_azubi", "az_atz",
+                                    "az_tz", "az_f_vz", "az_f_tz", "az_reg_vz",
+                                    "ein_ges", "ein_gf", "ein_vz",
+                                    "aus_ges", "aus_gf", "aus_vz",
+                                    "eintritt", "besch", "besch_vor",
+                                    "status_vor", "inflow",
+                                    "austritt", "besch_nach", "status_nach",
+                                    "outflow"),
+  # The AKM effects themselves are fabricated noise, so the fixture is compared
+  # on which episodes carry one, never on a value. See make_synth_akm.do.
+  "12_merge_AKM"                = c("feff_1985_1992", "feff_1993_2000",
+                                    "feff_2001_2008", "feff_2009_2016",
+                                    "feff_2017_2023",
+                                    "peff_1985_1992", "peff_1993_2000",
+                                    "peff_2001_2008", "peff_2009_2016",
+                                    "peff_2017_2023")
 )
 
 dump_step <- function(step) {
@@ -146,6 +168,22 @@ dump_step("09_restrictions")
 set.seed(123)
 con |> impute_wages(log_file = here("log", "07_wages_imputation.log"))
 dump_step("10_wages_imputation")
+
+# 11_merge_BHP.do reads the yearly establishment panel and the four extension
+# files straight out of the delivery, so the R side reads the same folder the
+# Stata fixture run staged its copies from.
+con |> merge_annual_bhp(log_file   = here("log", "07b_bhp_annual.log"),
+                        bhp_folder = testdata(""))
+dump_step("11_merge_BHP")
+
+# The AKM files are fabricated, not delivered, so both sides have to read the
+# same two files or the comparison means nothing. tests/fixtures/make_synth_akm.do
+# writes them into the Stata fixture run's orig folder and this reads them back.
+akm_dir <- here("local_context", "stata_fixtures", "orig")
+con |> merge_akm(log_file       = here("log", "07c_akm.log"),
+                 akm_estab_file = file.path(akm_dir, "SIAB_7523_v2_akm_estab.dta"),
+                 akm_pers_file  = file.path(akm_dir, "SIAB_7523_v2_akm_pers.dta"))
+dump_step("12_merge_AKM")
 
 #====================================================================
 #  Clean up

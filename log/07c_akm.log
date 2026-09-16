@@ -1,0 +1,16 @@
+INFO [2026-09-16 21:12:34] AKM merge started
+INFO [2026-09-16 21:12:34] Read 63553 rows and 5 effects from SIAB_7523_v2_akm_estab.dta
+INFO [2026-09-16 21:12:35] feff_1985_1992: 341893 of 505050 episodes (67.7%)
+INFO [2026-09-16 21:12:35] feff_1993_2000: 364737 of 505050 episodes (72.2%)
+INFO [2026-09-16 21:12:35] feff_2001_2008: 353962 of 505050 episodes (70.1%)
+INFO [2026-09-16 21:12:35] feff_2009_2016: 349737 of 505050 episodes (69.2%)
+INFO [2026-09-16 21:12:35] feff_2017_2023: 348847 of 505050 episodes (69.1%)
+SUCCESS [2026-09-16 21:12:35]  -> AKM establishment effects added
+INFO [2026-09-16 21:12:35] Read 25000 rows and 5 effects from SIAB_7523_v2_akm_pers.dta
+INFO [2026-09-16 21:12:37] peff_1985_1992: 451225 of 505050 episodes (89.3%)
+INFO [2026-09-16 21:12:37] peff_1993_2000: 482177 of 505050 episodes (95.5%)
+INFO [2026-09-16 21:12:37] peff_2001_2008: 474536 of 505050 episodes (94%)
+INFO [2026-09-16 21:12:37] peff_2009_2016: 476621 of 505050 episodes (94.4%)
+INFO [2026-09-16 21:12:37] peff_2017_2023: 480835 of 505050 episodes (95.2%)
+SUCCESS [2026-09-16 21:12:37]  -> AKM person effects added
+SUCCESS [2026-09-16 21:12:37] AKM merge finished

@@ -78,6 +78,13 @@ pipeline <- con |>
   generate_limit_marginal(      log_file = here("log", "05_wages_marginal.log")) |>
   deflate_wages(                log_file = here("log", "06_wages_deflation.log")) |>
   impute_wages(                 log_file = here("log", "07_wages_imputation.log")) |>
+  # The yearly establishment panel and the four extension files 11_merge_BHP.do
+  # reads are all in the FDZ test data, so this one can run as it stands. The
+  # AKM merge cannot: no FDZ test product carries the two files, and the
+  # fabricated pair that tests/fixtures/make_synth_akm.do writes exists only for
+  # the fixture comparison, never for a pipeline run.
+  merge_annual_bhp(             log_file   = here("log", "07b_bhp_annual.log"),
+                                bhp_folder = testdata("")) |>
   handle_parallel_episodes(     log_file = here("log", "08_parallel_episodes.log"),
                                 handling = "wage") |>
   build_yearly_panel(           log_file = here("log", "09_yearly_panel.log"),

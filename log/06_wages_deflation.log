@@ -1,4 +1,4 @@
-INFO [2026-09-16 20:49:07] Reading cpi data from csv
-INFO [2026-09-16 20:49:07] Add cpi to data and generate wage_defl, limit_marginal_defl and limit_assess_defl
-SUCCESS [2026-09-16 20:49:08]  ->  cpi, wage_defl, limit_marginal_defl and limit_assess_defl added
-SUCCESS [2026-09-16 20:49:08] Wage defaltion file finished
+INFO [2026-09-16 21:13:41] Reading cpi data from csv
+INFO [2026-09-16 21:13:42] Add cpi to data and generate wage_defl, limit_marginal_defl and limit_assess_defl
+SUCCESS [2026-09-16 21:14:03]  ->  cpi, wage_defl, limit_marginal_defl and limit_assess_defl added
+SUCCESS [2026-09-16 21:14:03] Wage defaltion file finished

@@ -68,6 +68,15 @@ con |>
   generate_limit_marginal(      log_file = here("log","05_wages_marginal.log"))|>
   deflate_wages(                log_file = here("log","06_wages_deflation.log")) |>
   impute_wages(                 log_file = here("log","07_wages_imputation.log")) |>
+  # 11_merge_BHP.do and 12_merge_AKM.do are switched off in the reference
+  # master, because every file they read has to be requested from the FDZ on
+  # top of the SIAB itself. Uncomment either call once the files are in place.
+  #
+  # merge_annual_bhp(           log_file   = here("log","07b_bhp_annual.log"),
+  #                             bhp_folder = rawdata("")) |>
+  # merge_akm(                  log_file       = here("log","07c_akm.log"),
+  #                             akm_estab_file = rawdata("SIAB_7523_v2_akm_estab.dta"),
+  #                             akm_pers_file  = rawdata("SIAB_7523_v2_akm_pers.dta")) |>
   handle_parallel_episodes(     log_file = here("log","08_parallel_episodes.log"),
                                 handling = "wage") |>
   build_yearly_panel(           log_file = here("log","09_yearly_panel.log"),

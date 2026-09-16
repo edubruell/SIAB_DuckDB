@@ -19,6 +19,13 @@
 	  - runs 09_restrictions.do for its dump but then continues from the
 	    step 08 data, because that step imposes one project's sample cut
 	    and the R pipeline has no counterpart for it
+	  - turns on all five of step 11's switches and both of step 12's, which the
+	    master leaves off because the files behind them have to be requested
+	    separately; the test data carries every file step 11 wants
+	  - fabricates the two AKM files step 12 reads, which no FDZ test product
+	    supplies, from the shape the FDZ methodology report describes. See
+	    tests/fixtures/make_synth_akm.do. The effects are noise, so step 12 is
+	    compared on which rows receive one, never on a value.
 
 	Everything else, including the pre-step block that restricts the sources and
 	generates jahr and age, is copied from 00_master_SIAB.do unchanged.
@@ -115,6 +122,33 @@ use "${testdata}/SIAB_7523_v2_bhp_basis_v1.dta", clear
 rename betnr_siab betnr
 save "${orig}/SIAB_7523_v2_bhp_basis_v1.dta", replace
 
+* The yearly establishment panel and the four worker-flow files, which step 11
+* reads. They arrive under the names that step wants already; only the key has
+* to be renamed. Each yearly file holds exactly one calendar year.
+* The brace form of a global in a loop header makes Stata's block parser take
+* the macro's own brace as the loop's, r(198). The dollar form is safe.
+forvalues y = $minYear / $maxYear {
+	capture confirm file "${testdata}/SIAB_7523_v2_bhp_v1_`y'.dta"
+	if !_rc {
+		use "${testdata}/SIAB_7523_v2_bhp_v1_`y'.dta", clear
+		rename betnr_siab betnr
+		save "${orig}/SIAB_7523_v2_bhp_v1_`y'.dta", replace
+	}
+}
+
+foreach f in inflow outflow entry exit {
+	use "${testdata}/SIAB_7523_v2_bhp_`f'_v1.dta", clear
+	rename betnr_siab betnr
+	save "${orig}/SIAB_7523_v2_bhp_`f'_v1.dta", replace
+}
+
+* The two AKM files do not exist as test data anywhere, so they are fabricated
+* from the shape the FDZ methodology report describes. The effects are noise;
+* what step 12 is compared on is which rows receive one. See the header of
+* make_synth_akm.do. Generated here, with the other staging, because it loads
+* data into memory and cannot run once the pipeline is under way.
+do "${root}/tests/fixtures/make_synth_akm.do"
+
 use "${testdata}/SIAB_7523_v2.dta", clear
 rename persnr_siab persnr
 rename betnr_siab  betnr
@@ -188,6 +222,24 @@ use "${dump}/08_wages_deflation.dta", clear
 
 do "${prog}/10_wages_imputation.do"
 save "${dump}/10_wages_imputation.dta", replace
+
+* 00_master_SIAB.do leaves all five of these at 0, because the files they read
+* are only released to a project that has requested them. The test data carries
+* every one of them, so the fixture run turns them all on and compares the step.
+global annual_BHP  = 1
+global BHP_inflow  = 1
+global BHP_outflow = 1
+global BHP_entry   = 1
+global BHP_exit    = 1
+
+do "${prog}/11_merge_BHP.do"
+save "${dump}/11_merge_BHP.dta", replace
+
+global AKM_estab = 1
+global AKM_pers  = 1
+
+do "${prog}/12_merge_AKM.do"
+save "${dump}/12_merge_AKM.dta", replace
 
 dis "fixture dumps written to ${dump}"
 dis "$S_DATE $S_TIME"

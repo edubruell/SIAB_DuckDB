@@ -60,7 +60,29 @@ touched <- list(
   # so the three variables its own header names are all that survive into the
   # dump. quelle rides along because each of the step's guards is `quelle == 1`
   # and a test has no other way to tell a BeH spell from the rest.
-  "10_wages_imputation"         = c("quelle", "cens", "wage", "wage_imp")
+  "10_wages_imputation"         = c("quelle", "cens", "wage", "wage_imp"),
+  # 11_merge_BHP.do merges five files, and the columns below are everything the
+  # test delivery's versions of them carry. `besch` is the one column two of the
+  # files share, which is where the merges' `update` option does real work.
+  # quelle rides along because only employment episodes carry an establishment
+  # number, and a test has no other way to check that nothing else matched.
+  "11_merge_BHP"                = c("quelle",
+                                    "az_f", "az_reg", "az_azubi", "az_atz",
+                                    "az_tz", "az_f_vz", "az_f_tz", "az_reg_vz",
+                                    "ein_ges", "ein_gf", "ein_vz",
+                                    "aus_ges", "aus_gf", "aus_vz",
+                                    "eintritt", "besch", "besch_vor",
+                                    "status_vor", "inflow",
+                                    "austritt", "besch_nach", "status_nach",
+                                    "outflow"),
+  # The AKM effects themselves are fabricated noise, so the fixture is compared
+  # on which episodes carry one, never on a value. See make_synth_akm.do.
+  "12_merge_AKM"                = c("feff_1985_1992", "feff_1993_2000",
+                                    "feff_2001_2008", "feff_2009_2016",
+                                    "feff_2017_2023",
+                                    "peff_1985_1992", "peff_1993_2000",
+                                    "peff_2001_2008", "peff_2009_2016",
+                                    "peff_2017_2023")
 )
 
 
