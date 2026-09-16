@@ -48,6 +48,7 @@ The file `stata_to_db_batch_read.R` in the project main folder contains all code
 - `generate_occupation_variables()`: Generates occupation-related variables.
 - `generate_educ_variable()`: Generates the education variable.
 - `merge_basic_bhp()`: Merges the Basic Establishment File.
+- `generate_industry_variables()`: Maps the three-digit industry to the two one-digit classifications.
 - `generate_limit_assess()`: Generates the wage assessment ceiling variable.
 - `generate_limit_marginal()`: Generates the marginal wages related variables.
 - `deflate_wages()`: Deflates the wages using the CPI.
