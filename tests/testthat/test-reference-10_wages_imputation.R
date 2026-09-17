@@ -2,7 +2,7 @@
 #
 # This is the first comparison past 09_restrictions.do. That step cuts the data
 # down to one project's population, and the R pipeline has no counterpart for
-# it, so tests/fixtures/make_fixtures.do takes its dump and then continues from
+# it, so make_fixtures.do takes its dump and then continues from
 # the step 08 data. Both halves of this comparison therefore carry the whole
 # dataset.
 #

@@ -38,9 +38,11 @@
 library("pacman")
 p_load(dplyr, tidyr, readr, stringr, purrr, here)
 
-# The reference do-files. Untracked, like all of local_context/.
+# The reference do-files. Not redistributed with this repo, so the fallback
+# points at the working folder this project keeps them in.
+# make_fixtures.do reads the same variable.
 stata_reference <- Sys.getenv(
-  "STATA_REFERENCE_DIR",
+  "SIAB_STATA_REFERENCE",
   here("local_context", "stata_reference", "origin_EastGermanWageStructure")
 )
 

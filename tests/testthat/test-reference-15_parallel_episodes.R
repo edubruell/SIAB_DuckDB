@@ -10,7 +10,7 @@
 #
 # Both sides carry `spell` as the last sort key, which the reference's own
 # comment beside the line asks for and which
-# tests/fixtures/15_parallel_episodes_tiebreak.patch supplies. Without it 1,945
+# 15_parallel_episodes_tiebreak.patch supplies. Without it 1,945
 # of the 479,806 person-episode groups are tied on everything the sort looks at
 # and the kept row is arbitrary on each side separately.
 #

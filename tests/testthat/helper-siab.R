@@ -91,10 +91,10 @@ quietly_run <- function(expr) {
 #====================================================================
 
 # Fixtures are parquet dumps taken from the Stata reference prep, one per
-# step, produced by tests/fixtures/make_fixtures.do and committed under
-# tests/testthat/fixtures/. A test that needs one calls this; when the file
-# is not there the test skips rather than fails, so the suite still runs on a
-# machine without the FDZ test data.
+# step, committed under tests/testthat/fixtures/. The scripts that produce them
+# need Stata and the reference do-files and are not part of this repo, which
+# tests/README.md explains. A test that needs a fixture calls this; when the
+# file is not there the test skips rather than fails.
 siab_fixture <- function(name) {
   path <- here("tests", "testthat", "fixtures", paste0(name, ".parquet"))
   testthat::skip_if_not(
@@ -115,15 +115,19 @@ siab_fixture <- function(name) {
 #====================================================================
 
 # The Stata half of a comparison is a parquet file under
-# tests/testthat/fixtures/, committed, produced by tests/fixtures/make_fixtures.do.
-# The R half is a parquet file under local_context/testdb/r_dump/, untracked,
-# produced by tests/fixtures/make_r_dumps.R over the FDZ test database. Both are
+# tests/testthat/fixtures/, committed.
+# The R half is a parquet file in the folder SIAB_R_DUMP names, untracked,
+# produced by tests/fixtures/make_r_dumps.R over the FDZ test database. That
+# script reads the same variable, so set it for both or neither. Both halves are
 # keyed on persnr, spell and begepi.
 
 siab_reference_paths <- function(step) {
   list(
     stata = here("tests", "testthat", "fixtures", paste0(step, ".parquet")),
-    r     = here("local_context", "testdb", "r_dump", paste0(step, ".parquet"))
+    r     = file.path(
+      Sys.getenv("SIAB_R_DUMP", here("local_context", "testdb", "r_dump")),
+      paste0(step, ".parquet")
+    )
   )
 }
 
@@ -140,7 +144,7 @@ siab_reference_query <- function(step, also = character(0), env = parent.frame()
   testthat::skip_if_not(
     file.exists(paths$stata),
     paste0("No Stata fixture for ", step,
-           ". Produce one with tests/fixtures/make_fixtures.do.")
+           ". The committed fixtures are made outside this repo, see tests/README.md.")
   )
   testthat::skip_if_not(
     file.exists(paths$r),

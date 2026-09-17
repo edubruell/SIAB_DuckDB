@@ -73,7 +73,7 @@ handle_parallel_episodes <- function(connection,
  # quelle, tage_bet and wage_imp together, and the kept row there is whatever
  # the database happens to return. `spell` closes it: the key persnr, spell,
  # begepi is unique, so spell is unique within a person and episode start. The
- # reference carries the same last key, as tests/fixtures/15_parallel_episodes_tiebreak.patch.
+ # reference carries the same last key, as 15_parallel_episodes_tiebreak.patch.
 
  # define job with longest tenure as main episode
   if(handling!="wage"){

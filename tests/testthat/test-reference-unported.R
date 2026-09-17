@@ -30,5 +30,5 @@ test_that("09_restrictions.do is ported", {
 # 17_clean_up.do needs no counterpart and no fixture. Its three working lines
 # are a sort, an xtset and a compress: none of them changes a value, and the R
 # pipeline's output is a database table rather than a Stata dataset, so there is
-# nothing for the port to reproduce. tests/fixtures/make_fixtures.do does not
+# nothing for the port to reproduce. make_fixtures.do does not
 # run it.

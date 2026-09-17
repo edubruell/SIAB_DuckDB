@@ -8,7 +8,7 @@
 # step was given an explicit tie-break. It takes running totals in `spell`
 # order, but after the episode split a spell that crosses a year boundary is one
 # row per year and all of them keep the same spell number, so Stata was free to
-# shuffle. See the header of tests/fixtures/make_fixtures.do.
+# shuffle. See the header of make_fixtures.do.
 
 bio_columns <- c(
   "azubi",     # apprenticeship flag

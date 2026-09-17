@@ -5,13 +5,22 @@
 #
 #  This is run_testdata.R broken open: the same steps in the same order over the
 #  same test database, but with a parquet dump of the touched columns written
-#  after each one. The dumps go to local_context/testdb/r_dump/ and stay
-#  untracked, because they can be regenerated from the test database in a few
-#  minutes. The Stata side, in tests/testthat/fixtures/, is the committed half.
+#  after each one. The dumps stay untracked, because they can be regenerated
+#  from the test database in a few minutes. The Stata side, in
+#  tests/testthat/fixtures/, is the committed half.
 #
 #    Rscript tests/fixtures/make_r_dumps.R
 #
-#  The comparison tests in tests/testthat/test-compare-*.R skip when these
+#  Three environment variables set the folders, each with a fallback:
+#
+#    SIAB_TEST_DB    the DuckDB file holding the test data
+#    SIAB_TEST_DATA  the folder holding the FDZ test data
+#    SIAB_R_DUMP     the folder these dumps are written to. The comparison
+#                    tests read the same variable, through
+#                    tests/testthat/helper-siab.R, so set it for both or
+#                    neither.
+#
+#  The comparison tests in tests/testthat/test-reference-*.R skip when these
 #  dumps are absent, so the fast synthetic suite still runs without them.
 #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,7 +41,7 @@ testdata <- folder_reference_factory(Sys.getenv(
   "SIAB_TEST_DATA",
   here("local_context", "testdata", "siab_7523_v2")
 ))
-dump_dir <- here("local_context", "testdb", "r_dump")
+dump_dir <- Sys.getenv("SIAB_R_DUMP", here("local_context", "testdb", "r_dump"))
 dir.create(dump_dir, showWarnings = FALSE, recursive = TRUE)
 
 if (!file.exists(db_file)) {
@@ -45,7 +54,7 @@ if (!"orig" %in% dbListTables(con)) {
   stop("The test database has no `orig` table: ", db_file)
 }
 
-# The same per-step column lists tests/fixtures/make_fixtures.R uses, with the
+# The same per-step column lists make_fixtures.R uses, with the
 # R names where they differ from the Stata ones. `jahr` is `year` in the port.
 key <- c("persnr", "spell", "begepi")
 
@@ -233,7 +242,7 @@ con |> merge_annual_bhp(log_file   = here("log", "07b_bhp_annual.log"),
 dump_step("11_merge_BHP")
 
 # The AKM files are fabricated, not delivered, so both sides have to read the
-# same two files or the comparison means nothing. tests/fixtures/make_synth_akm.do
+# same two files or the comparison means nothing. make_synth_akm.do
 # writes them into the Stata fixture run's orig folder and this reads them back.
 akm_dir <- here("local_context", "stata_fixtures", "orig")
 con |> merge_akm(log_file       = here("log", "07c_akm.log"),
@@ -261,7 +270,7 @@ dump_step("15_parallel_episodes")
 # 16_yearly_panel.do and 16_monthly_panel.do are alternatives: both start from
 # the step 15 data and the reference master calls neither. The step 15 state is
 # therefore kept aside here, so the monthly panel can be built from the same
-# input the yearly one was, exactly as tests/fixtures/make_fixtures.do reloads
+# input the yearly one was, exactly as make_fixtures.do reloads
 # the step 15 dump for it.
 dbExecute(con, "CREATE TABLE parallel_episodes AS SELECT * FROM data")
 

@@ -6,7 +6,7 @@
 # estimated once per window, so the five columns of each side arrive together.
 #
 # NEITHER SIDE OF THIS COMPARISON USES REAL AKM EFFECTS. No FDZ test product
-# carries them, so tests/fixtures/make_synth_akm.do fabricates both files from
+# carries them, so make_synth_akm.do fabricates both files from
 # the shape the FDZ methodology report describes, and the Stata reference run
 # and the R pipeline then read the same two fabricated files. The values are
 # normal draws with the documented dispersion and nothing else.

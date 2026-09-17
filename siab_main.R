@@ -23,8 +23,15 @@ here("functions") |>
 
 
 #Set folders
-dbfolder  <- folder_reference_factory("/Users/ebr/data/siab_db")
-rawdata   <- folder_reference_factory("/Users/ebr/data/siab_raw")
+#Two environment variables point at the data, each with a fallback:
+#  SIAB_DB_FOLDER   where the DuckDB database is written, default ~/data/siab_db
+#  SIAB_RAW_FOLDER  where the raw SIAB delivery sits, default ~/data/siab_raw
+dbfolder  <- folder_reference_factory(
+  Sys.getenv("SIAB_DB_FOLDER", path.expand("~/data/siab_db"))
+)
+rawdata   <- folder_reference_factory(
+  Sys.getenv("SIAB_RAW_FOLDER", path.expand("~/data/siab_raw"))
+)
 
 # Open DuckDB connection
 con <- dbConnect(duckdb::duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
