@@ -10,10 +10,10 @@ These are the Python arm's copy of tests/testthat/test-09b_monthly_panel.R,
 which pins the same arithmetic on the same two episodes, with a few cases added
 that the R file leaves to its fixture comparison. There is no fixture
 comparison on this side yet: the step reads `parallel_wage_imp`, which
-handle_parallel_episodes() builds out of the imputed wage, and
-10_wages_imputation.do is not ported here, so tests/pytest/make_py_dumps.py
-writes no 16_monthly_panel.parquet to hold against the committed Stata one.
-These tables are the whole of the step's coverage for now.
+handle_parallel_episodes() builds out of the imputed wage, and although the
+imputation is ported now, tests/pytest/make_py_dumps.py still writes no
+16_monthly_panel.parquet to hold against the committed Stata one. These tables
+are the whole of the step's coverage for now.
 """
 
 import datetime as dt

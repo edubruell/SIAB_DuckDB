@@ -6,11 +6,11 @@ simultaneously starting spells say about each other, keeps one of them as the
 main episode, and numbers what is left.
 
 There is no fixture comparison for this step yet. `wage_imp` comes out of
-10_wages_imputation.do, which the Python arm has not ported, so
-tests/pytest/make_py_dumps.py stops before step 15 and there is no
-15_parallel_episodes.parquet on this side to compare against the committed
-Stata one. Until that changes these hand-built tables are the only coverage the
-step has, so they carry the cases
+10_wages_imputation.do, which is ported now, but tests/pytest/make_py_dumps.py
+still stops before step 15, so there is no 15_parallel_episodes.parquet on this
+side to compare against the committed Stata one. Until that dump is written
+these hand-built tables are the only coverage the step has, so they carry the
+cases
 tests/testthat/test-reference-15_parallel_episodes.R makes against the
 reference: which row of a group survives, the four aggregates, and the zero a
 benefit-only group has to come out with rather than a missing.

@@ -1,12 +1,10 @@
 """
 The Python arm's pipeline, the counterpart of siab_main.R.
 
-Seventeen of the eighteen step functions are ported, and the pipeline below runs
-every one of them that the reference master calls. The imputation of
-right-censored wages is the exception: it needs a censored normal regression and
-is not ported, so the call is in place and commented out, and the two steps
-downstream of it are commented out with it. Uncomment all three once
-`impute_wages()` has a body.
+All eighteen step functions are ported, and the pipeline below runs every one of
+them that the reference master calls. The two merges that read files the FDZ
+only delivers on a separate request are the exception, and are commented out
+here exactly as the reference master switches them off.
 
 Three environment variables set the folders, each with a fallback:
 
@@ -28,6 +26,7 @@ import duckdb
 
 from siab.common import folder_reference_factory, read_table, write_table
 from siab.steps import (
+    build_yearly_panel,
     deflate_wages,
     drop_empty_columns,
     generate_biographic_variables,
@@ -37,6 +36,7 @@ from siab.steps import (
     generate_limit_marginal,
     generate_occupation_variables,
     handle_parallel_episodes,
+    impute_wages,
     merge_basic_bhp,
     reallocate_one_time_payments,
     restrict_observation_period,
@@ -105,11 +105,10 @@ def main() -> None:
     run(generate_limit_marginal, log_file=log_dir("05_wages_marginal.log"))
     run(deflate_wages, log_file=log_dir("06_wages_deflation.log"))
 
-    # The imputation of right-censored wages is not ported. `wage_imp` is what
-    # the parallel-episode step and both panel builders read, so those calls are
-    # commented out with it. See siab/steps/s07_wages_imputation.py.
-    #
-    # run(impute_wages, log_file=log_dir("07_wages_imputation.log"))
+    # The imputation draws a random term for every censored wage and sets no
+    # seed of its own, so two runs of the pipeline give two different wage_imp
+    # columns. Pass `seed=` to fix them.
+    run(impute_wages, log_file=log_dir("07_wages_imputation.log"))
 
     # 11_merge_BHP.do and 12_merge_AKM.do are switched off in the reference
     # master, because every file they read has to be requested from the FDZ on
@@ -121,12 +120,12 @@ def main() -> None:
     #     akm_estab_file=rawdata("SIAB_7523_v2_akm_estab.dta"),
     #     akm_pers_file=rawdata("SIAB_7523_v2_akm_pers.dta"),
     #     log_file=log_dir("07c_akm.log"))
-    #
-    # run(handle_parallel_episodes, handling="wage",
-    #     log_file=log_dir("08_parallel_episodes.log"))
-    # run(build_yearly_panel, cutoff_month=6, cutoff_day=30,
-    #     log_file=log_dir("09_yearly_panel.log"))
-    #
+
+    run(handle_parallel_episodes, handling="wage",
+        log_file=log_dir("08_parallel_episodes.log"))
+    run(build_yearly_panel, cutoff_month=6, cutoff_day=30,
+        log_file=log_dir("09_yearly_panel.log"))
+
     # 16_monthly_panel.do is an alternative to the yearly panel, not a step
     # after it: it cuts every episode into one row per calendar month and keeps
     # the month's 15th. Swap the call above for this one to build that panel.

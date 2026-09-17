@@ -6,15 +6,20 @@ check proves it, instead of a habit claiming it. Every step function is fed a
 LazyFrame and has to hand a LazyFrame back.
 
 The hole in this check is known and is not a hole in the rule: it does not see
-a `collect()` in the middle of a step that re-wraps its result. Six steps do
-collect mid-chain, and each one collects a summary rather than the data:
+a `collect()` in the middle of a step that re-wraps its result. Seven steps do
+collect mid-chain. Six of them collect a summary rather than the data:
 `drop_empty_columns` a null count per column, because which columns it returns
 is what the count decides; `generate_educ_variable` a tabulation for the log;
 `merge_basic_bhp`, `merge_annual_bhp` and `merge_akm` a uniqueness check on the
 using file and a match rate, both of which the reference's `merge` also
-computes; `build_monthly_panel` a row count it asserts on. That is recorded
-here so the next reader does not mistake the check for more than it is: what it
-proves is the boundary, not the interior.
+computes; `build_monthly_panel` a row count it asserts on.
+
+`impute_wages` is the seventh and the exception: it collects the data itself,
+once, at the top of the step. It maximises a censored normal likelihood per
+year/education/east cell in numpy, and there is no lazy expression for that. Its
+place here is the boundary check every other step gets, which is all this file
+ever proved. That is recorded so the next reader does not mistake the check for
+more than it is: what it proves is the boundary, not the interior.
 
 What it does prove, for every step in `siab.steps.__all__`:
 
@@ -53,6 +58,7 @@ from siab.steps import (
     generate_limit_marginal,
     generate_occupation_variables,
     handle_parallel_episodes,
+    impute_wages,
     merge_akm,
     merge_annual_bhp,
     merge_basic_bhp,
@@ -61,12 +67,10 @@ from siab.steps import (
     split_episodes,
 )
 
-# `impute_wages` is left out on purpose rather than skipped: the step is not
-# ported and raises NotImplementedError, so it has no plan to be lazy about.
-# tests/pytest/test_unported.py holds it to that, and the registry check at the
-# bottom of this file names it as the one exemption, so it comes back into the
-# check the day the exemption is deleted.
-NOT_PORTED = {"impute_wages"}
+# Every step in the package is covered. The set is kept because the registry
+# check below reads it, and because a step that has to be exempted again should
+# have to say so in one named place.
+NOT_PORTED: set[str] = set()
 
 # The dtype each column travels through the pipeline with, so that the frames
 # below only have to name the columns they need.
@@ -92,6 +96,13 @@ SCHEMA: dict[str, pl.DataType] = {
     "tage_erw": pl.Int32,
     "tage_lst": pl.Int32,
     "parallel_benefits": pl.Int32,
+    "frau": pl.Int32,
+    "teilzeit": pl.Int32,
+    "marginal": pl.Int32,
+    "educ": pl.Int32,
+    "cpi": pl.Float64,
+    "wage_defl": pl.Float64,
+    "limit_assess_defl": pl.Float64,
     "tentgelt": pl.Float64,
     "wage_imp": pl.Float64,
     "limit_marginal": pl.Float64,
@@ -177,9 +188,35 @@ def deflation_builder(_: Path) -> tuple[pl.LazyFrame, dict]:
                  limit_marginal=[10.0], limit_assess=[300.0]), {}
 
 
+def imputation_builder(_: Path) -> tuple[pl.LazyFrame, dict]:
+    """Two BEH spells in one imputation cell, one of them above the ceiling.
+
+    The cell is far too thin to fit, which is the point: the step has to hand
+    back a plan either way, and the unfittable branch is the one that would
+    otherwise only ever run on real data.
+    """
+    return frame(
+        persnr=[1, 2],
+        spell=[1, 1],
+        betnr=[10, 10],
+        quelle=[1, 1],
+        year=[2000, 2000],
+        age=[30, 45],
+        frau=[0, 1],
+        teilzeit=[0, 0],
+        tage_job=[100, 900],
+        educ=[2, 2],
+        east=[0, 0],
+        marginal=[0, 0],
+        cpi=[100.0, 100.0],
+        wage_defl=[80.0, 400.0],
+        limit_assess_defl=[300.0, 300.0],
+    ), {"seed": 123}
+
+
 def parallel_builder(_: Path) -> tuple[pl.LazyFrame, dict]:
-    # `wage_imp` would come from the unported imputation; the value below is
-    # arbitrary and only has to be there for the sort to have a key.
+    # `wage_imp` comes from the imputation; the value below is arbitrary and
+    # only has to be there for the sort to have a key.
     return frame(
         persnr=[1],
         spell=[1],
@@ -300,6 +337,7 @@ REGISTRY: list[tuple[Callable, Builder]] = [
     (generate_limit_assess, assessment_ceiling_builder),
     (generate_limit_marginal, marginal_builder),
     (deflate_wages, deflation_builder),
+    (impute_wages, imputation_builder),
     (merge_annual_bhp, annual_bhp_builder),
     (merge_akm, akm_builder),
     (handle_parallel_episodes, parallel_builder),

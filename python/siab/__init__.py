@@ -6,11 +6,11 @@ A second reimplementation of the Stüber-Dauth-Eppelsheimer SIAB preparation
 answers to. The two arms are independent readings of one reference; neither is
 the specification for the other.
 
-Seventeen of the eighteen step functions are ported. The one that is not is the
-imputation of right-censored wages, which needs a censored normal regression:
-`impute_wages()` raises `NotImplementedError` and says why. Every step has the
-same shape, a function that takes a polars LazyFrame and hands one back, with
-DuckDB owning the table in between.
+All eighteen step functions are ported. Every step has the same shape, a
+function that takes a polars LazyFrame and hands one back, with DuckDB owning
+the table in between. `impute_wages()` is the one that departs from it inside:
+it collects the data, because a censored normal regression per cell is not a
+polars expression.
 """
 
 from siab.steps import *  # noqa: F401,F403

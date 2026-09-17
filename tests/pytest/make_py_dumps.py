@@ -10,9 +10,8 @@ half, and it is the half both arms answer to.
 
     uv run python ../tests/pytest/make_py_dumps.py
 
-The chain stops at 12_merge_AKM. The wage imputation is not ported, and
-15_parallel_episodes and both panels read the imputed wage it would produce, so
-those three dumps wait on it. See siab/steps/s07_wages_imputation.py.
+The chain stops at 12_merge_AKM. 15_parallel_episodes and both panels read the
+imputed wage and are not dumped yet; their comparisons are still to be written.
 
 Six environment variables set the folders, each with a fallback:
 
@@ -55,6 +54,7 @@ from siab.steps import (  # noqa: E402
     generate_limit_assess,
     generate_limit_marginal,
     generate_occupation_variables,
+    impute_wages,
     merge_akm,
     merge_annual_bhp,
     merge_basic_bhp,
@@ -88,6 +88,10 @@ TOUCHED = {
     "08_wages_deflation": ["tentgelt", "cpi", "wage_defl",
                            "limit_marginal_defl", "limit_assess_defl"],
     "09_restrictions": [],
+    # The same four columns make_r_dumps.R takes. quelle rides along because the
+    # imputation only ever touches the employment history, and cens is flagged 0
+    # rather than missing off it, which a comparison has to be able to see.
+    "10_wages_imputation": ["quelle", "cens", "wage", "wage_imp"],
     # 11_merge_BHP.do merges five files, and the columns below are everything the
     # test delivery's versions of them carry. `besch` is the one column two of the
     # files share, which is where the merges' `update` option does real work.
@@ -257,12 +261,16 @@ def main() -> None:
     # reason: the step imposes one project's sample cut.
     dump_step(con, "09_restrictions", dump_dir)
 
-    # 10_wages_imputation.do would run here. It is not ported, so the chain
-    # carries on without it. The two merges below read only establishment and
-    # person identifiers, and the imputation changes no key and drops no row, so
-    # the dumps they take stay comparable against the Stata fixtures.
-    # 15_parallel_episodes and both panels do read the imputed wage, which is
-    # why the chain stops after 12_merge_AKM.
+    # impute_wages() draws a random term for every censored wage. The seed here
+    # is the dump's, not the pipeline's: it makes this file reproducible without
+    # changing what main.py does. Unlike the R arm's, this side sorts each cell
+    # on persnr and spell before it draws, so the seed determines the draws
+    # rather than only the sequence they are taken from. It does not bring them
+    # any closer to Stata's, which come from a different generator seeded inside
+    # the reference step, so wage_imp can only ever be compared distributionally.
+    run(con, impute_wages, seed=123,
+        log_file=log_dir("py_07_wages_imputation.log"))
+    dump_step(con, "10_wages_imputation", dump_dir)
 
     # 11_merge_BHP.do reads the yearly establishment panel and the four extension
     # files straight out of the delivery, so this side reads the same folder the
@@ -290,7 +298,7 @@ def main() -> None:
 
     print(f"\nPython dumps written to {dump_dir}")
     print("15_parallel_episodes, 16_yearly_panel and 16_monthly_panel are not "
-          "dumped: they read the imputed wage, which is not ported.")
+          "dumped yet: their comparisons are still to be written.")
     con.close()
 
 
