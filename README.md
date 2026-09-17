@@ -42,6 +42,7 @@ The file `stata_to_db_batch_read.R` in the project main folder contains all code
 3. **Data preparation workflow**
 `siab_main.R` launches the preparation workflow. The code installs and loads the necessary packages with the `pacman` package manager and its `p_load()` function. It then connects to a duckdb database, keeps the employment history, generates the year and age variables, and runs the following steps from the `functions` folder.
 
+- `drop_empty_columns()`: Drops every column that is missing on all rows, as the reference master does once the sources are restricted. Pass `drop = FALSE` to keep them.
 - `split_episodes()`: Splits the episodes in the SIAB data.
 - `reallocate_one_time_payments()`: Moves one-time payments onto the episodes they belong to.
 - `generate_biographic_variables()`: Generates biographical variables.

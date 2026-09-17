@@ -9,9 +9,16 @@ p_load(readstata13,
 #Load common functions
 source(here("functions","00_common_functions.R"))
 
-#Set folders - Add
-rawdata <- folder_reference_factory("/share/raw_siab")
-dbfolder <- folder_reference_factory("/share/duckdb/")
+#Set folders
+#Two environment variables point at the data, each with a fallback:
+#  SIAB_RAW_FOLDER  where the raw SIAB delivery sits, default ~/data/siab_raw
+#  SIAB_DB_FOLDER   where the DuckDB database is written, default ~/data/siab_db
+rawdata   <- folder_reference_factory(
+  Sys.getenv("SIAB_RAW_FOLDER", path.expand("~/data/siab_raw"))
+)
+dbfolder  <- folder_reference_factory(
+  Sys.getenv("SIAB_DB_FOLDER", path.expand("~/data/siab_db"))
+)
 
 #Setup an empty database
 con <- dbConnect(duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
@@ -20,12 +27,31 @@ con <- dbConnect(duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
 dbDisconnect(con, shutdown = TRUE)
 
 
+#The 7523 v2 delivery keys on persnr_siab and betnr_siab; the reference, the
+#pipeline and every fixture call them persnr and betnr, so the delivery is
+#renamed here. A file that already carries the short names passes through
+#untouched, which is what an older delivery such as the 7514 v1 needs.
+rename_keys <- function(data){
+  names(data)[names(data) == "persnr_siab"] <- "persnr"
+  names(data)[names(data) == "betnr_siab"]  <- "betnr"
+  data
+}
+
+#Which spelling of the person key the delivery uses, read off a single row
+person_key <- function(siab_file){
+  columns <- siab_file |>
+    read.dta13(convert.factors = FALSE, select.rows = c(1, 1)) |>
+    names()
+  if ("persnr_siab" %in% columns) "persnr_siab" else "persnr"
+}
+
 # Convert the base data to a DuckDB database 
 convert_to_duckdb <- function(siab_file, batch_size) {
   cat("Generate batches from persnr column of siab \n")
   # Read the persnr column of the STATA file and get row splits along the batch-size that are clean splits between persnr  
   read_rows <- siab_file |>
-    read.dta13(convert.factors = FALSE, select.cols = "persnr") |>
+    read.dta13(convert.factors = FALSE, select.cols = person_key(siab_file)) |>
+    rename_keys() |>
     group_by(persnr) |>
     count() |>
     ungroup() |>
@@ -48,6 +74,7 @@ convert_to_duckdb <- function(siab_file, batch_size) {
     batch_data <- read.dta13(file = siab_file,
                              convert.factors = FALSE,
                              convert.dates = TRUE, select.rows = c(min_r, max_r)) |>
+      rename_keys() |>
       mutate(pn_batch=r)
     
     # Open DuckDB connection

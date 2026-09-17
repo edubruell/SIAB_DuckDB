@@ -177,6 +177,13 @@ tbl(con, "orig") |>
 #  The steps, dumped one at a time
 #====================================================================
 
+# The master drops every variable that holds only missings here, and
+# make_fixtures.do keeps that position, so the R side does it too. It can only
+# drop a subset of what the reference drops, because Stata counts the empty
+# string as missing and this port counts only NULL, so no compared column can
+# go missing on one side alone.
+con |> drop_empty_columns(log_file = here("log", "00b_drop_empty_columns.log"))
+
 con |> split_episodes(log_file = here("log", "01_split_episodes.log"))
 dump_step("01_split_episodes")
 
