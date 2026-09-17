@@ -21,3 +21,9 @@ README.html
 # Run logs, written by every pipeline pass. The folder is tracked, its contents are not.
 log/*
 !log/.gitkeep
+
+# Python arm
+python/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
