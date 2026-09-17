@@ -67,22 +67,27 @@ SORT_ORDERS = {
 def _null_placement(descending: list[bool]) -> list[bool]:
     """Where a missing value goes in a `gsort`, key by key.
 
-    Stata stores a missing value as a number larger than any other, so an
-    ascending key puts it last and a descending key puts it first. polars
-    places nulls wherever `nulls_last` says, whichever way the key runs, so
-    the two have to be tied together by hand: `nulls_last = not descending`.
+    Last, every time, whichever way the key runs. This is worth stating
+    because the obvious reasoning gives the wrong answer: Stata stores a
+    missing value as a number larger than any other, so `-tage_bet` looks as
+    though it should put a missing tenure first. `gsort` does not work that
+    way. Its default is `mlast`, which holds missing values back to the end
+    regardless of the direction of the sort, and only `gsort -x, mfirst`
+    brings them to the front. The reference's line carries no such option:
 
-    This matters here and is not cosmetic. `tage_bet` and `wage_imp` are blank
-    outside the employment history, and `wage_imp` can be blank on an
-    employment spell whose wage never arrived. Under `handling = "wage"` such a
-    spell is the first row of its group in Stata and therefore the main
-    episode, because its missing wage outranks every reported one. The R arm
-    reads this differently: DuckDB places nulls last in both directions
-    (`default_null_order = NULLS_LAST`), so there the same spell sorts to the
-    back. The fixture this step is compared against is Stata's, so Stata's
-    order is what is reproduced.
+        gsort persnr begepi quelle -tage_bet -wage_imp spell
+
+    Checked against Stata MP 17 rather than reasoned about, because the two
+    readings pick a different main episode on real data. `tage_bet` and
+    `wage_imp` are blank outside the employment history, and `wage_imp` can be
+    blank on an employment spell whose wage never arrived, so the spells this
+    decides between exist in the delivery.
+
+    DuckDB's `default_null_order` is also NULLS_LAST in both directions, so the
+    R arm reaches the same place with a bare `desc()` and the two arms agree
+    here, each against the same reference.
     """
-    return [not desc for desc in descending]
+    return [True for _ in descending]
 
 
 def handle_parallel_episodes(frame: pl.LazyFrame,

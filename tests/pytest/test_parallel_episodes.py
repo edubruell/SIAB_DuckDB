@@ -15,12 +15,13 @@ tests/testthat/test-reference-15_parallel_episodes.R makes against the
 reference: which row of a group survives, the four aggregates, and the zero a
 benefit-only group has to come out with rather than a missing.
 
-The one case that is neither arm's fixture nor the R arm's behaviour is the
-missing `wage_imp` under handling = "wage". Stata sorts a missing above every
-number, so a spell with no imputed wage is the first row of its group under the
-descending sort and becomes the main episode. DuckDB places nulls last in both
-directions, so the R arm keeps a different row there. This port follows Stata,
-because Stata is what the fixture was made with; the test below pins it.
+One case is worth naming because the obvious reasoning gets it wrong. Stata
+stores a missing value as a number larger than any other, which suggests that
+`gsort -wage_imp` should put a spell with no imputed wage first and make it the
+main episode. It does not. `gsort` defaults to `mlast`, holding missing values
+back to the end whichever way the key runs, and the reference passes no
+`mfirst`. Checked against Stata MP 17, because the two readings keep a
+different episode on real data. The test below pins the checked behaviour.
 """
 
 import datetime as dt
@@ -120,13 +121,14 @@ def test_the_employment_spell_beats_the_benefit_spell_whatever_the_sort(handling
     assert out["quelle"][0] == 1
 
 
-# Stata sorts a missing value above every number, so under a descending key the
-# missing comes first. `_null_placement()` in the step ties polars' nulls_last
-# to the direction for exactly this case: a spell whose imputed wage never
-# arrived outranks every reported one and becomes the main episode. This is the
-# one place the two arms are known to differ, and the Python one is the one that
-# matches the reference.
-def test_a_missing_imputed_wage_outranks_every_reported_one():
+# `gsort` holds a missing value back to the end whichever way the key runs,
+# because its default is `mlast` and the reference passes no `mfirst`. So a
+# spell whose imputed wage never arrived sorts behind every reported one and
+# loses, rather than winning on the strength of missing being the largest
+# number. `_null_placement()` in the step is what pins polars to that, and this
+# is the case that would silently flip if someone rewrote it from first
+# principles.
+def test_a_missing_imputed_wage_loses_to_every_reported_one():
     frame = group(
         spell=[1, 2],
         quelle=[1, 1],
@@ -137,18 +139,19 @@ def test_a_missing_imputed_wage_outranks_every_reported_one():
     out = handle_parallel_episodes(frame, handling="wage").collect()
 
     assert out.height == 1
-    assert out["wage_imp"][0] is None, (
-        "the spell with no imputed wage has to win the descending sort, as it "
-        "does in Stata"
+    assert out["wage_imp"][0] == 110.0, (
+        "the spell with no imputed wage sorts last under gsort's mlast "
+        "default, so the reported wage wins"
     )
-    assert out["tage_bet"][0] == 10
+    assert out["tage_bet"][0] == 200
     # The missing contributes nothing to the total, as egen total() has it.
     assert out["parallel_wage_imp"][0] == 110.0
 
 
-# The same rule read the other way round. `quelle` is an ascending key, so a
-# missing one sorts last there, which is what shows the null placement follows
-# each key's own direction rather than being set once for the whole sort.
+# The same rule on an ascending key. `quelle` leads the sort, and a missing one
+# goes last there too, so a spell with no source loses however large its wage or
+# tenure. Ascending is the direction where the two readings agree, which is why
+# it is the descending case above that had to be checked against Stata.
 @pytest.mark.parametrize("handling", ["wage", "tenure"])
 def test_a_missing_source_sorts_last_under_the_ascending_key(handling):
     frame = group(
@@ -162,8 +165,8 @@ def test_a_missing_source_sorts_last_under_the_ascending_key(handling):
 
     assert out.height == 1
     assert out["quelle"][0] == 1, (
-        "a missing quelle is above every number under an ascending key, so the "
-        "spell carrying it goes last whatever its wage or tenure"
+        "a missing quelle sorts last, so the spell carrying it goes to the "
+        "back whatever its wage or tenure"
     )
     # A missing quelle is neither an employment nor a benefit spell.
     assert out["parallel_jobs"][0] == 1
