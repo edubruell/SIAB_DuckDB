@@ -6,21 +6,16 @@ A second reimplementation of the Stüber-Dauth-Eppelsheimer SIAB preparation
 answers to. The two arms are independent readings of one reference; neither is
 the specification for the other.
 
-Three of the sixteen reference steps are ported. The rest follow the same shape:
-a function that takes a polars LazyFrame and hands one back, with DuckDB owning
-the table in between.
+Seventeen of the eighteen step functions are ported. The one that is not is the
+imputation of right-censored wages, which needs a censored normal regression:
+`impute_wages()` raises `NotImplementedError` and says why. Every step has the
+same shape, a function that takes a polars LazyFrame and hands one back, with
+DuckDB owning the table in between.
 """
 
-from siab.steps import (
-    generate_biographic_variables,
-    reallocate_one_time_payments,
-    split_episodes,
-)
+from siab.steps import *  # noqa: F401,F403
+from siab.steps import __all__ as _step_names
 
-__all__ = [
-    "split_episodes",
-    "reallocate_one_time_payments",
-    "generate_biographic_variables",
-]
+__all__ = list(_step_names)
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

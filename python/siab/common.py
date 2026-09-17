@@ -32,9 +32,11 @@ from typing import Callable, Iterable
 import duckdb
 import numpy as np
 import polars as pl
+import pyreadstat
 
 __all__ = [
     "folder_reference_factory",
+    "classifications_dir",
     "stata_float",
     "pl_stata_float",
     "pl_stata_gt",
@@ -42,6 +44,7 @@ __all__ = [
     "step_logger",
     "read_table",
     "write_table",
+    "read_stata",
     "assert_empty",
 ]
 
@@ -70,6 +73,18 @@ def folder_reference_factory(target_folder: str | os.PathLike) -> Callable[..., 
         return base.joinpath(*parts)
 
     return reference
+
+
+def classifications_dir() -> Path:
+    """The folder holding the shared classification csv files.
+
+    The counterpart of the R arm's `here("classifications", ...)`. The tables
+    are language-neutral data and both arms read the same ones, so the folder
+    sits above both. `SIAB_CLASSIFICATIONS` overrides it for a run that keeps
+    its inputs somewhere else.
+    """
+    fallback = Path(__file__).resolve().parents[2] / "classifications"
+    return Path(os.environ.get("SIAB_CLASSIFICATIONS", fallback))
 
 
 def stata_float(x):
@@ -184,6 +199,32 @@ def write_table(connection: duckdb.DuckDBPyConnection,
     connection.execute(f"CREATE OR REPLACE TABLE {table} AS SELECT * FROM _siab_write")
     connection.unregister("_siab_write")
     return connection
+
+
+def read_stata(path: str | os.PathLike,
+               columns: Iterable[str] | None = None,
+               rename: dict[str, str] | None = None) -> pl.LazyFrame:
+    """Read a Stata file into a polars LazyFrame.
+
+    The counterpart of the R arm's `read.dta13()` calls. Every file the prep
+    merges in arrives as a .dta, and polars reads no such thing, so pyreadstat
+    reads it into pandas and polars takes it from there. Reading a named subset
+    of the columns matters on the yearly establishment panel, where the files
+    are wide and the merge wants three columns out of sixty.
+
+    `rename` maps the delivery's names onto the prepared SIAB's: the files key
+    on `betnr_siab` and `jahr`, and the pipeline uses `betnr` and `year`.
+    """
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"Stata file not found: {path}")
+
+    usecols = list(columns) if columns is not None else None
+    pandas_frame, _ = pyreadstat.read_dta(str(path), usecols=usecols)
+    frame = pl.from_pandas(pandas_frame)
+    if rename:
+        frame = frame.rename({k: v for k, v in rename.items() if k in frame.columns})
+    return frame.lazy()
 
 
 def assert_empty(frame: pl.LazyFrame, predicate: pl.Expr, message: str) -> int:
