@@ -14,7 +14,7 @@ same one:
                        normal regression, which Stata fits with `intreg` and the
                        R arm with `survival::survreg`. No drop-in exists in the
                        Python scientific stack, so the step raises rather than
-                       guessing. See siab/steps/wages_imputation.py.
+                       guessing. See siab/steps/s07_wages_imputation.py.
   15_parallel_episodes these three read `wage_imp`, which the imputation would
   16_yearly_panel      produce, so they wait on it: make_py_dumps.py stops after
   16_monthly_panel     12_merge_AKM and writes no dump for them. All three do

@@ -1,4 +1,4 @@
-# Tests for generate_industry_variables() in functions/03c_industries.R.
+# Tests for generate_industry_variables() in R/functions/03c_industries.R.
 #
 # The step maps the time-consistent three-digit WZ93 industry `w93_3_gen` onto
 # two one-digit classifications, following 13_industries_1digit.do: the

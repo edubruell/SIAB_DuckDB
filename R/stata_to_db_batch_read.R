@@ -7,7 +7,7 @@ p_load(readstata13,
        here)
 
 #Load common functions
-source(here("functions","00_common_functions.R"))
+source(here("R", "functions", "00_common_functions.R"))
 
 #Set folders
 #Two environment variables point at the data, each with a fallback:

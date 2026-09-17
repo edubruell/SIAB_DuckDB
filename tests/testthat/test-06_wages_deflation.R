@@ -1,4 +1,4 @@
-# Tests for deflate_wages() in functions/06_wages_deflation.R.
+# Tests for deflate_wages() in R/functions/06_wages_deflation.R.
 #
 # The step joins the consumer price index on year and divides three money
 # variables by it, following 08_wages_deflation.do:

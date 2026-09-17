@@ -1,7 +1,7 @@
 """
 Common helpers for the Python arm.
 
-The counterpart of functions/00_common_functions.R. Everything a step needs
+The counterpart of R/functions/00_common_functions.R. Everything a step needs
 that is not the step itself lives here: the folder helper, Stata's float
 precision, Stata's ordering of missing values, the logger, and the two
 functions that move a table between DuckDB and polars.

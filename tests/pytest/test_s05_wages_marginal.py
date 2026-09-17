@@ -59,7 +59,7 @@ def test_the_flag_is_never_missing_and_follows_statas_missing_value_ordering():
     # SIAB and sorts above everything, so it never compares as at or below the
     # threshold and stays 0, even when the threshold is missing too. A missing
     # threshold with a real wage goes the other way and gives 1. Reproduced on
-    # purpose; see siab/steps/wages_marginal.py.
+    # purpose; see siab/steps/s05_wages_marginal.py.
     out = generate_limit_marginal(frame(
         persnr=[1, 2, 3, 4],
         year=[2000, 2025, 2025, 2000],

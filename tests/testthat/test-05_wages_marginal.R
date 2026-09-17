@@ -1,4 +1,4 @@
-# Tests for generate_limit_marginal() in functions/05_wages_marginal.R.
+# Tests for generate_limit_marginal() in R/functions/05_wages_marginal.R.
 #
 # The step joins the marginal part-time income threshold
 # (Geringfuegigkeitsgrenze) on year and Rechtskreis, then flags a spell as
@@ -30,7 +30,7 @@ test_that("the flag is never missing, and follows Stata's missing-value ordering
   # SIAB and sorts above everything, so it never compares as at or below the
   # threshold and stays 0, even when the threshold is missing too. A missing
   # threshold with a real wage goes the other way and gives 1. Reproduced on
-  # purpose; see functions/05_wages_marginal.R.
+  # purpose; see R/functions/05_wages_marginal.R.
   connection <- siab_db(data.frame(
     persnr   = 1:4,
     year     = c(2000L, 2025L, 2025L, 2000L),

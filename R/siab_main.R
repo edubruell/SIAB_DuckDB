@@ -17,9 +17,9 @@ p_load(dplyr,  #For tidyverse compliant code
        )
 
 #Load common functions
-here("functions") |>
+here("R", "functions") |>
   dir() |>
-  walk(~source(here("functions",.x)))
+  walk(~source(here("R", "functions", .x)))
 
 
 #Set folders

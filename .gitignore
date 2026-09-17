@@ -3,27 +3,23 @@
 .RData
 .Ruserdata
 .DS_Store
+*.Rproj
 
-# Working material, never committed
+# Working material, never committed. Everything untracked lives here.
 local_context/
-local/
 CLAUDE.md
 
-# Test data and build artefacts
+# Databases and build artefacts
 *.duckdb
 *.duckdb.wal
-test_data_ein_bet.dta
-test_data_job.dta
 README.html
 
-# Stata's batch log, dropped in the working directory by -b do
-/make_fixtures.log
 # Run logs, written by every pipeline pass. The folder is tracked, its contents are not.
 log/*
 !log/.gitkeep
 
 # Python arm
-python/.venv/
+.venv/
 __pycache__/
 *.pyc
 .pytest_cache/

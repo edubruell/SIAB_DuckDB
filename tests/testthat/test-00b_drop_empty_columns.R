@@ -1,4 +1,4 @@
-# Tests for drop_empty_columns() in functions/00b_drop_empty_columns.R.
+# Tests for drop_empty_columns() in R/functions/00b_drop_empty_columns.R.
 #
 # 00_master_SIAB.do drops every variable that holds only missings, in a loop
 # over `varlist _all` guarded by `capture assert missing(`var')`, run right

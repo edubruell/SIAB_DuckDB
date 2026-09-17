@@ -107,7 +107,7 @@ def main() -> None:
 
     # The imputation of right-censored wages is not ported. `wage_imp` is what
     # the parallel-episode step and both panel builders read, so those calls are
-    # commented out with it. See siab/steps/wages_imputation.py.
+    # commented out with it. See siab/steps/s07_wages_imputation.py.
     #
     # run(impute_wages, log_file=log_dir("07_wages_imputation.log"))
 

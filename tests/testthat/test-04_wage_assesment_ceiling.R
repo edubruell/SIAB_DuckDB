@@ -1,4 +1,4 @@
-# Tests for generate_limit_assess() in functions/04_wage_assesment_ceiling.R.
+# Tests for generate_limit_assess() in R/functions/04_wage_assesment_ceiling.R.
 #
 # The step builds the Rechtskreis dummy `east` from the establishment's federal
 # state `ao_bula` and then joins the contribution assessment ceiling

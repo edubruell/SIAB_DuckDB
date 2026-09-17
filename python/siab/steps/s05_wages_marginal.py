@@ -52,7 +52,7 @@ def generate_limit_marginal(frame: pl.LazyFrame,
 
     # Same pre-1992 rule as the assessment ceiling: 07_wages_marginal.do assigns
     # the threshold on the year alone until 1991 and only conditions on east from
-    # 1992 on. See siab/steps/wage_assessment_ceiling.py.
+    # 1992 on. See siab/steps/s04_wage_assessment_ceiling.py.
     frame = frame.with_columns(
         east_lookup=pl.when(pl.col("year") < 1992)
         .then(pl.lit(0, dtype=pl.Int64))

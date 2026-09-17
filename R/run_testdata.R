@@ -26,9 +26,9 @@ library("pacman")
 p_load(dplyr, dbplyr, readr, tidyr, purrr, duckdb, stringr, glue, scales,
        data.table, readstata13, here, logger, survival)
 
-here("functions") |>
+here("R", "functions") |>
   dir() |>
-  walk(~source(here("functions", .x)))
+  walk(~source(here("R", "functions", .x)))
 
 db_file <- Sys.getenv(
   "SIAB_TEST_DB",

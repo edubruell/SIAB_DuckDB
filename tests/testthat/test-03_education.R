@@ -1,4 +1,4 @@
-# Tests for generate_educ_variable() in functions/03_education.R.
+# Tests for generate_educ_variable() in R/functions/03_education.R.
 #
 # The step recodes the FDZ's imputed training variable `ausbildung_imp` into
 # three broad groups, following 05_educ_broad.do:

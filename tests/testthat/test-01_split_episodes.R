@@ -1,4 +1,4 @@
-# Tests for split_episodes() in functions/01_split_episodes.R.
+# Tests for split_episodes() in R/functions/01_split_episodes.R.
 #
 # A SIAB spell can run over a year boundary. The step cuts every such spell
 # into one row per calendar year, keeping the original dates in begepi_orig

@@ -12,7 +12,7 @@ half, and it is the half both arms answer to.
 
 The chain stops at 12_merge_AKM. The wage imputation is not ported, and
 15_parallel_episodes and both panels read the imputed wage it would produce, so
-those three dumps wait on it. See siab/steps/wages_imputation.py.
+those three dumps wait on it. See siab/steps/s07_wages_imputation.py.
 
 Six environment variables set the folders, each with a fallback:
 

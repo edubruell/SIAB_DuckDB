@@ -1,6 +1,6 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# Build the three statutory lookup tables used by functions/04, 05 and 06.
+# Build the three statutory lookup tables used by R/functions/04, 05 and 06.
 #
 # Writes:
 #   - wa_ceiling.csv      year, east, limit_assess    contribution assessment

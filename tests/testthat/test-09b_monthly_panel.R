@@ -1,4 +1,4 @@
-# Tests for build_monthly_panel() in functions/09b_monthly_panel.R.
+# Tests for build_monthly_panel() in R/functions/09b_monthly_panel.R.
 #
 # The step follows 16_monthly_panel.do: total the days and earnings of each
 # calendar year, cut every episode into one row per calendar month, keep the row

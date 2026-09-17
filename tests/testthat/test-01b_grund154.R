@@ -1,4 +1,4 @@
-# Tests for reallocate_one_time_payments() in functions/01b_grund154.R.
+# Tests for reallocate_one_time_payments() in R/functions/01b_grund154.R.
 #
 # The step ports 02_grund154.do. A spell with deregistration reason 154 holds a
 # one-time payment reported apart from the employment spell it belongs to. The
