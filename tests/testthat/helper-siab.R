@@ -3,7 +3,7 @@
 #  Shared setup for the test suite.
 #
 #  Sourced by testthat before any test-*.R file. It loads the packages the
-#  preparation steps need, sources functions/ the same way siab_main.R does,
+#  preparation steps need, sources R/functions/ the same way siab_main.R does,
 #  and defines the helpers that give a step function a small in-memory DuckDB
 #  to work on.
 #
@@ -24,9 +24,9 @@ suppressPackageStartupMessages({
 
 # The step functions are sourced into the global environment, exactly as
 # siab_main.R and run_testdata.R do it.
-here("functions") |>
+here("R", "functions") |>
   dir() |>
-  purrr::walk(~source(here("functions", .x)))
+  purrr::walk(~source(here("R", "functions", .x)))
 
 #====================================================================
 #  A disposable database for one test
@@ -35,7 +35,7 @@ here("functions") |>
 # compute_and_overwrite() reads the connection from a variable called `con`
 # in the global environment rather than from an argument. A test therefore
 # has to put its own connection there and take it away again afterwards.
-# That coupling is a known wart in functions/00_common_functions.R; the helper
+# That coupling is a known wart in R/functions/00_common_functions.R; the helper
 # works around it instead of hiding it.
 
 siab_db <- function(data, env = parent.frame()) {

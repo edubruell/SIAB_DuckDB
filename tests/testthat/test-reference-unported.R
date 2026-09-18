@@ -17,6 +17,10 @@
 # The master's source restriction was ported on 2026-09-16, so the R output is
 # no longer a superset: both sides carry 505,050 rows on the test data. The
 # row-set equality is checked in test-reference-01_split_episodes.R.
+#
+# The master's loop over all-missing variables was ported on 2026-09-17, into
+# drop_empty_columns(). It changes no value, only the column set, so it has no
+# fixture comparison; its tests live in test-00b_drop_empty_columns.R.
 
 test_that("09_restrictions.do is ported", {
   skip(paste(

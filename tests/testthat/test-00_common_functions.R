@@ -1,4 +1,4 @@
-# Tests for the small helpers in functions/00_common_functions.R.
+# Tests for the small helpers in R/functions/00_common_functions.R.
 
 test_that("%nin% is the negation of %in%", {
   expect_equal(c(1, 2, 3) %nin% c(2, 4), c(TRUE, FALSE, TRUE))

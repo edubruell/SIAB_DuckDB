@@ -1,4 +1,4 @@
-# Tests for restrict_observation_period() in functions/03d_observation_period.R.
+# Tests for restrict_observation_period() in R/functions/03d_observation_period.R.
 #
 # 00_master_SIAB.do keeps the episodes whose year lies in the observation
 # period, `keep if inrange(jahr,${minYear},${maxYear})`, and runs it after the

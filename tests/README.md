@@ -18,14 +18,14 @@ testthat::test_file("tests/testthat/test-06_wages_deflation.R")
 ```
 
 `tests/testthat/helper-siab.R` is sourced first. It loads the packages the
-preparation needs, sources `functions/` the way `siab_main.R` does, and defines
+preparation needs, sources `R/functions/` the way `R/siab_main.R` does, and defines
 the helpers that hand a step function a small in-memory DuckDB to work on.
 
 ## The two kinds of test
 
 **Synthetic tests** build a handful of rows in memory, run one step function
 over them and check the result against values worked out by hand. They cover the
-helpers in `functions/00_common_functions.R`, the lookup tables in
+helpers in `R/functions/00_common_functions.R`, the lookup tables in
 `classifications/`, and the behaviour of each step at its edges. A missing code,
 a year outside the statutory table, a spell that runs over a year boundary.
 These are the fast half and they always run.
@@ -73,9 +73,9 @@ half a minute.
 Rscript tests/fixtures/make_r_dumps.R
 ```
 
-This is `run_testdata.R` broken open. The same steps in the same order over the
+This is `R/run_testdata.R` broken open. The same steps in the same order over the
 same test database, with a parquet dump of the touched columns after each one.
-Write the database first with `stata_to_db_batch_read.R`.
+Write the database first with `R/stata_to_db_batch_read.R`.
 
 Three environment variables set the folders, each with a fallback.
 `SIAB_TEST_DB` is the DuckDB file, `SIAB_TEST_DATA` the folder holding the FDZ

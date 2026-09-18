@@ -5,7 +5,7 @@
 #  This repo is a collection of preparation scripts, not an R package, so the
 #  tests are run with test_dir() over tests/testthat rather than with
 #  devtools::test(). Everything under tests/testthat/helper-*.R is sourced
-#  first; that is where functions/ gets loaded and where the in-memory test
+#  first; that is where R/functions/ gets loaded and where the in-memory test
 #  database is built.
 #
 #  Run the whole suite from the project root:

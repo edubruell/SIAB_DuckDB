@@ -1,4 +1,4 @@
-# Tests for generate_occupation_variables() in functions/02_occupations.R.
+# Tests for generate_occupation_variables() in R/functions/02_occupations.R.
 #
 # The step joins two crosswalks onto the 3-digit SIAB occupation code `beruf`:
 # the 2-digit KldB-88 Berufsgruppe (occ_kldb88_2) and the Blossfeld

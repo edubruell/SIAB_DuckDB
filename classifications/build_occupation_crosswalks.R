@@ -1,6 +1,6 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
-# Build the occupation crosswalks used by functions/02_occupations.R
+# Build the occupation crosswalks used by R/functions/02_occupations.R
 #
 # Writes:
 #   - kldb88_beruf.csv         beruf (KldB-88 Berufsordnung) with its German and

@@ -29,9 +29,9 @@ library("pacman")
 p_load(dplyr, dbplyr, readr, tidyr, purrr, duckdb, stringr, glue, scales,
        data.table, readstata13, here, logger, survival)
 
-here("functions") |>
+here("R", "functions") |>
   dir() |>
-  walk(~source(here("functions", .x)))
+  walk(~source(here("R", "functions", .x)))
 
 db_file <- Sys.getenv(
   "SIAB_TEST_DB",
@@ -46,7 +46,7 @@ dir.create(dump_dir, showWarnings = FALSE, recursive = TRUE)
 
 if (!file.exists(db_file)) {
   stop("No test database at ", db_file,
-       ". Write one with stata_to_db_batch_read.R, or set SIAB_TEST_DB.")
+       ". Write one with R/stata_to_db_batch_read.R, or set SIAB_TEST_DB.")
 }
 
 con <- dbConnect(duckdb::duckdb(), dbdir = db_file, read_only = FALSE)
@@ -176,6 +176,13 @@ tbl(con, "orig") |>
 #====================================================================
 #  The steps, dumped one at a time
 #====================================================================
+
+# The master drops every variable that holds only missings here, and
+# make_fixtures.do keeps that position, so the R side does it too. It can only
+# drop a subset of what the reference drops, because Stata counts the empty
+# string as missing and this port counts only NULL, so no compared column can
+# go missing on one side alone.
+con |> drop_empty_columns(log_file = here("log", "00b_drop_empty_columns.log"))
 
 con |> split_episodes(log_file = here("log", "01_split_episodes.log"))
 dump_step("01_split_episodes")

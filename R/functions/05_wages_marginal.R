@@ -45,7 +45,7 @@ generate_limit_marginal <- function(connection, log_file = NULL){
   tbl(connection, "data") |>
     #Same pre-1992 rule as the assessment ceiling: 07_wages_marginal.do assigns
     #the threshold on the year alone until 1991 and only conditions on east from
-    #1992 on. See functions/04_wage_assesment_ceiling.R.
+    #1992 on. See R/functions/04_wage_assesment_ceiling.R.
     mutate(east_lookup = if_else(year < 1992, 0, east)) |>
     left_join(tbl_limit_marginal |> rename(east_lookup = east),
               by = c("east_lookup", "year"), copy = TRUE) |>

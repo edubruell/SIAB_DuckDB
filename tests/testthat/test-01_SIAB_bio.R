@@ -1,4 +1,4 @@
-# Tests for generate_biographic_variables() in functions/01_SIAB_bio_modified.R.
+# Tests for generate_biographic_variables() in R/functions/01_SIAB_bio_modified.R.
 #
 # The reference comparison in test-reference-03_SIAB_bio.R is the strong test:
 # it checks all nine columns against a Stata run over the FDZ test data. These
