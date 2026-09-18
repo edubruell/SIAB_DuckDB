@@ -5,6 +5,9 @@ description = "Python arm of the SIAB_DuckDB preparation: polars over DuckDB"
 requires-python = ">=3.11"
 dependencies = [
     "polars>=1.18",
+    # DuckDB is installed by default because a .duckdb store is the default and
+    # what the R arm reads. The package imports it only when such a store is
+    # opened, so the Parquet store runs in an environment without it.
     "duckdb>=1.1",
     "pyarrow>=18",
     "numpy>=2.0",

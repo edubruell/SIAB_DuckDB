@@ -1,5 +1,5 @@
 """
-Read a Stata SIAB into a DuckDB database, one batch of persons at a time.
+Read a Stata SIAB into the pipeline's store, one batch of persons at a time.
 
 The counterpart of R/stata_to_db_batch_read.R, and the step that has to run
 before main.py: the pipeline opens a database and expects an `orig` table in
@@ -31,10 +31,18 @@ own:
     double. That is the same mapping readstata13 makes on the R side, so both
     arms build the same `orig` table out of the same file.
 
-Two environment variables point at the data, each with a fallback:
+The store is either a DuckDB database or a folder of Parquet files, picked by
+the name of the target exactly as main.py picks it: a name ending in `.duckdb`
+is a database, anything else is a folder holding one Parquet file per table.
+The Python arm computes in polars and needs neither, so the choice is about
+what you want to hold afterwards.
+
+Environment variables point at the data, each with a fallback:
 
   SIAB_RAW_FOLDER  where the raw SIAB delivery sits, default ~/data/siab_raw
-  SIAB_DB_FOLDER   where the DuckDB database is written, default ~/data/siab_db
+  SIAB_DB_FOLDER   where the store is written, default ~/data/siab_db
+  SIAB_DB          the store itself, overriding the two above. Defaults to
+                   siab.duckdb inside SIAB_DB_FOLDER.
 
 Run it with:
 
@@ -54,15 +62,15 @@ import os
 import sys
 from pathlib import Path
 
-import duckdb
 import polars as pl
+import pyarrow.parquet as pq
 import pyreadstat
 
 HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
-from siab.common import folder_reference_factory  # noqa: E402
+from siab.common import ParquetStore, folder_reference_factory, open_store  # noqa: E402
 
 # The delivery's name for each key, and the pipeline's.
 KEY_RENAMES = {"persnr_siab": "persnr", "betnr_siab": "betnr"}
@@ -183,15 +191,74 @@ def read_batch(siab_file: str | os.PathLike,
             .with_columns(pl.lit(batch, dtype=pl.Int32).alias("pn_batch")))
 
 
+class _ParquetSink:
+    """Append batches to one Parquet file, a row group at a time.
+
+    pyarrow writes row group by row group, so the file never holds more than
+    the batch in memory. The first batch fixes the schema and every later one
+    is cast to it, which cannot change a value here because every column was
+    already cast to its Stata storage type in `read_batch()`.
+    """
+
+    def __init__(self, path: Path):
+        self.path = path
+        self.pending = path.with_suffix(f".pending{path.suffix}")
+        self.writer: pq.ParquetWriter | None = None
+        self.schema = None
+
+    def write(self, frame: pl.DataFrame) -> None:
+        table = frame.to_arrow()
+        if self.writer is None:
+            self.schema = table.schema
+            self.writer = pq.ParquetWriter(self.pending, self.schema,
+                                           compression="zstd")
+        elif table.schema != self.schema:
+            table = table.cast(self.schema)
+        self.writer.write_table(table)
+
+    def close(self) -> None:
+        if self.writer is not None:
+            self.writer.close()
+            # The finished file replaces the old table in one move, so an
+            # interrupted read-in leaves the previous table rather than half
+            # of a new one.
+            os.replace(self.pending, self.path)
+
+
+class _DuckDBSink:
+    """Append batches to a DuckDB table, replacing whatever was there."""
+
+    def __init__(self, connection, table: str):
+        self.connection = connection
+        self.table = table
+        self.created = False
+        connection.execute(f"DROP TABLE IF EXISTS {table}")
+
+    def write(self, frame: pl.DataFrame) -> None:
+        self.connection.register("_siab_batch", frame)
+        if self.created:
+            self.connection.execute(
+                f"INSERT INTO {self.table} SELECT * FROM _siab_batch")
+        else:
+            self.connection.execute(
+                f"CREATE TABLE {self.table} AS SELECT * FROM _siab_batch")
+            self.created = True
+        self.connection.unregister("_siab_batch")
+
+    def close(self) -> None:
+        self.connection.close()
+
+
 def ingest(siab_file: str | os.PathLike,
-           db_file: str | os.PathLike,
+           target: str | os.PathLike,
            batch_size: int = BATCH_SIZE,
            table: str = "orig") -> int:
     """Read a whole SIAB delivery into `table`, replacing what was there.
 
-    Gives back the number of rows written. The table is replaced rather than
-    appended to, so running this twice leaves one copy of the data instead of
-    two.
+    `target` names the store: a `.duckdb` file for a DuckDB database, any other
+    name for a folder holding one Parquet file per table. Gives back the number
+    of rows written. The table is replaced rather than appended to, so running
+    this twice leaves one copy of the data instead of two.
     """
     siab_file = Path(siab_file)
     if not siab_file.exists():
@@ -220,27 +287,23 @@ def ingest(siab_file: str | os.PathLike,
           f"{len(bounds)} batch(es)")
     del keys, person_column
 
-    connection = duckdb.connect(str(db_file))
-    connection.execute(f"DROP TABLE IF EXISTS {table}")
+    store = open_store(target)
+    if isinstance(store, ParquetStore):
+        sink = _ParquetSink(store.path(table))
+    else:
+        sink = _DuckDBSink(store, table)
 
     written = 0
     for position, (batch, offset, length) in enumerate(bounds, start=1):
         print(f"Uploading batch {position}/{len(bounds)} "
               f"(pn_batch {batch}, rows {offset + 1} to {offset + length})")
         frame = read_batch(siab_file, offset, length, plan, batch)
-        connection.register("_siab_batch", frame)
-        if position == 1:
-            connection.execute(
-                f"CREATE TABLE {table} AS SELECT * FROM _siab_batch")
-        else:
-            connection.execute(
-                f"INSERT INTO {table} SELECT * FROM _siab_batch")
-        connection.unregister("_siab_batch")
+        sink.write(frame)
         written += frame.height
         del frame
 
-    connection.close()
-    print(f"\n{written} rows written to the `{table}` table of {db_file}")
+    sink.close()
+    print(f"\n{written} rows written to the `{table}` table of {target}")
     return written
 
 
@@ -249,8 +312,9 @@ def main() -> None:
         os.environ.get("SIAB_RAW_FOLDER", str(Path.home() / "data" / "siab_raw")))
     dbfolder = folder_reference_factory(
         os.environ.get("SIAB_DB_FOLDER", str(Path.home() / "data" / "siab_db")))
+    target = os.environ.get("SIAB_DB", str(dbfolder("siab.duckdb")))
 
-    ingest(rawdata("SIAB_7523_v2.dta"), dbfolder("siab.duckdb"))
+    ingest(rawdata("SIAB_7523_v2.dta"), target)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,18 @@
 
 ## Project Overview
 
-This project is a reimplementation of the data preparation process for the Sample of Integrated Labour Market Biographies (SIAB) based on the original `STATA` reference implementation by [Wolfgang Dauth and Johann Eppelsheimer (2023)](https://labourmarketresearch.springeropen.com/articles/10.1186/s12651-023-00335-w). This reimplementation uses R and DuckDB, which handles large datasets efficiently, including those that exceed available memory.
+This project is a reimplementation of the data preparation process for the Sample of Integrated Labour Market Biographies (SIAB) in modern data science languages using `DuckDB`. It is based on the original `STATA` reference implementation by [Wolfgang Dauth and Johann Eppelsheimer (2023)](https://labourmarketresearch.springeropen.com/articles/10.1186/s12651-023-00335-w). It handles large datasets very efficiently and can even work when data exceeds available memory, because neither arm ever holds the whole dataset: the R arm leaves it in `DuckDB`, and the Python arm streams it through `polars`.
+
+The preparation exists twice here, as two arms, each written for a big-data engine so that the SIAB never has to fit in memory. The **R arm** is tidyverse code: `dplyr` and `dbplyr` translate every step into SQL that DuckDB runs, and the same code would run on another engine `dbplyr` writes for. The **Python arm** is `polars`: the steps are polars expressions, and the table between two steps is kept either in a DuckDB database or in a plain folder of Parquet files, whichever you point it at. Both carry the same eighteen steps under the same function names, and both are tested column by column against outputs from the original STATA reference on the IAB testdata. You can pick whichever language you work in, the two pipelines work the same.
+
+How close is close: every column the reference computes deterministically is completely identical to it, the columns STATA stores as four-byte floats agree to about seven digits, and the imputed wages, where each implementation draws values at random from the estimated distribution, match the reference's mean and quartiles to within one percent.
+
+### What DuckDB does here
+
+DuckDB is the database the prep lives in: the read-in writes the SIAB into it, every step reads a table out of it and writes one back, and what you hold at the end is a database you can query in SQL from STATA, R or Python.
+
+- In the **R arm** DuckDB is the engine. `dbplyr` turns each step into SQL and DuckDB executes it, so the database does the work. Only the episode splitting is written as SQL by hand.
+- In the **Python arm** DuckDB is storage. The eighteen steps hold no SQL at all and compute in `polars`, episode splitting included, so the store only has to hand a table over and take one back. A DuckDB database does that, and so does a folder with one Parquet file per table, which is what `main.py` uses when you point it at a folder instead of a `.duckdb` file. Nothing in the Python prep needs a database engine.
 
 ### Which SIAB version this targets
 
@@ -11,11 +22,11 @@ The target is the **SIAB 7523 v2**, the weakly anonymous extract covering 1975 t
 
 ### Advantages of Using DuckDB
 
-- **High Performance**: DuckDB's in-memory database engine optimizes query performance, significantly speeding up the preparation compared to STATA. In addition processes like wage imputation based on observables are also much faster in R, leading to run times of less than 40 minutes for the entire workflow on a very limited virtual machine with just 8GB of RAM. 
+- **High Performance**: DuckDB's in-memory database engine optimizes query performance, significantly speeding up the preparation compared to STATA. In addition processes like wage imputation based on observables are also much faster in R, leading to run times of less than 40 minutes for the entire workflow on a very limited virtual machine with just 8GB of RAM. That figure is a measurement of the R arm. The Python arm has not been timed on a full delivery.
   
-- **Big Data Capability**: This implementation can handle datasets that exceed memory limits, making it possible to extend this code to prepare the entire universe of German social security data with only minor modifications. This larger-than-memory capability was tested by running the reimplementation on a virtual machine with artificially limited memory to a size smaller than the SIAB 2% sample data.
+- **Big Data Capability**: This implementation can handle datasets that exceed memory limits, making it possible to extend this code to prepare the entire universe of German social security data with only minor modifications. This larger-than-memory capability was tested by running the R arm on a virtual machine with artificially limited memory to a size smaller than the SIAB 2% sample data. The Python arm holds the same property at every step boundary: the table arrives as a Parquet file, `polars` scans it, and `sink_parquet()` streams the step's result back into a file, so neither side of a boundary holds the dataset in memory. With a `.duckdb` store DuckDB writes that file; with a Parquet store the table is that file already.
 
-- **Portability**: The use of `dbplyr` and automatic SQL translation to DuckDB ensures that most of the code is a pure tidyverse implementation. Therefore, it can be easily adapted to other database systems or different big-data solutions like [tidypolars](https://github.com/etiennebacher/tidypolars). In fact only the episode splitting part uses SQL code directly.
+- **Portability**: The use of `dbplyr` and automatic SQL translation to DuckDB ensures that most of the R code is a pure tidyverse implementation, and only the episode splitting part uses SQL code directly. It can therefore be adapted to another database system, or to a different big-data back end such as [tidypolars](https://github.com/etiennebacher/tidypolars), by changing where the tables live. The Python arm goes the same way from the other side: the steps are `polars` and carry no SQL, so DuckDB is one storage choice there and plain Parquet files are the other.
 
 ## Repository layout
 
@@ -37,6 +48,10 @@ Neither answers to the other.
 
 ### Prerequisites
 
+Install the arm you intend to run. Nothing in the R arm needs Python, and nothing in the Python arm needs R.
+
+#### The R arm
+
 - **R**: Ensure that R is installed on your machine.
 - **DuckDB**: Install the DuckDB package for R.
 - **tidyverse**: The code relies on `dplyr`, `dbplyr`, `readr`, `tidyr`, `purrr`, `stringr`, `glue` and `here`.
@@ -45,6 +60,14 @@ Neither answers to the other.
 - **readstata13**: Reads the Basic Establishment File for the BHP merge.
 - **scales** and **data.table**: `scales` labels the censoring overviews in the imputation, `data.table` is used by the read-in step.
 
+#### The Python arm
+
+- **Python 3.11** or newer, and [uv](https://docs.astral.sh/uv/) to resolve the environment. `uv run --project python` installs everything below on first use from `python/pyproject.toml`.
+- **polars**: holds all eighteen steps. **pyarrow** writes and reads the Parquet files the steps hand over through.
+- **duckdb**: needed only for a `.duckdb` store. It is installed by default, because that store is the default, and the package imports it only when such a store is opened. An environment without DuckDB runs the whole prep into a folder of Parquet files.
+- **numpy** and **scipy**: `scipy.optimize` maximises the censored normal likelihood used for imputing wages on observables, which is what `survival::survreg()` does in the R arm.
+- **pyreadstat** and **pandas**: `pyreadstat` reads the STATA delivery and the Basic Establishment File, and returns a `pandas` frame.
+
 ### Getting started
 
 1. **Clone the repository**:
@@ -52,11 +75,34 @@ Neither answers to the other.
    git clone https://github.com/edubruell/SIAB_DuckDB.git
    ```
 
-2. **Read a SIAB into DuckDB**
-The file `R/stata_to_db_batch_read.R` contains all code needed to install the prerequisites and read a STATA SIAB 7523 v2 file into a duckdb database. Run this to get started.
+2. **Read a SIAB into the store**
+`R/stata_to_db_batch_read.R` contains all code needed to install the prerequisites and read a STATA SIAB 7523 v2 file into a duckdb database. `python/stata_to_db_batch_read.py` is its counterpart in the Python arm. Both read the delivery in batches of whole persons and write the same `orig` table, so either read-in can feed either pipeline. Both take two environment variables, `SIAB_RAW_FOLDER` for the folder the delivery sits in and `SIAB_DB_FOLDER` for the folder the database is written to. Run one of them to get started.
+
+The Python read-in also takes `SIAB_DB`, the store itself, which is what chooses between the two. A name ending in `.duckdb` is a database; any other name is a folder that will hold one Parquet file per table.
+
+   ```bash
+   Rscript R/stata_to_db_batch_read.R
+   uv run --project python python python/stata_to_db_batch_read.py
+   ```
 
 3. **Data preparation workflow**
-`R/siab_main.R` launches the preparation workflow. The code installs and loads the necessary packages with the `pacman` package manager and its `p_load()` function. It then connects to a duckdb database, keeps the employment history, generates the year and age variables, and runs the following steps from the `R/functions` folder.
+`R/siab_main.R` launches the preparation workflow in the R arm, `python/main.py` in the Python arm. The two run the same steps in the same order and build the same panel, up to the random draw in the wage imputation, which each arm takes from its own generator.
+
+   ```bash
+   Rscript R/siab_main.R
+   uv run --project python python python/main.py
+   ```
+
+The Python pipeline reads the same `SIAB_DB` and falls back to `SIAB_DB_FOLDER/siab.duckdb`, so the read-in and the pipeline are pointed at one place:
+
+   ```bash
+   SIAB_DB=/somewhere/siab.duckdb  uv run --project python python python/main.py   # a DuckDB database
+   SIAB_DB=/somewhere/siab_store   uv run --project python python python/main.py   # a folder of Parquet files
+   ```
+
+It also reads `SIAB_RAW` for the delivery folder, falling back to `SIAB_RAW_FOLDER`, `SIAB_LOG` for the log folder, and `SIAB_SPILL` for the Parquet handover files a `.duckdb` store needs between steps, which land beside the database by default. A Parquet store writes no handover files and ignores it.
+
+The R script installs and loads the necessary packages with the `pacman` package manager and its `p_load()` function. It then connects to a duckdb database, keeps the employment history, generates the year and age variables, and runs the following steps from the `R/functions` folder.
 
 - `drop_empty_columns()`: Drops every column that is missing on all rows, as the reference master does once the sources are restricted. Pass `drop = FALSE` to keep them.
 - `split_episodes()`: Splits the episodes in the SIAB data.
@@ -78,7 +124,17 @@ The file `R/stata_to_db_batch_read.R` contains all code needed to install the pr
 
 Two further merges, `merge_annual_bhp()` and `merge_akm()`, sit commented out in `R/siab_main.R`. Both read files that have to be requested from the FDZ on top of the SIAB itself. Uncomment either call once the files are in place.
 
+The Python arm carries every one of these steps under the same name, one module per step in `python/siab/steps/`, numbered as the R and STATA files are with an `s` in front because a Python module name cannot start with a digit. `python/main.py` calls them in the same order, with the same two merges and the same monthly panel commented out.
+
 Each of these steps logs its progress to the specified log files.
+
+4. **Run the tests**
+Both suites run without STATA and without the SIAB itself, on synthetic data built in the tests. The comparisons against the committed STATA fixtures skip when a dump is absent.
+
+   ```bash
+   Rscript tests/testthat.R
+   uv run --project python python -m pytest tests/pytest
+   ```
 
 ### Acknowledgments
 

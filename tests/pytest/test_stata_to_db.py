@@ -240,3 +240,76 @@ def test_a_delivery_that_is_not_sorted_by_person_is_refused(tmp_path):
 def test_a_missing_delivery_says_so(tmp_path):
     with pytest.raises(FileNotFoundError):
         ingest(tmp_path / "nothing.dta", tmp_path / "siab.duckdb")
+
+
+# ======================================================================
+#  The same read-in, into a Parquet store
+# ======================================================================
+
+def test_the_delivery_can_be_read_into_a_folder_of_parquet_files(
+        delivery, tmp_path):
+    # A target that is not a .duckdb file is a folder, and `orig` is one
+    # Parquet file in it. Nothing about the reading changes, so this is the
+    # same delivery arriving in a store that needs no database engine.
+    store = tmp_path / "store"
+
+    written = ingest(delivery, store, batch_size=4)
+
+    assert written == 10
+    assert (store / "orig.parquet").exists()
+
+    table = pl.read_parquet(store / "orig.parquet")
+    assert table.height == 10
+    assert "persnr" in table.columns and "persnr_siab" not in table.columns
+    assert table.schema["persnr"] == pl.Int32
+    assert table.schema["tentgelt"] == pl.Float64
+    assert table.schema["begepi"] == pl.Date
+    assert table.schema["pn_batch"] == pl.Int32
+
+
+def test_both_stores_get_the_same_table_out_of_the_same_delivery(
+        delivery, tmp_path):
+    # The two stores are two ways of holding one table, so the table they hold
+    # has to be the same one, column for column and row for row.
+    ingest(delivery, tmp_path / "siab.duckdb", batch_size=4)
+    ingest(delivery, tmp_path / "store", batch_size=4)
+
+    con = duckdb.connect(str(tmp_path / "siab.duckdb"), read_only=True)
+    from_database = con.execute("SELECT * FROM orig").pl()
+    con.close()
+    from_folder = pl.read_parquet(tmp_path / "store" / "orig.parquet")
+
+    assert from_folder.columns == from_database.columns
+    assert from_folder.equals(from_database)
+
+
+def test_a_missing_date_stays_missing_in_a_parquet_store_too(delivery, tmp_path):
+    ingest(delivery, tmp_path / "store", batch_size=4)
+
+    alo_beg = pl.read_parquet(tmp_path / "store" / "orig.parquet")["alo_beg"]
+
+    assert alo_beg.null_count() == 7
+    assert alo_beg.min() == dt.date(1960, 1, 1) + dt.timedelta(days=11000)
+
+
+def test_reading_the_same_delivery_twice_into_a_folder_leaves_one_copy(
+        delivery, tmp_path):
+    store = tmp_path / "store"
+
+    ingest(delivery, store, batch_size=4)
+    ingest(delivery, store, batch_size=4)
+
+    assert pl.read_parquet(store / "orig.parquet").height == 10
+    assert sorted(p.name for p in store.glob("*.parquet")) == ["orig.parquet"]
+
+
+def test_every_batch_lands_in_the_parquet_file(delivery, tmp_path):
+    # pyarrow writes one row group per batch, and a batch that never reached
+    # the file would show up as a missing person rather than as an error.
+    ingest(delivery, tmp_path / "store", batch_size=4)
+
+    table = pl.read_parquet(tmp_path / "store" / "orig.parquet")
+
+    assert table["pn_batch"].n_unique() > 1
+    assert table.group_by("persnr").agg(
+        pl.col("pn_batch").n_unique().alias("batches"))["batches"].max() == 1

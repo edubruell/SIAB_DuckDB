@@ -3,16 +3,18 @@ Common helpers for the Python arm.
 
 The counterpart of R/functions/00_common_functions.R. Everything a step needs
 that is not the step itself lives here: the folder helper, Stata's float
-precision, Stata's ordering of missing values, the logger, and the two
-functions that move a table between DuckDB and polars.
+precision, Stata's ordering of missing values, the logger, and the functions
+that move a table between the store and polars.
 
-DuckDB owns the table between steps, exactly as it does in the R arm. A step
-reads the `data` table, builds its work in polars expressions and writes the
-table back. `read_table()` and `write_table()` are that boundary, and neither
-holds the table in memory: the handover goes through a Parquet file, written by
-DuckDB's own writer on the way out and streamed by polars on the way in. Peak
-memory is therefore whatever one step's own plan needs, not the size of the
-dataset. `boundary_dir()` says where those files go.
+The steps compute in polars and never see the store. Something has to own the
+table between steps, and two things can: a DuckDB database, as in the R arm, or
+a folder of Parquet files. `open_store()` picks by the name of the target, and
+`read_table()` and `write_table()` work on either. Neither holds the table in
+memory. A Parquet store scans the table's own file and sinks the result beside
+it. A DuckDB store hands over through a Parquet file, written by DuckDB's own
+writer on the way out and streamed by polars on the way in, with
+`boundary_dir()` saying where those files go. Peak memory is therefore whatever
+one step's own plan needs, not the size of the dataset.
 
 Author(s): Eduard Brüll
 Python/polars reimplementation of the original procedures by Heiko Stüber,
@@ -30,7 +32,6 @@ import tempfile
 from pathlib import Path
 from typing import Callable, Iterable
 
-import duckdb
 import numpy as np
 import polars as pl
 import pyreadstat
@@ -43,6 +44,12 @@ __all__ = [
     "pl_stata_gt",
     "pl_days",
     "step_logger",
+    "ParquetStore",
+    "open_store",
+    "store_description",
+    "table_names",
+    "drop_table",
+    "count_rows",
     "database_path",
     "boundary_dir",
     "read_table",
@@ -176,11 +183,111 @@ def step_logger(name: str, log_file: str | os.PathLike | None = None) -> logging
 
 
 # ====================================================================
-# 1. Database related functions
+# 1. Storage: a DuckDB database or a folder of Parquet files
 # ====================================================================
+#
+# The steps compute in polars and never see the store. All the store has to do
+# is hand a table over as a LazyFrame and take one back, which a DuckDB
+# database and a folder of Parquet files can both do. `open_store()` picks by
+# the target's name, and everything below works on either.
+#
+# DuckDB is imported where it is used rather than at the top of the module, so
+# the Parquet store runs in an environment that has no DuckDB in it.
 
 
-def database_path(connection: duckdb.DuckDBPyConnection) -> Path | None:
+def _duckdb():
+    """Import DuckDB at the point of use, with a message worth reading."""
+    try:
+        import duckdb
+    except ModuleNotFoundError as error:  # pragma: no cover - environment
+        raise ModuleNotFoundError(
+            "DuckDB is needed for a .duckdb store. Install it, or point the "
+            "pipeline at a folder to keep the tables as Parquet files instead."
+        ) from error
+    return duckdb
+
+
+class ParquetStore:
+    """A folder of Parquet files, one per table, used in place of a database.
+
+    The Python arm's steps are polars from end to end, so nothing in the prep
+    needs a database engine: a table is a file, `data.parquet` beside
+    `orig.parquet`, and a step scans one and sinks the other. What DuckDB adds
+    over this is SQL over the result and one file that both arms of the project
+    can open, which is worth having and is not required to run the prep.
+    """
+
+    suffix = ".parquet"
+
+    def __init__(self, folder: str | os.PathLike):
+        self.folder = Path(folder)
+        self.folder.mkdir(parents=True, exist_ok=True)
+
+    def path(self, table: str = "data") -> Path:
+        return self.folder / f"{table}{self.suffix}"
+
+    def tables(self) -> list[str]:
+        # A `.pending.parquet` file is a write that did not finish. It is not a
+        # table and must not be read as one.
+        return sorted(path.stem for path in self.folder.glob(f"*{self.suffix}")
+                      if not path.stem.endswith(".pending"))
+
+    def drop(self, table: str) -> None:
+        self.path(table).unlink(missing_ok=True)
+
+    def close(self) -> None:
+        """Nothing to close. Here so a caller can treat both stores alike."""
+
+    def __repr__(self) -> str:
+        return f"ParquetStore({str(self.folder)!r})"
+
+
+def open_store(target: str | os.PathLike):
+    """Open the store the pipeline should work in, chosen by the target's name.
+
+    A name ending in `.duckdb`, `.db` or `.ddb` is a DuckDB database and comes
+    back as a connection. Anything else is a folder and comes back as a
+    `ParquetStore`. The folder is created if it is not there, so a first run
+    needs no setup beyond naming a place.
+    """
+    target = Path(target)
+    if target.suffix.lower() in (".duckdb", ".db", ".ddb"):
+        target.parent.mkdir(parents=True, exist_ok=True)
+        return _duckdb().connect(str(target))
+    return ParquetStore(target)
+
+
+def store_description(store) -> str:
+    """One line naming the store, for a log line or an error message."""
+    if isinstance(store, ParquetStore):
+        return f"the Parquet folder {store.folder}"
+    database = database_path(store)
+    return f"the DuckDB database {database}" if database else "an in-memory DuckDB database"
+
+
+def table_names(store) -> list[str]:
+    """Every table the store holds."""
+    if isinstance(store, ParquetStore):
+        return store.tables()
+    return [row[0] for row in store.execute("SHOW TABLES").fetchall()]
+
+
+def drop_table(store, table: str) -> None:
+    """Remove one table from the store."""
+    if isinstance(store, ParquetStore):
+        store.drop(table)
+        return
+    store.execute(f"DROP TABLE IF EXISTS {table}")
+
+
+def count_rows(store, table: str = "data") -> int:
+    """How many rows the table holds, without reading it into memory."""
+    if isinstance(store, ParquetStore):
+        return int(pl.scan_parquet(store.path(table)).select(pl.len()).collect().item())
+    return int(store.execute(f"SELECT count(*) FROM {table}").fetchone()[0])
+
+
+def database_path(connection) -> Path | None:
     """Where the connection's own database file sits, or None in memory."""
     row = connection.execute(
         "SELECT path FROM duckdb_databases() WHERE database_name = current_database()"
@@ -190,7 +297,7 @@ def database_path(connection: duckdb.DuckDBPyConnection) -> Path | None:
     return Path(row[0])
 
 
-def boundary_dir(connection: duckdb.DuckDBPyConnection) -> Path:
+def boundary_dir(connection) -> Path:
     """The folder the Parquet handover files are written to.
 
     Beside the database by default, because that is a disk already known to
@@ -198,6 +305,9 @@ def boundary_dir(connection: duckdb.DuckDBPyConnection) -> Path:
     moves them somewhere else, which is what a database on a small volume or a
     read-only mount needs. An in-memory connection has no folder of its own and
     falls back to the system temporary directory.
+
+    A `ParquetStore` has no handover files at all: its tables are already the
+    files the steps read and write.
     """
     override = os.environ.get("SIAB_SPILL")
     if override:
@@ -210,9 +320,7 @@ def boundary_dir(connection: duckdb.DuckDBPyConnection) -> Path:
     return folder
 
 
-def _handover(connection: duckdb.DuckDBPyConnection,
-              table: str,
-              direction: str) -> Path:
+def _handover(connection, table: str, direction: str) -> Path:
     """The Parquet file one side of one table's boundary uses.
 
     The database's own name is in the file name, because two databases in one
@@ -225,41 +333,64 @@ def _handover(connection: duckdb.DuckDBPyConnection,
     return boundary_dir(connection) / f"{stem}__{table}__{direction}.parquet"
 
 
-def read_table(connection: duckdb.DuckDBPyConnection, table: str = "data") -> pl.LazyFrame:
-    """Hand the DuckDB table to polars as a LazyFrame, without materialising it.
+def read_table(store, table: str = "data") -> pl.LazyFrame:
+    """Hand the stored table to polars as a LazyFrame, without materialising it.
 
-    DuckDB copies the table to a Parquet file with its own writer, which never
-    holds more than a row group, and polars scans that file. What comes back is
-    a plan over a file rather than over memory, so a step that the streaming
-    engine can run reads the dataset in batches and one that cannot still only
-    materialises at the moment it collects.
+    In a Parquet store the table is a file already and this is a scan of it.
+    In a DuckDB store the table is copied to a Parquet file with DuckDB's own
+    writer, which never holds more than a row group, and polars scans that.
+    Either way what comes back is a plan over a file rather than over memory,
+    so a step the streaming engine can run reads the dataset in batches and one
+    that cannot still only materialises at the moment it collects.
     """
-    handover = _handover(connection, table, "read")
-    connection.execute(
+    if isinstance(store, ParquetStore):
+        path = store.path(table)
+        if not path.exists():
+            raise FileNotFoundError(
+                f"No `{table}` table in {store.folder}: {path} does not exist")
+        return pl.scan_parquet(path)
+
+    handover = _handover(store, table, "read")
+    store.execute(
         f"COPY (SELECT * FROM {table}) TO '{handover}' "
         f"(FORMAT PARQUET, COMPRESSION ZSTD)"
     )
     return pl.scan_parquet(handover)
 
 
-def write_table(connection: duckdb.DuckDBPyConnection,
-                frame: pl.LazyFrame,
-                table: str = "data") -> duckdb.DuckDBPyConnection:
-    """Put the frame back into DuckDB under `table`, through a Parquet file.
+def write_table(store, frame: pl.LazyFrame, table: str = "data"):
+    """Put the frame back into the store under `table`, through a Parquet file.
 
     The counterpart of `compute_and_overwrite()`. `sink_parquet()` runs the
-    plan into the file rather than into memory wherever polars can stream it,
-    and DuckDB then reads that file into the table. The connection is returned
-    so a caller can chain steps, which is what the R arm's pipe does.
+    plan into a file rather than into memory wherever polars can stream it.
+
+    In a Parquet store the plan usually scans the very file it is replacing, so
+    it is written beside the table and moved over it once it is complete. The
+    move is atomic on one filesystem, which means an interrupted step leaves
+    the table it started from rather than half a table.
+
+    In a DuckDB store the written file is read into the table and deleted. The
+    store is returned either way, so a caller can chain steps, which is what
+    the R arm's pipe does.
     """
-    handover = _handover(connection, table, "write")
+    if isinstance(store, ParquetStore):
+        target = store.path(table)
+        pending = target.with_suffix(f".pending{ParquetStore.suffix}")
+        if isinstance(frame, pl.LazyFrame):
+            frame.sink_parquet(pending, compression="zstd")
+        else:
+            frame.write_parquet(pending, compression="zstd")
+        os.replace(pending, target)
+        return store
+
+    handover = _handover(store, table, "write")
 
     if isinstance(frame, pl.LazyFrame):
         frame.sink_parquet(handover, compression="zstd")
     else:
         frame.write_parquet(handover, compression="zstd")
 
-    connection.execute(
+    store.execute(
         f"CREATE OR REPLACE TABLE {table} AS SELECT * FROM read_parquet('{handover}')"
     )
 
@@ -268,8 +399,8 @@ def write_table(connection: duckdb.DuckDBPyConnection,
     # They are the size of the dataset, so they do not stay on disk between
     # steps.
     handover.unlink(missing_ok=True)
-    _handover(connection, table, "read").unlink(missing_ok=True)
-    return connection
+    _handover(store, table, "read").unlink(missing_ok=True)
+    return store
 
 
 def read_stata(path: str | os.PathLike,

@@ -9,17 +9,29 @@ here exactly as the reference master switches them off.
 `stata_to_db_batch_read.py` runs before this and writes the `orig` table this
 reads. Nothing here creates one.
 
-Four environment variables set the folders, each with a fallback:
+Nothing in the eighteen steps is SQL: they compute in polars, and the store
+only has to hold a table between them. Two stores can do that, and the name of
+the target picks which. A name ending in `.duckdb` is a DuckDB database, which
+is what the R arm uses and what leaves a database to query afterwards. Any
+other name is a folder, and each table is a Parquet file in it, which needs no
+database engine at all.
 
-  SIAB_DB        the DuckDB file holding the data, with an `orig` table
-  SIAB_RAW       the folder the raw SIAB delivery sits in
+Environment variables set the folders, each with a fallback:
+
+  SIAB_DB        the store: a `.duckdb` file, or a folder for Parquet tables.
+                 Defaults to siab.duckdb inside SIAB_DB_FOLDER.
+  SIAB_DB_FOLDER the folder that default database sits in, the same variable
+                 the read-in and the R arm use
+  SIAB_RAW       the folder the raw SIAB delivery sits in, defaulting to
+                 SIAB_RAW_FOLDER, the name the read-in and the R arm use
   SIAB_LOG       the folder the per-step logs are written to
   SIAB_SPILL     where the Parquet handover files between steps are written,
-                 beside the database by default
+                 beside the database by default. A Parquet store has no
+                 handover files and ignores it.
 
 Run it with:
 
-  uv run python main.py
+  uv run --project python python python/main.py
 """
 
 from __future__ import annotations
@@ -27,9 +39,18 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-import duckdb
+import polars as pl
 
-from siab.common import folder_reference_factory, read_table, write_table
+from siab.common import (
+    count_rows,
+    drop_table,
+    folder_reference_factory,
+    open_store,
+    read_table,
+    store_description,
+    table_names,
+    write_table,
+)
 from siab.steps import (
     build_yearly_panel,
     deflate_wages,
@@ -53,44 +74,51 @@ PROJECT = HERE.parent
 
 
 def main() -> None:
-    db_file = os.environ.get(
-        "SIAB_DB", str(Path.home() / "data" / "siab_db" / "siab.duckdb"))
+    db_folder = os.environ.get(
+        "SIAB_DB_FOLDER", str(Path.home() / "data" / "siab_db"))
+    target = os.environ.get("SIAB_DB", str(Path(db_folder) / "siab.duckdb"))
     rawdata = folder_reference_factory(
-        os.environ.get("SIAB_RAW", str(Path.home() / "data" / "siab_raw")))
+        os.environ.get("SIAB_RAW",
+                       os.environ.get("SIAB_RAW_FOLDER",
+                                      str(Path.home() / "data" / "siab_raw"))))
     log_dir = folder_reference_factory(os.environ.get("SIAB_LOG", str(PROJECT / "log")))
 
-    if not Path(db_file).exists():
+    if not Path(target).exists():
         raise SystemExit(
-            f"No database at {db_file}. Write one with "
+            f"No store at {target}. Write one with "
             f"python/stata_to_db_batch_read.py, or set SIAB_DB."
         )
 
-    con = duckdb.connect(db_file)
-    if "orig" not in [row[0] for row in con.execute("SHOW TABLES").fetchall()]:
-        raise SystemExit(f"The database has no `orig` table: {db_file}")
+    store = open_store(target)
+    if "orig" not in table_names(store):
+        raise SystemExit(f"There is no `orig` table in {store_description(store)}")
 
     # ================================================================
     #  1. Generate the variables `year` and `age` in the database
     # ================================================================
     # 00_master_SIAB.do keeps only the employment history before it generates
     # jahr and age: `keep if inlist(quelle,1,2,3)`. Sources 4 to 7 are dropped.
-    con.execute(
-        """
-        CREATE OR REPLACE TABLE data AS
-        SELECT *, year(begepi) AS year, year(begepi) - gebjahr AS age
-        FROM orig
-        WHERE quelle IN (1, 2, 3)
-        """
+    # The R arm writes this as SQL. Here it is polars, like every step below,
+    # which is what lets the same pipeline run over a store that has no query
+    # engine in it.
+    write_table(
+        store,
+        read_table(store, "orig")
+        .filter(pl.col("quelle").is_in([1, 2, 3]))
+        .with_columns(year=pl.col("begepi").dt.year())
+        .with_columns(age=pl.col("year") - pl.col("gebjahr")),
+        "data",
     )
 
     # ================================================================
     #  2. Prepare the SIAB as a yearly panel
     # ================================================================
     # Each step reads the `data` table, works over it in polars and writes the
-    # table back. DuckDB owns the table in between, which is where the
-    # out-of-core guarantee comes from.
+    # table back. The store owns the table in between, and neither side of that
+    # boundary holds it in memory, which is where the out-of-core guarantee
+    # comes from.
     def run(step, **kwargs) -> None:
-        write_table(con, step(read_table(con, "data"), **kwargs), "data")
+        write_table(store, step(read_table(store, "data"), **kwargs), "data")
 
     # 00_master_SIAB.do drops every variable that holds only missings right
     # after the source restriction above, before it generates anything else.
@@ -143,13 +171,14 @@ def main() -> None:
     #  3. Clean up
     # ================================================================
     # Only `data` and `orig` should remain as tables.
-    for (table,) in con.execute("SHOW TABLES").fetchall():
+    for table in table_names(store):
         if table not in ("orig", "data"):
-            con.execute(f"DROP TABLE {table}")
+            drop_table(store, table)
 
-    rows = con.execute("SELECT count(*) FROM data").fetchone()[0]
-    print(f"\nPipeline finished, {rows} rows in the `data` table of {db_file}")
-    con.close()
+    rows = count_rows(store, "data")
+    print(f"\nPipeline finished, {rows} rows in the `data` table of "
+          f"{store_description(store)}")
+    store.close()
 
 
 if __name__ == "__main__":
