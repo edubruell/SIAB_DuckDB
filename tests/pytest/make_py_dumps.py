@@ -10,8 +10,10 @@ half, and it is the half both arms answer to.
 
     uv run python ../tests/pytest/make_py_dumps.py
 
-The chain stops at 12_merge_AKM. 15_parallel_episodes and both panels read the
-imputed wage and are not dumped yet; their comparisons are still to be written.
+The chain runs the whole prep. The last three steps are dumped off a second
+branch of it: 16_yearly_panel.do and 16_monthly_panel.do are alternatives rather
+than one after the other, so both are built from the same parallel-episode data,
+exactly as make_fixtures.do reloads the step 15 dump for the second one.
 
 Six environment variables set the folders, each with a fallback:
 
@@ -46,6 +48,8 @@ sys.path.insert(0, str(PROJECT / "python"))
 
 from siab.common import folder_reference_factory, read_table, write_table  # noqa: E402
 from siab.steps import (  # noqa: E402
+    build_monthly_panel,
+    build_yearly_panel,
     deflate_wages,
     drop_empty_columns,
     generate_biographic_variables,
@@ -54,6 +58,7 @@ from siab.steps import (  # noqa: E402
     generate_limit_assess,
     generate_limit_marginal,
     generate_occupation_variables,
+    handle_parallel_episodes,
     impute_wages,
     merge_akm,
     merge_annual_bhp,
@@ -67,8 +72,9 @@ from siab.steps import (  # noqa: E402
 # where they differ from the Stata ones. `jahr` is `year` in both ports.
 KEY = ["persnr", "spell", "begepi"]
 
-# The two late steps that drop part of the key. They are not reached yet, and
-# the entries stay here so the table matches make_r_dumps.R line for line.
+# The three late steps that drop part of the key. The Stata side drops `spell`
+# in 15_parallel_episodes.do and `begepi` in 16_yearly_panel.do; the port keeps
+# the columns, so the narrower key here is what makes the two halves joinable.
 STEP_KEY = {
     "15_parallel_episodes": ["persnr", "begepi"],
     "16_yearly_panel": ["persnr", "year"],
@@ -124,6 +130,29 @@ TOUCHED = {
     # far earlier than the reference's 14_occ_blossfeld.do; the column is dumped
     # here, at the position the reference creates it, so the two are comparable.
     "14_occ_blossfeld": ["beruf", "occ_blo"],
+    "15_parallel_episodes": ["quelle", "tage_bet", "wage_imp", "nspell",
+                             "parallel_jobs", "parallel_wage",
+                             "parallel_wage_imp", "parallel_benefits"],
+    # begepi and endepi have no Stata counterpart here: 16_yearly_panel.do drops
+    # both and the port keeps them. They ride along so a test can check that every
+    # surviving episode really does cover the cutoff date.
+    "16_yearly_panel": ["quelle", "erwstat", "parallel_benefits",
+                        "year_days_emp", "year_days_benefits",
+                        "year_labor_earn",
+                        "tage_bet", "tage_job", "tage_erw",
+                        "tage_lst", "begepi", "endepi"],
+    # The monthly panel is an alternative to the yearly one, so its dump is taken
+    # from a second run over the same step 15 data. `year` carries the reference's
+    # `jahr` and its `year` at once: the reference generates a second year column
+    # from the month, and after 01_split_episodes.do no episode crosses a year
+    # boundary, so the two agree row by row.
+    "16_monthly_panel": ["quelle", "erwstat", "parallel_benefits",
+                         "year_days_emp", "year_days_benefits",
+                         "year_labor_earn",
+                         "tage_bet", "tage_job", "tage_erw",
+                         "tage_lst",
+                         "month", "month_num", "endepi_monthly",
+                         "begepi", "endepi"],
 }
 
 
@@ -296,9 +325,37 @@ def main() -> None:
     dump_step(con, "13_industries_1digit", dump_dir)
     dump_step(con, "14_occ_blossfeld", dump_dir)
 
+    # The reference's uncommented rule defines the main episode as the job with
+    # the longest tenure, using the imputed wage only to break a tie.
+    # handling = "wage", which main.py passes, sorts on the imputed wage first;
+    # those draws differ between Python and Stata by construction, so under that
+    # setting the two sides would keep different episodes and nothing downstream
+    # would compare.
+    run(con, handle_parallel_episodes, handling="tenure",
+        log_file=log_dir("py_08_parallel_episodes.log"))
+    dump_step(con, "15_parallel_episodes", dump_dir)
+
+    # 16_yearly_panel.do and 16_monthly_panel.do are alternatives: both start
+    # from the step 15 data and the reference master calls neither. The step 15
+    # state is therefore kept aside here, so the monthly panel can be built from
+    # the same input the yearly one was, exactly as make_fixtures.do reloads the
+    # step 15 dump for it.
+    con.execute("CREATE TABLE parallel_episodes AS SELECT * FROM data")
+
+    run(con, build_yearly_panel, cutoff_month=6, cutoff_day=30,
+        log_file=log_dir("py_09_yearly_panel.log"))
+    dump_step(con, "16_yearly_panel", dump_dir)
+
+    con.execute("DROP TABLE data")
+    con.execute("ALTER TABLE parallel_episodes RENAME TO data")
+
+    # The reference hardcodes the 15th of the month as the cutoff, which is the
+    # port's default.
+    run(con, build_monthly_panel, cutoff_day=15,
+        log_file=log_dir("py_09b_monthly_panel.log"))
+    dump_step(con, "16_monthly_panel", dump_dir)
+
     print(f"\nPython dumps written to {dump_dir}")
-    print("15_parallel_episodes, 16_yearly_panel and 16_monthly_panel are not "
-          "dumped yet: their comparisons are still to be written.")
     con.close()
 
 

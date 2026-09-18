@@ -136,3 +136,30 @@ def assert_column_matches(query, column, py_column=None, tolerance=None,
         f"{column}: {differing} of {shared} shared rows differ between the "
         f"Stata fixture and the Python dump"
     )
+
+
+def siab_column_moments(query: Callable[[str], pl.DataFrame],
+                        column: str,
+                        py_column: str | None = None,
+                        key: Sequence[str] | Mapping[str, str] = ("persnr", "spell", "begepi")
+                        ) -> pl.DataFrame:
+    """The mean and the two outer quartiles of one column on each side.
+
+    What a column carrying a random draw can be compared on. Every imputed
+    wage on either side gets its random term from that side's own generator,
+    so a column built from one cannot agree row by row; the shape of its
+    distribution still has to. The counterpart of the R helper's
+    siab_column_moments().
+    """
+    py_column = py_column or column
+
+    return query(
+        "SELECT count(*) AS shared, "
+        f"       avg(stata.{column}) AS stata_mean, "
+        f"       avg(py.{py_column}) AS py_mean, "
+        f"       quantile_cont(stata.{column}, 0.25) AS stata_q25, "
+        f"       quantile_cont(py.{py_column}, 0.25) AS py_q25, "
+        f"       quantile_cont(stata.{column}, 0.75) AS stata_q75, "
+        f"       quantile_cont(py.{py_column}, 0.75) AS py_q75 "
+        f"FROM stata JOIN py ON {siab_key_on(key)}"
+    )

@@ -1,26 +1,26 @@
 """
 What the Python arm still owes, on the record.
 
-The counterpart of tests/testthat/test-reference-unported.R. Four of the
-committed Stata fixtures have no Python comparison, and the reasons are not the
-same one:
+The counterpart of tests/testthat/test-reference-unported.R. One committed
+Stata fixture has no Python comparison:
 
   09_restrictions      09_restrictions.do cuts the sample to certain groups and
                        takes the test data from 505,050 rows to 83,817. The
                        reference README calls the step project-specific rather
                        than part of the reusable prep, so neither arm ports it;
                        porting it would be a design decision, not a translation.
-  15_parallel_episodes these three read `wage_imp`, which the imputation now
-  16_yearly_panel      produces, so nothing blocks them any more:
-  16_monthly_panel     make_py_dumps.py stops after 12_merge_AKM and their
-                       comparisons are the next thing to write. All three do
-                       have synthetic coverage, in test_parallel_episodes.py,
-                       test_yearly_panel.py and test_monthly_panel.py.
 
 10_wages_imputation left this list on 2026-09-17, when the step was ported. The
 two tests that asserted its `NotImplementedError` were written to fail the day
 the debt was paid, and they did; the comparison lives in
 test_reference_10_wages_imputation.py now.
+
+15_parallel_episodes, 16_yearly_panel and 16_monthly_panel left it the same
+day. All three read `wage_imp`, so they were waiting on the imputation and on
+nothing else; once make_py_dumps.py ran past 12_merge_AKM their comparisons
+went into test_reference_15_parallel_episodes.py,
+test_reference_16_yearly_panel.py and test_reference_16_monthly_panel.py. Every
+committed fixture except 09_restrictions is now compared against this arm.
 
 The tests below keep the remaining gap in the test output rather than in
 someone's memory. The fixtures are checked for presence because they are the
@@ -36,12 +36,9 @@ import pytest
 from conftest import fixtures_dir
 from siab import steps
 
-# The four steps with a committed Stata fixture and no Python comparison.
+# The one step with a committed Stata fixture and no Python comparison.
 UNCOMPARED = [
     "09_restrictions",
-    "15_parallel_episodes",
-    "16_yearly_panel",
-    "16_monthly_panel",
 ]
 
 

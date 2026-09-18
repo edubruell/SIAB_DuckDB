@@ -6,15 +6,12 @@ each calendar year, keep the one episode of that year running across the cutoff
 date, and trim the four duration counters so they end on that date rather than
 at the episode's own end.
 
-There is no fixture comparison for this step yet. It reads `parallel_wage_imp`,
-which handle_parallel_episodes() builds out of the imputed wage; the imputation
-is ported now, but tests/pytest/make_py_dumps.py still writes no
-16_yearly_panel.parquet to compare against the committed Stata one. These
-hand-built tables are therefore the step's only coverage, and they carry the
-cases
-tests/testthat/test-reference-16_yearly_panel.R makes against the reference:
-one episode per person-year, the yearly totals, the four trimmed counters, and
-the missing employment status Stata's inlist() reads as "not one of these".
+The step is also compared against the committed Stata fixture, in
+test_reference_16_yearly_panel.py, since 2026-09-17. These hand-built tables
+stay because they run without the FDZ test data and they name the cases one at
+a time: one episode per person-year, the yearly totals, the four trimmed
+counters, and the missing employment status Stata's inlist() reads as "not one
+of these".
 
 The reference drops seven columns on its way out -- nspell, begorig, endorig,
 begepi, endepi, begepi_orig and endepi_orig -- and the port keeps all seven, so
