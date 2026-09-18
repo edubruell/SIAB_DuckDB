@@ -15,7 +15,8 @@ branch of it: 16_yearly_panel.do and 16_monthly_panel.do are alternatives rather
 than one after the other, so both are built from the same parallel-episode data,
 exactly as make_fixtures.do reloads the step 15 dump for the second one.
 
-Six environment variables set the folders, each with a fallback:
+Seven environment variables set the folders and the handover, each with a
+fallback:
 
   SIAB_TEST_DB    the DuckDB file holding the test data, opened READ ONLY
   SIAB_PY_DB      the working database this script builds, which must not be
@@ -29,6 +30,10 @@ Six environment variables set the folders, each with a fallback:
                   nothing, so this points at the Stata fixture run's orig
                   folder by default.
   SIAB_LOG        the folder the per-step logs are written to
+  SIAB_BOUNDARY   how the working database hands a table between steps,
+                  `memory` or `parquet`, as in main.py. The dumps are identical
+                  either way, which was checked on 2026-09-18 by regenerating
+                  all seventeen under both.
 
 The comparison tests in tests/pytest/test_reference_*.py skip when these dumps
 are absent, so the fast synthetic tests still run without them.
@@ -40,13 +45,19 @@ import os
 import sys
 from pathlib import Path
 
-import duckdb
 
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parent.parent
 sys.path.insert(0, str(PROJECT / "python"))
 
-from siab.common import folder_reference_factory, read_table, write_table  # noqa: E402
+from siab.common import (  # noqa: E402
+    DEFAULT_BOUNDARY,
+    DuckDBStore,
+    folder_reference_factory,
+    open_store,
+    read_table,
+    write_table,
+)
 from siab.steps import (  # noqa: E402
     build_monthly_panel,
     build_yearly_panel,
@@ -160,7 +171,7 @@ def key_for(step: str) -> list[str]:
     return STEP_KEY.get(step, KEY)
 
 
-def dump_step(con: duckdb.DuckDBPyConnection, step: str, dump_dir: Path) -> None:
+def dump_step(con: DuckDBStore, step: str, dump_dir: Path) -> None:
     present = [row[1] for row in con.execute("PRAGMA table_info('data')").fetchall()]
     asked = list(dict.fromkeys(key_for(step) + TOUCHED[step]))
     wanted = [c for c in asked if c in present]
@@ -176,7 +187,7 @@ def dump_step(con: duckdb.DuckDBPyConnection, step: str, dump_dir: Path) -> None
     print(f"{step + '.parquet':<32} {rows:>8d} rows  {len(wanted):>2d} cols{note}")
 
 
-def run(con: duckdb.DuckDBPyConnection, step, **kwargs) -> None:
+def run(con: DuckDBStore, step, **kwargs) -> None:
     """Read the `data` table, run one step over it and write the table back."""
     write_table(con, step(read_table(con, "data"), **kwargs), "data")
 
@@ -207,7 +218,7 @@ def main() -> None:
     # state halfway through.
     if py_db.exists():
         py_db.unlink()
-    con = duckdb.connect(str(py_db))
+    con = open_store(py_db, os.environ.get("SIAB_BOUNDARY", DEFAULT_BOUNDARY))
     con.execute(f"ATTACH '{db_file}' AS src (READ_ONLY)")
 
     tables = [row[0] for row in con.execute(

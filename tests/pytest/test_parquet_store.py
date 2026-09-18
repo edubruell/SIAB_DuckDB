@@ -22,6 +22,7 @@ import polars as pl
 import pytest
 
 from siab.common import (
+    DuckDBStore,
     ParquetStore,
     count_rows,
     drop_table,
@@ -58,11 +59,12 @@ def store(tmp_path) -> ParquetStore:
 # ======================================================================
 
 def test_a_duckdb_suffix_opens_a_database(tmp_path):
-    connection = open_store(tmp_path / "siab.duckdb")
+    store = open_store(tmp_path / "siab.duckdb")
     try:
-        assert type(connection).__name__ == "DuckDBPyConnection"
+        assert isinstance(store, DuckDBStore)
+        assert type(store.connection).__name__ == "DuckDBPyConnection"
     finally:
-        connection.close()
+        store.close()
 
 
 def test_any_other_name_opens_a_parquet_folder(tmp_path):

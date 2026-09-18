@@ -25,9 +25,13 @@ Environment variables set the folders, each with a fallback:
   SIAB_RAW       the folder the raw SIAB delivery sits in, defaulting to
                  SIAB_RAW_FOLDER, the name the read-in and the R arm use
   SIAB_LOG       the folder the per-step logs are written to
+  SIAB_BOUNDARY  how a DuckDB store hands a table between steps: `memory`, the
+                 default, which collects it, or `parquet`, which writes a file
+                 at each end, so peak memory stays at what one step's plan
+                 needs. A Parquet store has no handover and ignores it.
   SIAB_SPILL     where the Parquet handover files between steps are written,
-                 beside the database by default. A Parquet store has no
-                 handover files and ignores it.
+                 beside the database by default. It applies to SIAB_BOUNDARY
+                 `parquet` only; a Parquet store has no handover files.
 
 Run it with:
 
@@ -42,6 +46,7 @@ from pathlib import Path
 import polars as pl
 
 from siab.common import (
+    DEFAULT_BOUNDARY,
     count_rows,
     drop_table,
     folder_reference_factory,
@@ -89,7 +94,7 @@ def main() -> None:
             f"python/stata_to_db_batch_read.py, or set SIAB_DB."
         )
 
-    store = open_store(target)
+    store = open_store(target, os.environ.get("SIAB_BOUNDARY", DEFAULT_BOUNDARY))
     if "orig" not in table_names(store):
         raise SystemExit(f"There is no `orig` table in {store_description(store)}")
 
@@ -114,9 +119,11 @@ def main() -> None:
     #  2. Prepare the SIAB as a yearly panel
     # ================================================================
     # Each step reads the `data` table, works over it in polars and writes the
-    # table back. The store owns the table in between, and neither side of that
-    # boundary holds it in memory, which is where the out-of-core guarantee
-    # comes from.
+    # table back. The store owns the table in between. A Parquet store, and a
+    # DuckDB store opened with SIAB_BOUNDARY=parquet, hand it over as a file,
+    # so neither side holds the dataset and peak memory is one step's own plan;
+    # a DuckDB store on its default collects it at both ends, which is faster
+    # on data that fits.
     def run(step, **kwargs) -> None:
         write_table(store, step(read_table(store, "data"), **kwargs), "data")
 

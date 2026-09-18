@@ -193,6 +193,21 @@ def step_logger(name: str, log_file: str | os.PathLike | None = None) -> logging
 #
 # DuckDB is imported where it is used rather than at the top of the module, so
 # the Parquet store runs in an environment that has no DuckDB in it.
+#
+# A DuckDB store has one further choice to make, which a Parquet store does
+# not: how a step hands its table over. `DuckDBStore` carries it, because a
+# DuckDB connection is a C extension type that cannot hold an attribute of
+# ours.
+
+
+#: How a DuckDB store hands a table over when nothing says otherwise. The
+#: in-memory handover is the faster of the two on data that fits: measured over
+#: the whole test chain it saves 28 percent of the wall clock, and the Parquet
+#: handover's saving was 0.12 GB of a 2.45 GB peak that the imputation and the
+#: monthly panel set between them. On a delivery larger than memory the ranking
+#: reverses, and that case is untested here.
+DEFAULT_BOUNDARY = "memory"
+BOUNDARIES = ("memory", "parquet")
 
 
 def _duckdb():
@@ -242,19 +257,80 @@ class ParquetStore:
         return f"ParquetStore({str(self.folder)!r})"
 
 
-def open_store(target: str | os.PathLike):
+class DuckDBStore:
+    """A DuckDB connection, plus the one choice the connection cannot carry.
+
+    `boundary` is how a step hands its table over, and it is fixed once, here,
+    so that a step never has to know which mode it is running under.
+
+    `"memory"` collects the table and registers the result back, which is what
+    the arm did until 2026-09-18. It is the faster of the two on data that
+    fits, and it holds the whole table at both ends of every step.
+
+    `"parquet"` writes a Parquet file at each end. Peak memory is then whatever
+    one step's own plan needs, which is what a delivery larger than memory
+    requires and what the test data is far too small to show.
+
+    Every attribute this does not define itself is handed to the connection, so
+    `store.execute(...)`, `store.register(...)` and `store.close()` work as they
+    did when the pipeline held a bare connection. A bare connection is still
+    accepted everywhere below and takes `DEFAULT_BOUNDARY`.
+    """
+
+    def __init__(self, connection, boundary: str = DEFAULT_BOUNDARY):
+        if boundary not in BOUNDARIES:
+            raise ValueError(
+                f"Unknown boundary {boundary!r}: it is one of "
+                f"{', '.join(repr(name) for name in BOUNDARIES)}.")
+        self.connection = connection
+        self.boundary = boundary
+
+    def __getattr__(self, name: str):
+        # Reached only for names this class does not hold itself. The guard
+        # stops the infinite recursion a half-built instance would otherwise
+        # cause, where looking up `connection` calls this method again.
+        if name in ("connection", "boundary"):
+            raise AttributeError(name)
+        return getattr(self.connection, name)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exception) -> bool:
+        self.connection.close()
+        return False
+
+    def __repr__(self) -> str:
+        return f"DuckDBStore({self.connection!r}, boundary={self.boundary!r})"
+
+
+def open_store(target: str | os.PathLike, boundary: str = DEFAULT_BOUNDARY):
     """Open the store the pipeline should work in, chosen by the target's name.
 
     A name ending in `.duckdb`, `.db` or `.ddb` is a DuckDB database and comes
-    back as a connection. Anything else is a folder and comes back as a
-    `ParquetStore`. The folder is created if it is not there, so a first run
-    needs no setup beyond naming a place.
+    back as a `DuckDBStore` around the connection. Anything else is a folder and
+    comes back as a `ParquetStore`. The folder is created if it is not there, so
+    a first run needs no setup beyond naming a place.
+
+    `boundary` picks how a DuckDB store hands a table between steps, `"memory"`
+    or `"parquet"`; see `DuckDBStore`. A Parquet store has no handover at all,
+    because its tables are already the files the steps read and write, so the
+    argument does not reach it.
     """
     target = Path(target)
     if target.suffix.lower() in (".duckdb", ".db", ".ddb"):
         target.parent.mkdir(parents=True, exist_ok=True)
-        return _duckdb().connect(str(target))
+        return DuckDBStore(_duckdb().connect(str(target)), boundary)
     return ParquetStore(target)
+
+
+def boundary_of(store) -> str:
+    """How this store hands a table over between steps.
+
+    A bare DuckDB connection, which is what the dump writer and the older tests
+    pass, carries no choice of its own and gets `DEFAULT_BOUNDARY`.
+    """
+    return getattr(store, "boundary", DEFAULT_BOUNDARY)
 
 
 def store_description(store) -> str:
@@ -334,14 +410,18 @@ def _handover(connection, table: str, direction: str) -> Path:
 
 
 def read_table(store, table: str = "data") -> pl.LazyFrame:
-    """Hand the stored table to polars as a LazyFrame, without materialising it.
+    """Hand the stored table to polars as a LazyFrame.
 
-    In a Parquet store the table is a file already and this is a scan of it.
-    In a DuckDB store the table is copied to a Parquet file with DuckDB's own
-    writer, which never holds more than a row group, and polars scans that.
-    Either way what comes back is a plan over a file rather than over memory,
-    so a step the streaming engine can run reads the dataset in batches and one
-    that cannot still only materialises at the moment it collects.
+    In a Parquet store the table is a file already and this is a scan of it,
+    so the plan is over a file and nothing is materialised.
+
+    In a DuckDB store this follows the store's boundary. Under `"parquet"` the
+    table is copied to a Parquet file with DuckDB's own writer, which never
+    holds more than a row group, and polars scans that: the plan is again over
+    a file, so a step the streaming engine can run reads the dataset in batches
+    and one that cannot still only materialises when it collects. Under
+    `"memory"`, the default, the table is collected here and the plan is over
+    memory.
     """
     if isinstance(store, ParquetStore):
         path = store.path(table)
@@ -349,6 +429,9 @@ def read_table(store, table: str = "data") -> pl.LazyFrame:
             raise FileNotFoundError(
                 f"No `{table}` table in {store.folder}: {path} does not exist")
         return pl.scan_parquet(path)
+
+    if boundary_of(store) == "memory":
+        return store.sql(f"SELECT * FROM {table}").pl().lazy()
 
     handover = _handover(store, table, "read")
     store.execute(
@@ -369,9 +452,11 @@ def write_table(store, frame: pl.LazyFrame, table: str = "data"):
     move is atomic on one filesystem, which means an interrupted step leaves
     the table it started from rather than half a table.
 
-    In a DuckDB store the written file is read into the table and deleted. The
-    store is returned either way, so a caller can chain steps, which is what
-    the R arm's pipe does.
+    In a DuckDB store this follows the store's boundary. Under `"parquet"` the
+    written file is read into the table and deleted. Under `"memory"`, the
+    default, the plan is collected and the result registered straight into the
+    table. The store is returned either way, so a caller can chain steps, which
+    is what the R arm's pipe does.
     """
     if isinstance(store, ParquetStore):
         target = store.path(table)
@@ -381,6 +466,13 @@ def write_table(store, frame: pl.LazyFrame, table: str = "data"):
         else:
             frame.write_parquet(pending, compression="zstd")
         os.replace(pending, target)
+        return store
+
+    if boundary_of(store) == "memory":
+        materialised = frame.collect() if isinstance(frame, pl.LazyFrame) else frame
+        store.register("_siab_write", materialised)
+        store.execute(f"CREATE OR REPLACE TABLE {table} AS SELECT * FROM _siab_write")
+        store.unregister("_siab_write")
         return store
 
     handover = _handover(store, table, "write")
