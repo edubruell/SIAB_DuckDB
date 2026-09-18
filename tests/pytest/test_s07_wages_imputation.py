@@ -430,13 +430,37 @@ def test_a_zero_wage_gets_no_log_and_therefore_no_imputed_wage():
 
 
 def test_the_same_seed_gives_the_same_imputed_wages():
-    """The one thing the R arm cannot claim.
-
-    Each cell is sorted on persnr and spell before it draws, so the draws no
-    longer depend on the order the rows happen to arrive in.
-    """
+    """The one thing the R arm cannot claim."""
     first = impute_wages(cell_frame(), seed=123).collect()
     second = impute_wages(cell_frame(), seed=123).collect()
+
+    assert first["wage_imp"].equals(second["wage_imp"])
+
+
+def test_the_same_seed_gives_the_same_wages_whatever_order_the_rows_arrive_in():
+    """The claim the test above looks like it makes and does not.
+
+    Running the step twice on the same frame proves the draws are seeded; it
+    proves nothing about the row order, because the order is the same both
+    times. This shuffles the rows instead, which is what a step upstream can do
+    at any time: polars is free to reorder a join unless it is told not to.
+
+    Two things had to be true for this to pass, and neither was before
+    2026-09-18. The step sorts on the dataset's whole key before it does
+    anything, because the second step's regressors are leave-one-out mean wages
+    and a sum over a group adds its terms in row order, which floating-point
+    addition is not indifferent to. And the basic establishment merge passes
+    `maintain_order="left"`, as every other merge in the arm already did. Left
+    alone the two together moved 19,649 of 505,050 imputed wages between runs
+    of the test data, most by about 6e-8 and a few by whole euros, because the
+    inverse normal is steep in the tail the draw comes from.
+    """
+    ordered = cell_frame().collect()
+    shuffled = ordered.sample(fraction=1.0, shuffle=True, seed=99)
+
+    key = ["persnr", "spell", "begepi"]
+    first = impute_wages(ordered.lazy(), seed=123).collect().sort(key)
+    second = impute_wages(shuffled.lazy(), seed=123).collect().sort(key)
 
     assert first["wage_imp"].equals(second["wage_imp"])
 

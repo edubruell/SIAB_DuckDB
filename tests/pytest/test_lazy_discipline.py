@@ -198,6 +198,10 @@ def imputation_builder(_: Path) -> tuple[pl.LazyFrame, dict]:
     return frame(
         persnr=[1, 2],
         spell=[1, 1],
+        # begepi completes the key: the step sorts each cell on all three
+        # before it draws, because persnr and spell alone do not name a row
+        # once the episodes have been split.
+        begepi=[dt.date(2000, 1, 1), dt.date(2000, 1, 1)],
         betnr=[10, 10],
         quelle=[1, 1],
         year=[2000, 2000],

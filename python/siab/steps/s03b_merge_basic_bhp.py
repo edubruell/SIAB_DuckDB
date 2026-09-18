@@ -107,8 +107,14 @@ def merge_basic_bhp(frame: pl.LazyFrame,
     log.info(f"Merging {', '.join(keep_variables)} on betnr and year")
 
     # `keep(master match)` is a left join: every SIAB episode survives, matched
-    # or not.
-    frame = frame.join(bhp, on=JOIN_KEYS, how="left")
+    # or not. `maintain_order="left"` is what every other merge in the arm
+    # passes and this one was missing: without it polars is free to hand the
+    # rows back in whatever order the join produced them, and downstream every
+    # sum over a group then adds its terms in a different order. Floating-point
+    # addition is not associative, so the leave-one-out means in the imputation
+    # and the `egen total()` sums in the parallel-episode step came out
+    # differing in their last bits from one run to the next.
+    frame = frame.join(bhp, on=JOIN_KEYS, how="left", maintain_order="left")
 
     log.info(" -> Basic establishment variables added")
 

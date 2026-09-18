@@ -6,11 +6,16 @@ them that the reference master calls. The two merges that read files the FDZ
 only delivers on a separate request are the exception, and are commented out
 here exactly as the reference master switches them off.
 
-Three environment variables set the folders, each with a fallback:
+`stata_to_db_batch_read.py` runs before this and writes the `orig` table this
+reads. Nothing here creates one.
+
+Four environment variables set the folders, each with a fallback:
 
   SIAB_DB        the DuckDB file holding the data, with an `orig` table
   SIAB_RAW       the folder the raw SIAB delivery sits in
   SIAB_LOG       the folder the per-step logs are written to
+  SIAB_SPILL     where the Parquet handover files between steps are written,
+                 beside the database by default
 
 Run it with:
 
@@ -56,7 +61,8 @@ def main() -> None:
 
     if not Path(db_file).exists():
         raise SystemExit(
-            f"No database at {db_file}. Write one with the read-in script, or set SIAB_DB."
+            f"No database at {db_file}. Write one with "
+            f"python/stata_to_db_batch_read.py, or set SIAB_DB."
         )
 
     con = duckdb.connect(db_file)

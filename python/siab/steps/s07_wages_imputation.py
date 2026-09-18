@@ -53,9 +53,13 @@ missing and the imputed wage falls through to the first step's value. That
 fallback is why the reference has its `replace wage_imp = wage_imp_int if
 missing(wage_imp)` line.
 
-Unlike the R arm, each cell is sorted on `persnr` and `spell` before it draws,
-which is the order the reference sorts the whole dataset into before it seeds.
-That makes a seeded run of this step reproducible, which the R arm's is not.
+Unlike the R arm, each cell is sorted before it draws, on `persnr` and `spell`,
+which is the order the reference sorts the whole dataset into before it seeds,
+and then on `begepi`, which this port adds because the reference's two keys do
+not name a row: episode splitting turns one spell into several episodes. With
+the full key the draw a row gets is settled by the data, so a seeded run of
+this step reproduces no matter what order the step is handed. The R arm's does
+not reproduce at all.
 
 Author(s): Eduard Brüll
 Python/polars reimplementation of the original procedure by Wolfgang Dauth and
@@ -372,10 +376,12 @@ def _run_imputation_step(work: pl.DataFrame,
 
     unfitted = 0
     for key in sorted(cells):
-        # `sort persnr spell` is what the reference puts the whole dataset into
-        # before it seeds, so a cell is drawn for in that order. Sorting here is
-        # what makes a seeded run of this step reproducible.
-        cell = cells[key].sort("persnr", "spell")
+        # The cell is already in `persnr`, `spell`, `begepi` order, because
+        # the whole frame was sorted before it was cut up and `partition_by`
+        # keeps that order. Sorting again is cheap and says so out loud: the
+        # order a cell is drawn for is the reference's, and it is fixed by the
+        # data rather than by whatever order upstream handed the step.
+        cell = cells[key].sort("persnr", "spell", "begepi")
         values, fitted, message = _impute_cell(cell, regressors, generator)
         imputed[cell["_row"].to_numpy()] = values
         unfitted += not fitted
@@ -553,7 +559,20 @@ def impute_wages(frame: pl.LazyFrame,
     # The one collection point in this step. Everything from here to the
     # cleanup is eager, because a maximum likelihood fit per cell is not a
     # polars expression.
-    work = work.collect().with_row_index("_row")
+    #
+    # The sort is what makes the step reproducible, and it has to happen here
+    # rather than per cell. The second step's regressors are leave-one-out mean
+    # wages, which polars sums over a person and over a plant in whatever order
+    # the rows arrive in, and floating-point addition is not associative: the
+    # same data in a different order gives a regressor that differs in its last
+    # bits, a fit that differs in its last bits, and a draw that usually
+    # differs by about 6e-8 but can move by whole euros where the inverse
+    # normal is steep. Sorting on the dataset's key fixes the summation order,
+    # so a seeded run gives the same wages whatever order upstream handed the
+    # step. `persnr` and `spell` are the reference's own sort; `begepi` is this
+    # port's addition, because episode splitting means the first two do not
+    # name a row.
+    work = work.sort("persnr", "spell", "begepi").collect().with_row_index("_row")
     log.info(f" ->  limit_assess4, ln_limit_assess4, cens, wage, ln_wage and "
              f"the controls added over {work.height} rows")
 
