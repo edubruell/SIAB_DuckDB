@@ -11,6 +11,14 @@
 # Since this proof-of-concept is done entirely with the SUF, I can not do leave-one-out means because I only have a person-specific 
 # firm identifier, so this implements only the Gartner step 
 
+#The step draws a random term for every censored wage and sets no seed of its
+#own, so a caller that wants the same wages twice calls set.seed() before it.
+#Since 2026-09-18 that is enough: each cell is sorted before the draw and the
+#leave-one-out sums are ordered, so a seeded run gives the same column
+#whatever order DuckDB stores the data in. Before those two changes it did not,
+#and two seeded runs differed on almost every imputed wage. The Python arm has
+#the same property, by the same two means.
+#
 #Generates the variables:
 #  - cens: 1 if right-censored/imputed wage, 0 otherwise; (4 EUR below assessment ceiling)
 #   - wage: daily wage, not imputed, top-coded wages replaced by assessment ceiling (-4 EUR), deflated (2015)
@@ -281,12 +289,23 @@ impute_wages <- function(connection, log_file = NULL){
                           extra = character(0), target) {
     regressors <- c(controls_imputation, extra)
 
+    #The sort is what makes this step reproducible. runif() hands out its draws
+    #in row order, so without it the draw a row gets is decided by the order
+    #DuckDB happens to return the cell in, and a seed does not fix that: two
+    #runs of this file over the same database, both under set.seed(123), gave
+    #wage_imp differing on 29,651 of the 30,315 censored spells of the test data
+    #on 2026-09-18, by up to 1831 EUR a day. persnr and spell are the
+    #reference's own sort, the order it puts the whole dataset into before it
+    #seeds; begepi is this port's addition, because episode splitting means the
+    #first two do not name a row. The three together are unique, and the Python
+    #arm sorts on the same three.
     cell <- tbl(connection, "data") |>
       filter(year     == plan_year,
              educ_tmp == plan_educ_tmp,
              east     == plan_east) |>
       select(persnr, spell, begepi, endepi, marginal, cens, ln_wage,
              ln_limit_assess4, all_of(regressors)) |>
+      arrange(persnr, spell, begepi) |>
       collect()
 
     #e(sample): `if marginal == 0` excludes a missing marginal flag, and Stata
@@ -422,8 +441,26 @@ impute_wages <- function(connection, log_file = NULL){
 
   log_info("Leave-one-out means of the imputed wages", namespace = "impute_wages")
 
+  #Every sum below is ordered, and that is the second half of what makes this
+  #step reproducible. DuckDB adds a group's terms in whatever order its threads
+  #hand them over, and floating-point addition is not associative, so the same
+  #query over the same stored table returns sums that differ in their last bits:
+  #measured on 2026-09-18, repeating one grouped sum over the test data five
+  #times gave between 5,483 and 8,955 of the worker groups a different value
+  #each time. These sums are step 2's regressors, so that wobble moves the fit,
+  #the prediction and the draw. `window_order()` plus a frame covering the whole
+  #partition turns the plain SUM(x) OVER (PARTITION BY ...) into one with an
+  #ORDER BY, which fixes the summation order at the cost of a sort per
+  #partition. The order is the same key the cells are sorted on above.
+  ordered_window <- function(query) {
+    query |>
+      window_order(persnr, spell, begepi) |>
+      window_frame(from = -Inf, to = Inf)
+  }
+
   tbl(connection, "data") |>
     group_by(persnr, quelle) |>
+    ordered_window() |>
     mutate(loo_obs = n(),
            loo_sum = coalesce(sum(ln_wage_imp, na.rm = TRUE), 0)) |>
     ungroup() |>
@@ -435,8 +472,14 @@ impute_wages <- function(connection, log_file = NULL){
     mutate(only_one_obs = as.integer(is.na(ln_wage_mean_worker))) |>
     compute_and_overwrite()
 
+  #The mean over every row, for the workers whose leave-one-out set is empty.
+  #Taken as a window over the whole table rather than with summarise(), for the
+  #same reason: an unordered AVG() is an unordered sum.
   overall_mean <- tbl(connection, "data") |>
-    summarise(m = mean(ln_wage_imp, na.rm = TRUE)) |>
+    ordered_window() |>
+    mutate(m = mean(ln_wage_imp, na.rm = TRUE)) |>
+    select(m) |>
+    head(1) |>
     collect() |>
     pull(m)
 
@@ -449,10 +492,12 @@ impute_wages <- function(connection, log_file = NULL){
 
   tbl(connection, "data") |>
     group_by(year, betnr) |>
+    ordered_window() |>
     mutate(loo_obs = n(),
            loo_sum = coalesce(sum(ln_wage_imp, na.rm = TRUE), 0)) |>
     ungroup() |>
     group_by(year) |>
+    ordered_window() |>
     mutate(year_mean = mean(ln_wage_imp, na.rm = TRUE)) |>
     ungroup() |>
     mutate(ln_wage_mean_firm =

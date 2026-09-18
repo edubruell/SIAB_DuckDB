@@ -116,10 +116,18 @@ test_that("the imputed wage distribution matches the reference within one percen
   # construction and only their distributions are comparable.
   #
   # The bound is one percent. Measured on the test data the three statistics
-  # land within 0.11, 0.19 and 0.21 percent, so the bound has room for the
+  # land within 0.2066, 0.1271 and 0.2262 percent, so the bound has room for the
   # sampling noise of a different draw without being loose enough to pass a
   # port that models something else: before the second imputation step was
   # written the same three sat 1.1, 1.9 and 3.8 percent apart.
+  #
+  # Those three figures are the step's and not one run's. Until 2026-09-18 they
+  # were one run's: the port drew in whatever row order DuckDB returned and
+  # summed each leave-one-out group in whatever order its threads finished, so a
+  # seeded regeneration moved the gaps by a factor of six and once failed this
+  # bound. impute_wages() now sorts every cell before it draws and orders those
+  # sums, and five seeded regenerations gave wage_imp identical on all 505,050
+  # rows.
   query <- siab_reference_query("10_wages_imputation")
 
   stats <- query(
