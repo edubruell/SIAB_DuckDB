@@ -9,10 +9,11 @@
 # column matches the Stata reference. Column-level tests live under
 # tests/testthat/.
 #
-# Both paths can be overridden:
-#   SIAB_TEST_DB    the DuckDB file, default local_context/testdb/siab_test.duckdb
-#   SIAB_TEST_DATA  the folder holding SIAB_7523_v2_bhp_basis_v1.dta,
-#                   default local_context/testdata/siab_7523_v2
+# Both paths are environment variables, each with a fallback:
+#   SIAB_TEST_DB    the DuckDB file holding the `orig` table
+#   SIAB_TEST_DATA  the folder holding SIAB_7523_v2_bhp_basis_v1.dta
+# Each falls back to the untracked working folder this project keeps its test
+# data in, so a run from the project root sets neither.
 #
 # The database must already carry the `orig` table, written by
 # stata_to_db_batch_read.R. The run overwrites `data` and drops the helper

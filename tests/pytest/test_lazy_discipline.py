@@ -257,7 +257,7 @@ def panel_builder(_: Path) -> tuple[pl.LazyFrame, dict]:
 #  The three steps that read an external Stata file
 #
 #  Each gets one written with pyreadstat under tmp_path, so the check stays
-#  independent of local_context/ and of the FDZ test data. The cost is that
+#  independent of the untracked working folder and of the FDZ test data. The cost is that
 #  these three carry a fixture the other fifteen do not need: the frames stay
 #  minimal, but the builders are no longer only a table.
 # ----------------------------------------------------------------------

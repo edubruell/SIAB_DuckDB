@@ -11,7 +11,7 @@
 #
 #    Rscript tests/fixtures/make_r_dumps.R
 #
-#  Three environment variables set the folders, each with a fallback:
+#  Four environment variables set the folders, each with a fallback:
 #
 #    SIAB_TEST_DB    the DuckDB file holding the test data
 #    SIAB_TEST_DATA  the folder holding the FDZ test data
@@ -19,6 +19,10 @@
 #                    tests read the same variable, through
 #                    tests/testthat/helper-siab.R, so set it for both or
 #                    neither.
+#    SIAB_AKM_DIR    the folder holding the two fabricated AKM files. The
+#                    Python dump writer reads the same variable, and both
+#                    arms have to read the same two files or the comparison
+#                    means nothing.
 #
 #  The comparison tests in tests/testthat/test-reference-*.R skip when these
 #  dumps are absent, so the fast synthetic suite still runs without them.
@@ -251,7 +255,10 @@ dump_step("11_merge_BHP")
 # The AKM files are fabricated, not delivered, so both sides have to read the
 # same two files or the comparison means nothing. make_synth_akm.do
 # writes them into the Stata fixture run's orig folder and this reads them back.
-akm_dir <- here("local_context", "stata_fixtures", "orig")
+akm_dir <- Sys.getenv(
+  "SIAB_AKM_DIR",
+  here("local_context", "stata_fixtures", "orig")
+)
 con |> merge_akm(log_file       = here("log", "07c_akm.log"),
                  akm_estab_file = file.path(akm_dir, "SIAB_7523_v2_akm_estab.dta"),
                  akm_pers_file  = file.path(akm_dir, "SIAB_7523_v2_akm_pers.dta"))

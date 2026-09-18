@@ -16,7 +16,10 @@ arms answering to two slightly different questions.
 Folders come from environment variables with fallbacks:
 
   SIAB_FIXTURES  the committed Stata fixtures, default tests/testthat/fixtures
-  SIAB_PY_DUMP   the Python dumps, default local_context/testdb/py_dump
+  SIAB_PY_DUMP   the Python dumps that make_py_dumps.py writes. The default
+                 sits in the untracked working folder this project keeps its
+                 test database in, so a run from the project root sets it
+                 for neither script or for both.
 """
 
 from __future__ import annotations
