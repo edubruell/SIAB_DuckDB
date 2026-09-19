@@ -38,6 +38,8 @@ SIAB_DuckDB/
   classifications/    shared, language-neutral lookup tables (CSV)
   tests/              testthat/ for R, pytest/ for Python,
                       and the shared Stata fixtures
+  benchmark/          a synthetic delivery of any size, and the harness
+                      that times all three arms over it
   log/                per-step run logs, written by either arm
 ```
 

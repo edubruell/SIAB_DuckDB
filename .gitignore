@@ -18,6 +18,11 @@ README.html
 log/*
 !log/.gitkeep
 
+# Benchmark output. The harness writes outside the repo by default; this covers
+# a run that was pointed at the repo instead.
+benchmark/results/
+benchmark/*.csv
+
 # Python arm
 .venv/
 __pycache__/
