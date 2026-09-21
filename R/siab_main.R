@@ -118,3 +118,11 @@ dbListTables(con)
 
 # Close DuckDB connection
 dbDisconnect(con, shutdown = TRUE)
+
+#Hand the store on at the size of what is in it
+#
+#The run allocated a block for every copy of `data` it wrote and every helper
+#table it dropped, and a DuckDB file never shrinks on its own. Copying the two
+#surviving tables into a fresh database returns all of it, in about a second at
+#this size, and leaves a store holding the same values.
+compact_store(dbfolder("siab.duckdb"))

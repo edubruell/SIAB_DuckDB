@@ -30,6 +30,7 @@ from siab.common import (
     DEFAULT_BOUNDARY,
     DuckDBStore,
     boundary_dir,
+    compact_store,
     database_path,
     open_store,
     read_table,
@@ -268,3 +269,80 @@ def test_two_databases_in_one_folder_do_not_share_a_handover(tmp_path):
     finally:
         first.close()
         second.close()
+
+
+# ======================================================================
+#  Keeping the store the size of what is in it
+# ======================================================================
+#
+# Every step rewrites the whole table, so the blocks the old copy held are free
+# as soon as it is dropped. DuckDB reuses free blocks only across a checkpoint
+# and never shrinks a file by itself, which is why `write_table()` checkpoints
+# and why a finished prep is copied into a fresh file. The counterparts are
+# tested in tests/testthat/test-00_common_functions.R.
+
+def _rewrite(store, steps: int = 10) -> None:
+    """A run's worth of rewrites of the same table."""
+    for step in range(steps):
+        write_table(store, read_table(store).with_columns(
+            wage=pl.col("wage") + step))
+
+
+def _big_table(store) -> None:
+    store.execute("DROP TABLE IF EXISTS data")
+    store.execute(
+        "CREATE TABLE data AS "
+        "SELECT i AS persnr, i * 1.5 AS wage FROM range(50000) t(i)")
+
+
+def test_a_write_leaves_no_unreused_blocks_behind(connection):
+    _big_table(connection)
+
+    def blocks() -> dict:
+        return connection.execute("PRAGMA database_size").pl().to_dicts()[0]
+
+    free = []
+    for _ in range(10):
+        write_table(connection, read_table(connection).with_columns(
+            wage=pl.col("wage") + 1))
+        free.append(blocks()["free_blocks"])
+
+    assert max(free) < 3 * blocks()["used_blocks"]
+
+
+def test_compact_store_returns_the_file_to_the_size_of_what_is_in_it(tmp_path):
+    database = tmp_path / "siab.duckdb"
+    store = open_store(database)
+    _big_table(store)
+    _rewrite(store)
+    before = read_table(store).collect().sort("persnr")
+    store.execute("CHECKPOINT")
+    grown = database.stat().st_size
+    store.close()
+
+    after_bytes = compact_store(database)
+
+    assert after_bytes < grown
+    assert after_bytes == database.stat().st_size
+    assert not (tmp_path / "siab.duckdb.wal").exists()
+    assert not (tmp_path / "siab.duckdb.compact").exists()
+
+    reopened = open_store(database)
+    try:
+        assert read_table(reopened).collect().sort("persnr").equals(before)
+    finally:
+        reopened.close()
+
+
+def test_compact_store_leaves_a_parquet_folder_alone(tmp_path):
+    folder = tmp_path / "store"
+    store = open_store(folder)
+    write_table(store, pl.DataFrame({"persnr": [1, 2], "wage": [1.0, 2.0]}).lazy())
+    sizes = {path.name: path.stat().st_size for path in folder.iterdir()}
+
+    assert compact_store(folder) is None
+    assert {path.name: path.stat().st_size for path in folder.iterdir()} == sizes
+
+
+def test_compact_store_says_nothing_about_a_path_with_no_store_at_it(tmp_path):
+    assert compact_store(tmp_path / "no_such_store.duckdb") is None

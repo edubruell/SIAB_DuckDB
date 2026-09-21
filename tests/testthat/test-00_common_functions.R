@@ -99,3 +99,94 @@ test_that("stata_float makes a threshold comparison agree with the reference", {
   expect_false(13.15 <= stata_float(13.15))
   expect_true(13.15 <= 13.15)
 })
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
+#  What the two arms do to keep a store the size of what is in it
+#
+#  Every step rewrites the whole table, so the blocks the old copy held are
+#  free as soon as it is dropped. DuckDB reuses free blocks only across a
+#  checkpoint and never shrinks a file by itself, which is why
+#  compute_and_overwrite() checkpoints and why a finished prep is copied into a
+#  fresh file. The counterparts are tested in tests/pytest/test_common.py.
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# A file-backed database, which is the only kind that has blocks to reuse.
+on_disk_db <- function(rows, env = parent.frame()) {
+  path       <- withr::local_tempfile(fileext = ".duckdb", .local_envir = env)
+  connection <- siab_connect(path)
+
+  DBI::dbWriteTable(connection, "data", as.data.frame(rows))
+
+  had_con <- exists("con", envir = globalenv(), inherits = FALSE)
+  old_con <- if (had_con) get("con", envir = globalenv()) else NULL
+  assign("con", connection, envir = globalenv())
+
+  withr::defer(
+    {
+      if (had_con) assign("con", old_con, envir = globalenv())
+      else rm("con", envir = globalenv())
+      suppressWarnings(try(DBI::dbDisconnect(connection, shutdown = TRUE),
+                           silent = TRUE))
+    },
+    envir = env
+  )
+
+  list(connection = connection, path = path)
+}
+
+test_that("compute_and_overwrite leaves no unreused blocks behind", {
+  store <- on_disk_db(data.frame(persnr = 1:20000, wage = runif(20000)))
+
+  after_rewrite <- function(step) {
+    tbl(store$connection, "data") |>
+      mutate(wage = wage + step) |>
+      compute_and_overwrite()
+    DBI::dbGetQuery(store$connection, "PRAGMA database_size")$free_blocks[1]
+  }
+
+  # Ten rewrites of the same table. Without the checkpoint every one of them
+  # allocates a fresh copy and frees the one before it, so the free blocks
+  # climb with the number of steps; with it, they do not.
+  free <- vapply(1:10, after_rewrite, numeric(1))
+
+  expect_lt(max(free), 3 * DBI::dbGetQuery(
+    store$connection, "PRAGMA database_size")$used_blocks[1])
+})
+
+test_that("compact_store returns the file to the size of what is in it", {
+  store <- on_disk_db(data.frame(persnr = 1:50000, wage = runif(50000)))
+
+  # A run's worth of rewrites, each leaving its predecessor's blocks free.
+  for (step in 1:10) {
+    tbl(store$connection, "data") |>
+      mutate(wage = wage + step) |>
+      compute_and_overwrite()
+  }
+  before  <- DBI::dbGetQuery(store$connection, "SELECT * FROM data") |>
+    dplyr::arrange(persnr)
+  # What the file is once everything is in it rather than in the write-ahead
+  # log, so that the comparison below is about the compaction and not about
+  # whether the rewrites were checkpointed.
+  DBI::dbExecute(store$connection, "CHECKPOINT")
+  grown   <- file.size(store$path)
+  DBI::dbDisconnect(store$connection, shutdown = TRUE)
+
+  expect_output(compact_store(store$path), "Store compacted")
+
+  expect_lt(file.size(store$path), grown)
+  expect_false(file.exists(paste0(store$path, ".wal")))
+  expect_false(file.exists(paste0(store$path, ".compact")))
+
+  connection <- siab_connect(store$path, read_only = TRUE)
+  on.exit(DBI::dbDisconnect(connection, shutdown = TRUE), add = TRUE)
+  after <- DBI::dbGetQuery(connection, "SELECT * FROM data") |>
+    dplyr::arrange(persnr)
+  expect_equal(after, before)
+})
+
+test_that("compact_store refuses a path with no database at it", {
+  expect_error(compact_store(file.path(tempdir(), "no_such_store.duckdb")),
+               "No such database file")
+})

@@ -102,6 +102,8 @@ The Python pipeline reads the same `SIAB_DB` and falls back to `SIAB_DB_FOLDER/s
    SIAB_DB=/somewhere/siab_store   uv run --project python python python/main.py   # a folder of Parquet files
    ```
 
+Both arms leave the store at about the size of what is in it. A step rewrites the whole table, and DuckDB reuses the blocks the previous copy held only across a checkpoint, so each arm checkpoints after every step; at the end of a run the finished database is copied into a fresh file with `COPY FROM DATABASE`, which returns every block the run allocated and never reused. Over the FDZ test delivery that is 0.071 GB where an uncheckpointed run left 0.958 GB behind, and it costs no measurable time. A Parquet store keeps one file per table and needs neither.
+
 It also reads `SIAB_RAW` for the delivery folder, falling back to `SIAB_RAW_FOLDER`, and `SIAB_LOG` for the log folder. Two more govern how a `.duckdb` store hands a table between steps: `SIAB_BOUNDARY`, which is `memory` by default and `parquet` for the larger-than-memory case, and `SIAB_SPILL`, which moves the handover files `parquet` writes, beside the database by default. A Parquet store hands its tables over as files in any case and ignores both.
 
 The R script installs and loads the necessary packages with the `pacman` package manager and its `p_load()` function. It then connects to a duckdb database, keeps the employment history, generates the year and age variables, and runs the following steps from the `R/functions` folder.

@@ -47,6 +47,7 @@ import polars as pl
 
 from siab.common import (
     DEFAULT_BOUNDARY,
+    compact_store,
     count_rows,
     drop_table,
     folder_reference_factory,
@@ -191,6 +192,13 @@ def main() -> None:
     print(f"\nPipeline finished, {rows} rows in the `data` table of "
           f"{store_description(store)}")
     store.close()
+
+    # The run allocated a block for every copy of `data` it wrote and every
+    # helper table it dropped, and a DuckDB file never shrinks on its own.
+    # Copying the two surviving tables into a fresh database returns all of it
+    # and hands the store on at the size of what is in it. A Parquet folder
+    # holds one file per table and is left alone.
+    compact_store(target)
 
 
 if __name__ == "__main__":

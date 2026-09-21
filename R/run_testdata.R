@@ -125,3 +125,9 @@ cat("\n",
     sep = "")
 
 dbDisconnect(con, shutdown = TRUE)
+
+#Hand the store on at the size of what is in it, as siab_main.R does. The run
+#allocated a block for every copy of `data` it wrote and every helper table it
+#dropped, and a DuckDB file never shrinks on its own; copying the two surviving
+#tables into a fresh database returns all of it.
+compact_store(db_file)
