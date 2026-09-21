@@ -371,7 +371,15 @@ def _run_imputation_step(work: pl.DataFrame,
     """
     imputed = np.full(work.height, np.nan)
 
-    cells = work.filter(pl.col("east").is_not_null()).partition_by(
+    # Only the columns a cell is fitted, sorted and scattered back by. The
+    # partition is a second copy of what it is given, so handing it the whole
+    # frame costs a copy of every column the fit never reads: forty-odd of them
+    # by this point in the pipeline against the twenty below.
+    needed = list(dict.fromkeys(
+        ["_row", "persnr", "spell", "begepi", "year", "educ_tmp", "east",
+         "marginal", "cens", "ln_wage", "ln_limit_assess4", *regressors]))
+
+    cells = work.filter(pl.col("east").is_not_null()).select(needed).partition_by(
         ["year", "educ_tmp", "east"], as_dict=True, maintain_order=True)
 
     unfitted = 0
