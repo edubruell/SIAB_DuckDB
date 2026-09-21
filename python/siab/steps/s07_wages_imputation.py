@@ -82,7 +82,9 @@ References:
 
 from __future__ import annotations
 
+import atexit
 import os
+from pathlib import Path
 from typing import NamedTuple, Sequence
 
 import numpy as np
@@ -91,7 +93,7 @@ from scipy.optimize import minimize
 from scipy.special import log_ndtr, ndtr, ndtri
 from scipy.stats import norm
 
-from siab.common import pl_stata_gt, step_logger
+from siab.common import open_store, pl_stata_gt, spill_dir, step_logger
 
 __all__ = ["impute_wages"]
 
@@ -266,6 +268,92 @@ def draw_above_the_ceiling(expected: np.ndarray,
 
 
 # ======================================================================
+#  The database this step works in
+# ======================================================================
+#
+# Three things this step does are what a database is for and none of them is a
+# polars expression the streaming engine can run: the whole dataset is sorted
+# once, a maximum likelihood fit reads one year/education/east cell at a time,
+# and the leave-one-out means are window functions over every row. Written to a
+# file, those windows peak higher than collecting the frame does, measured on
+# 2026-09-21 at 4.51 GB against 3.57 on a stand-in of five million rows.
+#
+# So the step loads the prepared frame into a DuckDB database of its own and
+# hands back a scan of what it writes out. DuckDB sorts, filters and windows
+# out of core, under `SIAB_DUCKDB_MEMORY_LIMIT` where a run sets one, which is
+# what the R arm has always done and why the R arm survives a 4 GB cap where
+# this one used to hold about 14 GB at ten copies of the test delivery.
+#
+# The round trip costs no types: every store this arm runs over already writes
+# each step's result into a DuckDB table or a Parquet file between steps.
+
+_ORDERED = ("ORDER BY persnr, spell, begepi "
+            "ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING")
+
+_cleaned_up: set[Path] = set()
+
+
+def _step_file(suffix: str) -> Path:
+    """A working file of this step's own, in the folder the arm spills to.
+
+    The name carries the process, so two runs in one folder do not meet, and it
+    is the same on every call, so a run leaves one file per suffix behind
+    rather than one per step. Whatever is there from an earlier call goes now,
+    and what this call writes goes when the process ends.
+    """
+    path = spill_dir() / f"siab_imputation_{os.getpid()}{suffix}"
+    path.unlink(missing_ok=True)
+    if path not in _cleaned_up:
+        atexit.register(path.unlink, missing_ok=True)
+        _cleaned_up.add(path)
+    return path
+
+
+def _columns(store) -> list[str]:
+    return [row[1] for row in store.execute("PRAGMA table_info('work')").fetchall()]
+
+
+def _overwrite_work(store, query: str) -> None:
+    """Rebuild `work` from a query over itself, to a new table and then a rename.
+
+    The same shape as the R arm's `compute_and_overwrite()`, and kept explicit
+    for the same reason: what a statement that reads and replaces one table in
+    one breath does is a property of the engine rather than of this code.
+    """
+    store.execute("DROP TABLE IF EXISTS work_next")
+    store.execute(f"CREATE TABLE work_next AS {query}")
+    store.execute("DROP TABLE work")
+    store.execute("ALTER TABLE work_next RENAME TO work")
+
+
+def _load_work(store, work: pl.LazyFrame) -> None:
+    """Put the prepared frame into the step's database, numbered in the sort order.
+
+    The sort is what makes the step reproducible. The second step's regressors
+    are leave-one-out mean wages, which sum over a person and over a plant in
+    whatever order the rows arrive in, and floating-point addition is not
+    associative: the same data in a different order gives a regressor that
+    differs in its last bits, a fit that differs in its last bits, and a draw
+    that usually differs by about 6e-8 but can move by whole euros where the
+    inverse normal is steep. `persnr` and `spell` are the reference's own sort;
+    `begepi` is this port's addition, because episode splitting means the first
+    two do not name a row.
+
+    `_row` is that order as a column. Every cell the loop below reads carries
+    it, which is how a cell's draws find their rows again, and the step writes
+    its result out in it, so what the next step is handed does not depend on
+    how the join that put the draws back happened to come out.
+    """
+    handover = _step_file("_in.parquet")
+    work.sink_parquet(handover, compression="zstd")
+    store.execute(
+        "CREATE TABLE work AS SELECT *, "
+        "row_number() OVER (ORDER BY persnr, spell, begepi) - 1 AS _row "
+        f"FROM read_parquet('{handover}')")
+    handover.unlink(missing_ok=True)
+
+
+# ======================================================================
 #  One cell of one imputation step
 # ======================================================================
 
@@ -348,12 +436,52 @@ def _impute_cell(cell: pl.DataFrame,
     return imputed, True, ("; ".join(notes) if notes else None)
 
 
-def _run_imputation_step(work: pl.DataFrame,
+def _cells(store, regressors: Sequence[str], batch: int = 200_000):
+    """Hand out one year/education/east cell at a time, in the reference's order.
+
+    The database sorts the table into cell order once, on the three keys of the
+    plan and then on the dataset's own, and the rows arrive as a stream of
+    batches. A cell's rows are therefore next to each other, so this holds one
+    cell and one batch at a time and never the dataset.
+
+    A query per cell would be the obvious way to write it and was the first one:
+    every cell is a filter the database can answer. It scans the whole table to
+    do so, and with the test delivery's 294 cells that cost 17 seconds against
+    the 14 of one ordered pass. One pass also keeps the count of scans off the
+    delivery's size.
+    """
+    # Only the columns a cell is fitted, sorted and scattered back by, which is
+    # twenty of the forty-odd the table carries by this point in the pipeline.
+    columns = ", ".join(dict.fromkeys(
+        ["_row", "persnr", "spell", "begepi", "marginal", "cens", "ln_wage",
+         "ln_limit_assess4", "year", "educ_tmp", "east", *regressors]))
+
+    stream = store.execute(
+        f"SELECT {columns} FROM work WHERE east IS NOT NULL "
+        f"ORDER BY year, educ_tmp, east, persnr, spell, begepi"
+    ).to_arrow_reader(batch)
+
+    key = None
+    pending: list[pl.DataFrame] = []
+    for arrow in stream:
+        frame = pl.from_arrow(arrow)
+        for part_key, part in frame.partition_by(
+                ["year", "educ_tmp", "east"], as_dict=True, maintain_order=True).items():
+            if key is not None and part_key != key:
+                yield key, pl.concat(pending)
+                pending = []
+            key, pending = part_key, pending + [part]
+
+    if pending:
+        yield key, pl.concat(pending)
+
+
+def _run_imputation_step(store,
                          regressors: Sequence[str],
                          target: str,
                          carry_missing_east: bool,
                          generator: np.random.Generator,
-                         log) -> pl.DataFrame:
+                         log) -> None:
     """One whole imputation step: every cell of the plan, plus the rows it never sees.
 
         keep if missing(east)
@@ -365,54 +493,43 @@ def _run_imputation_step(work: pl.DataFrame,
     from the fallback at the end.
 
     The reference loops year, then education group, then East/West, and runs a
-    cell even when it holds nothing. The plan is built from the data instead, so
-    an empty cell is never visited, but the order is the reference's, and the
-    draws follow it.
+    cell even when it holds nothing. The plan is the data's own distinct keys
+    instead, so an empty cell is never visited, but the order is the
+    reference's, and the draws follow it.
     """
-    imputed = np.full(work.height, np.nan)
+    # One draw per row of the dataset, eight bytes each, and the only thing
+    # here that grows with the delivery. A cell writes its own rows and the
+    # join at the end puts the column back on the table.
+    imputed = np.full(store.sql("SELECT count(*) FROM work").fetchone()[0], np.nan)
 
-    # Only the columns a cell is fitted, sorted and scattered back by. The
-    # partition is a second copy of what it is given, so handing it the whole
-    # frame costs a copy of every column the fit never reads: forty-odd of them
-    # by this point in the pipeline against the twenty below.
-    needed = list(dict.fromkeys(
-        ["_row", "persnr", "spell", "begepi", "year", "educ_tmp", "east",
-         "marginal", "cens", "ln_wage", "ln_limit_assess4", *regressors]))
-
-    cells = work.filter(pl.col("east").is_not_null()).select(needed).partition_by(
-        ["year", "educ_tmp", "east"], as_dict=True, maintain_order=True)
-
-    unfitted = 0
-    for key in sorted(cells):
-        # The cell is already in `persnr`, `spell`, `begepi` order, because
-        # the whole frame was sorted before it was cut up and `partition_by`
-        # keeps that order. Sorting again is cheap and says so out loud: the
-        # order a cell is drawn for is the reference's, and it is fixed by the
-        # data rather than by whatever order upstream handed the step.
-        cell = cells[key].sort("persnr", "spell", "begepi")
+    cells = unfitted = 0
+    for (year, educ, east), cell in _cells(store, regressors):
         values, fitted, message = _impute_cell(cell, regressors, generator)
         imputed[cell["_row"].to_numpy()] = values
+        cells += 1
         unfitted += not fitted
         if message is not None:
-            year, educ, east = key
             log.warning(f" ->  year {year}, education group {educ}, east {east}: "
                         f"{message}")
 
     if unfitted > 0:
-        log.warning(f" ->  {unfitted} of {len(cells)} cells could not be fitted")
+        log.warning(f" ->  {unfitted} of {cells} cells could not be fitted")
 
-    # NaN is how a missing value travelled through the cells; polars wants a
+    # NaN is how a missing value travelled through the cells; the table wants a
     # null, and the fallback at the end of the step reads null.
-    drawn = pl.Series(target, imputed, dtype=pl.Float64).fill_nan(None)
+    drawn = pl.DataFrame({
+        "_row": np.arange(imputed.size, dtype=np.int64),
+        "value": imputed,
+    }).with_columns(pl.col("value").fill_nan(None))
 
-    if carry_missing_east:
-        carried = pl.when(pl.col("quelle") == 1).then(pl.col("ln_wage")).otherwise(None)
-    else:
-        carried = pl.lit(None, pl.Float64)
-
-    return work.with_columns(
-        pl.when(pl.col("east").is_not_null()).then(drawn).otherwise(carried).alias(target)
-    )
+    carried = ("WHEN w.quelle = 1 THEN w.ln_wage " if carry_missing_east else "")
+    store.register("_drawn", drawn)
+    _overwrite_work(
+        store,
+        f"SELECT w.*, CASE WHEN w.east IS NOT NULL THEN d.value {carried}END "
+        f"            AS {target} "
+        f"FROM work w JOIN _drawn d ON w._row = d._row")
+    store.unregister("_drawn")
 
 
 # ======================================================================
@@ -423,27 +540,30 @@ def _percent(share: float | None) -> str:
     return "n/a" if share is None else f"{share:.1%}"
 
 
-def _log_censoring_overview(work: pl.DataFrame, log) -> None:
+def _log_censoring_overview(store, log) -> None:
     """The `tab cens ...` blocks of 10_wages_imputation.do, as log lines.
 
     The reference prints these only under its `inspect` global. They are kept
     because the R arm keeps them, and because the share of censored wages per
     education group is the first thing that looks wrong when the assessment
     ceiling or the deflation is off.
-    """
-    beh = work.filter((pl.col("quelle") == 1) & pl.col("cens").is_not_null())
 
-    counts = beh.group_by("cens").len().sort("cens")
-    total = counts["len"].sum()
+    Every line is a count or a group mean, so the database answers them one
+    small frame at a time and nothing here holds a column of the dataset.
+    """
+    beh = "FROM work WHERE quelle = 1 AND cens IS NOT NULL"
+
+    counts = store.sql(f"SELECT cens, count(*) AS n {beh} "
+                       f"GROUP BY cens ORDER BY cens").pl()
+    total = counts["n"].sum()
     labels = {0: "below the wage assessment limit", 1: "above the wage assessment limit"}
     for censored, n in counts.iter_rows():
         log.info(f"{n} BeH wages ({_percent(n / total)}) are {labels[censored]}")
     log.info("--------------------")
 
     education = {0: "Missing", 1: "Low", 2: "Medium", 3: "High"}
-    by_education = (beh.with_columns(pl.col("educ").fill_null(0))
-                       .group_by("educ").agg(pl.col("cens").mean().alias("share"))
-                       .sort("educ"))
+    by_education = store.sql(f"SELECT coalesce(educ, 0) AS educ, avg(cens) AS share "
+                             f"{beh} GROUP BY 1 ORDER BY 1").pl()
     for educ, share in by_education.iter_rows():
         log.info(f"{_percent(share)} of wages are censored for "
                  f"{education.get(educ, educ)} Education")
@@ -453,28 +573,26 @@ def _log_censoring_overview(work: pl.DataFrame, log) -> None:
     # theirs is the group most of the censoring sits in. Each band is closed on
     # the left and open on the right, and the last one takes the sixtieth
     # birthday with it.
-    skilled = beh.filter(pl.col("educ") == 3)
     bands = [(18, 25)] + [(lower, lower + 5) for lower in range(25, 60, 5)]
     for lower, upper in bands:
-        in_band = pl.col("age").is_between(lower, upper, closed="both" if upper == 60
-                                           else "left")
-        share = skilled.filter(in_band)["cens"].mean()
+        closed = "age <= ?" if upper == 60 else "age < ?"
+        share = store.execute(f"SELECT avg(cens) {beh} AND educ = 3 "
+                              f"AND age >= ? AND {closed}", [lower, upper]).fetchone()[0]
         log.info(f"For the highly educated in age range {lower} to {upper} "
                  f"{_percent(share)} of wages are censored")
     log.info("--------------------")
 
     hours = {0: "Fulltime", 1: "Parttime", 9: "Missing FT-Info"}
-    by_hours = (beh.with_columns(pl.col("teilzeit").fill_null(9))
-                   .group_by("teilzeit").agg(pl.col("cens").mean().alias("share"))
-                   .sort("teilzeit"))
+    by_hours = store.sql(f"SELECT coalesce(teilzeit, 9) AS teilzeit, avg(cens) AS share "
+                         f"{beh} GROUP BY 1 ORDER BY 1").pl()
     for teilzeit, share in by_hours.iter_rows():
         log.info(f"{_percent(share)} of wages are censored for "
                  f"{hours.get(teilzeit, teilzeit)} employees")
     log.info("--------------------")
 
     sex = {0: "Men", 1: "Women"}
-    by_sex = (beh.group_by("frau").agg(pl.col("cens").mean().alias("share"))
-                 .sort("frau"))
+    by_sex = store.sql(f"SELECT frau, avg(cens) AS share {beh} "
+                       f"GROUP BY frau ORDER BY frau").pl()
     for frau, share in by_sex.iter_rows():
         log.info(f"{_percent(share)} of wages of {sex.get(frau, frau)} are censored")
     log.info("--------------------")
@@ -495,9 +613,15 @@ def impute_wages(frame: pl.LazyFrame,
     from run to run, which is what the reference does outside its own
     `set seed 123`.
 
-    This is the one step that collects the data rather than a summary: a
-    likelihood is maximised per cell, in numpy, and there is no lazy expression
-    for that. The frame is collected once, at the top, and handed back lazy.
+    This is the one step that works in a database of its own rather than in a
+    polars plan: a likelihood is maximised per cell, in numpy, and there is no
+    lazy expression for that, nor for a leave-one-out mean the streaming engine
+    will run. What it holds is one cell at a time. See the block above
+    `_step_file()`.
+
+    What comes back is a scan of a file in the spill folder, and a second call
+    in the same process writes over that file, so collect the frame before
+    calling the step again. The pipeline does, and so does every test here.
     """
     log = step_logger("impute_wages", log_file)
     generator = np.random.default_rng(seed)
@@ -563,151 +687,182 @@ def impute_wages(frame: pl.LazyFrame,
         age_old=pl.col("age") * pl.col("old"),
         age_sq_old=pl.col("age_sq") * pl.col("old"),
     )
-
-    # The one collection point in this step. Everything from here to the
-    # cleanup is eager, because a maximum likelihood fit per cell is not a
-    # polars expression.
-    #
-    # The sort is what makes the step reproducible, and it has to happen here
-    # rather than per cell. The second step's regressors are leave-one-out mean
-    # wages, which polars sums over a person and over a plant in whatever order
-    # the rows arrive in, and floating-point addition is not associative: the
-    # same data in a different order gives a regressor that differs in its last
-    # bits, a fit that differs in its last bits, and a draw that usually
-    # differs by about 6e-8 but can move by whole euros where the inverse
-    # normal is steep. Sorting on the dataset's key fixes the summation order,
-    # so a seeded run gives the same wages whatever order upstream handed the
-    # step. `persnr` and `spell` are the reference's own sort; `begepi` is this
-    # port's addition, because episode splitting means the first two do not
-    # name a row.
-    work = work.sort("persnr", "spell", "begepi").collect().with_row_index("_row")
-    log.info(f" ->  limit_assess4, ln_limit_assess4, cens, wage, ln_wage and "
-             f"the controls added over {work.height} rows")
-
-    _log_censoring_overview(work, log)
-
-    plan = (work.filter(pl.col("east").is_not_null())
-                .select("year", "educ_tmp", "east").unique())
-    log.info(f"Imputation plan: {plan.height} year/education/east cells, "
-             f"{work['year'].min()} to {work['year'].max()}")
-
     # ------------------------------------------------------------------
-    # Step 1: imputation with observable characteristics (Gartner 2005)
-    # ------------------------------------------------------------------
-    log.info("Step 1: imputation on observables")
-    work = _run_imputation_step(work, CONTROLS, "ln_wage_imp",
-                                carry_missing_east=True,
-                                generator=generator, log=log)
-    log.info(" ->  ln_wage_imp added")
-
-    # ------------------------------------------------------------------
-    # Intermediate step: leave-one-out means of the imputed wages
+    #   Into the step's own database
     # ------------------------------------------------------------------
     #
-    # Something like a worker and a plant fixed effect. Three details of the
-    # reference decide the values and none of them is visible in the formula:
-    #
-    #   - `egen total()` sums a group of nothing but missings to 0, which is
-    #     also what a polars sum over nothing but nulls gives.
-    #   - a worker seen once, or a plant with one sampled worker, has an empty
-    #     leave-one-out set. The dummy records that BEFORE the gap is filled.
-    #   - the fill is the mean over every row, taken before non-BeH spells are
-    #     wiped, and for the plant it is the mean within the year.
-    #
-    # betnr is a real establishment number in SIAB 7523 v2, so the plant means
-    # are computable; in the 2 percent sample most plants hold one sampled
-    # worker and the fallback carries them.
-    log.info("Leave-one-out means of the imputed wages")
+    # Everything above is a lazy plan the streaming engine runs; everything
+    # below is the database's, because a maximum likelihood fit per cell is not
+    # a polars expression and the leave-one-out means are windows over the
+    # whole dataset. See the block above `_step_file()` for why that is the
+    # line, and `_load_work()` for what the sort is protecting.
+    output = _step_file(".parquet")
+    database = _step_file(".duckdb")
 
-    overall_mean = work["ln_wage_imp"].mean()
+    with open_store(database,
+                    memory_limit=os.environ.get("SIAB_DUCKDB_MEMORY_LIMIT"),
+                    temp_directory=os.environ.get("SIAB_DUCKDB_TEMP_DIR")) as store:
+        _load_work(store, work)
+        rows = store.sql("SELECT count(*) FROM work").fetchone()[0]
+        log.info(f" ->  limit_assess4, ln_limit_assess4, cens, wage, ln_wage and "
+                 f"the controls added over {rows} rows")
 
-    work = work.with_columns(
-        ln_wage_mean_worker=pl.when(
-            (pl.len().over("persnr", "quelle") > 1) & pl.col("ln_wage_imp").is_not_null()
-        ).then(
-            (pl.col("ln_wage_imp").sum().over("persnr", "quelle") - pl.col("ln_wage_imp"))
-            / (pl.len().over("persnr", "quelle") - 1)
-        ).otherwise(None),
-        ln_wage_mean_firm=pl.when(
-            (pl.len().over("year", "betnr") > 1) & pl.col("ln_wage_imp").is_not_null()
-        ).then(
-            (pl.col("ln_wage_imp").sum().over("year", "betnr") - pl.col("ln_wage_imp"))
-            / (pl.len().over("year", "betnr") - 1)
-        ).otherwise(None),
-        year_mean=pl.col("ln_wage_imp").mean().over("year"),
-    ).with_columns(
-        only_one_obs=pl.col("ln_wage_mean_worker").is_null().cast(pl.Int32),
-        only_one_worker=pl.col("ln_wage_mean_firm").is_null().cast(pl.Int32),
-    ).with_columns(
-        ln_wage_mean_worker=pl.when(pl.col("quelle") != 1).then(None)
-            .otherwise(pl.col("ln_wage_mean_worker").fill_null(overall_mean)),
-        ln_wage_mean_firm=pl.when(pl.col("quelle") != 1).then(None)
-            .otherwise(pl.col("ln_wage_mean_firm").fill_null(pl.col("year_mean"))),
-    ).drop("year_mean")
+        _log_censoring_overview(store, log)
 
-    log.info(" ->  ln_wage_mean_worker, only_one_obs, ln_wage_mean_firm and "
-             "only_one_worker added")
+        cells, first_year, last_year = store.sql(
+            "SELECT (SELECT count(*) FROM (SELECT DISTINCT year, educ_tmp, east "
+            "        FROM work WHERE east IS NOT NULL)), min(year), max(year) "
+            "FROM work").fetchone()
+        log.info(f"Imputation plan: {cells} year/education/east cells, "
+                 f"{first_year} to {last_year}")
 
-    # ------------------------------------------------------------------
-    # Step 2: extended imputation models including the leave-one-out means
-    # ------------------------------------------------------------------
-    log.info("Step 2: imputation including the leave-one-out means")
-    work = _run_imputation_step(work, list(CONTROLS) + LEAVE_ONE_OUT, "ln_wage_imp2",
-                                carry_missing_east=False,
-                                generator=generator, log=log)
-    log.info(" ->  ln_wage_imp2 added")
+        # --------------------------------------------------------------
+        # Step 1: imputation with observable characteristics (Gartner 2005)
+        # --------------------------------------------------------------
+        log.info("Step 1: imputation on observables")
+        _run_imputation_step(store, CONTROLS, "ln_wage_imp",
+                             carry_missing_east=True,
+                             generator=generator, log=log)
+        log.info(" ->  ln_wage_imp added")
 
-    # ------------------------------------------------------------------
-    #   Imputed wages in levels, and the minor adjustments
-    # ------------------------------------------------------------------
-    #
-    # 10_wages_imputation.do takes the 99th percentile of wage_imp, the level,
-    # not of its logarithm, and only after the second step has run:
-    #   sum wage_imp, d
-    #   global maxWage = 10 * r(p99)
-    # Ten seems awfully high as a cutoff and two would be more reasonable for
-    # excluding weirdly high observations, but ten is what the original code
-    # uses. `summarize, detail` and a continuous quantile do not define the 99th
-    # percentile the same way, so the bound differs in its last digits; it is
-    # ten times a percentile and binds on almost nothing, but it is a reason
-    # this column gets a tolerance rather than an exact comparison.
-    log.info("Add imputed wages in levels")
+        # --------------------------------------------------------------
+        # Intermediate step: leave-one-out means of the imputed wages
+        # --------------------------------------------------------------
+        #
+        # Something like a worker and a plant fixed effect. Three details of
+        # the reference decide the values and none of them is visible in the
+        # formula:
+        #
+        #   - `egen total()` sums a group of nothing but missings to 0, which a
+        #     SQL sum returns as null instead, so each one is wrapped in a
+        #     coalesce, exactly as the R arm wraps it.
+        #   - a worker seen once, or a plant with one sampled worker, has an
+        #     empty leave-one-out set. The dummy records that BEFORE the gap is
+        #     filled.
+        #   - the fill is the mean over every row, taken before non-BeH spells
+        #     are wiped, and for the plant it is the mean within the year.
+        #
+        # betnr is a real establishment number in SIAB 7523 v2, so the plant
+        # means are computable; in the 2 percent sample most plants hold one
+        # sampled worker and the fallback carries them.
+        #
+        # Every window carries the dataset's sort order and an unbounded frame,
+        # so each sum is taken over its whole group in the order `_load_work()`
+        # fixed. An unordered sum would be a different number in its last bits
+        # on every run.
+        log.info("Leave-one-out means of the imputed wages")
 
-    work = work.with_columns(
-        wage_imp_int=pl.col("ln_wage_imp").exp(),
-        wage_imp=pl.col("ln_wage_imp2").exp(),
-    )
+        overall_mean = store.sql(
+            f"SELECT avg(ln_wage_imp) OVER ({_ORDERED}) FROM work LIMIT 1").fetchone()[0]
 
-    max_wage = work["wage_imp"].quantile(0.99, interpolation="linear") * 10
-    log.info(f"Imputed wages are bounded at {max_wage:.2f} EUR per day")
+        _overwrite_work(store, f"""
+            WITH windowed AS (
+                SELECT *,
+                       count(*) OVER person AS n_person,
+                       coalesce(sum(ln_wage_imp) OVER person, 0) AS sum_person,
+                       count(*) OVER plant AS n_plant,
+                       coalesce(sum(ln_wage_imp) OVER plant, 0) AS sum_plant,
+                       avg(ln_wage_imp) OVER years AS year_mean
+                FROM work
+                WINDOW person AS (PARTITION BY persnr, quelle {_ORDERED}),
+                       plant AS (PARTITION BY year, betnr {_ORDERED}),
+                       years AS (PARTITION BY year {_ORDERED})
+            ), leave_one_out AS (
+                SELECT * EXCLUDE (n_person, sum_person, n_plant, sum_plant),
+                       CASE WHEN n_person > 1 AND ln_wage_imp IS NOT NULL
+                            THEN (sum_person - ln_wage_imp) / (n_person - 1)
+                            END AS ln_wage_mean_worker,
+                       CASE WHEN n_plant > 1 AND ln_wage_imp IS NOT NULL
+                            THEN (sum_plant - ln_wage_imp) / (n_plant - 1)
+                            END AS ln_wage_mean_firm
+                FROM windowed
+            )
+            SELECT * EXCLUDE (ln_wage_mean_worker, ln_wage_mean_firm, year_mean),
+                   CAST(ln_wage_mean_worker IS NULL AS INTEGER) AS only_one_obs,
+                   CAST(ln_wage_mean_firm IS NULL AS INTEGER) AS only_one_worker,
+                   CASE WHEN quelle <> 1 THEN NULL
+                        ELSE coalesce(ln_wage_mean_worker, {overall_mean!r})
+                        END AS ln_wage_mean_worker,
+                   CASE WHEN quelle <> 1 THEN NULL
+                        ELSE coalesce(ln_wage_mean_firm, year_mean)
+                        END AS ln_wage_mean_firm
+            FROM leave_one_out""")
 
-    # The second line is what a cell that could not be fitted, a spell with no
-    # East/West information, or a draw that overflowed in the tail leaves
-    # behind: the first step's wage stands in for the second step's.
-    # Written as a comparison rather than a minimum, because a minimum over a
-    # null and a number is the number, and a spell with no imputed wage has to
-    # keep its missing rather than acquire the bound.
-    work = work.with_columns(
-        wage_imp_int=pl.when(pl.col("wage_imp_int") > max_wage)
-                       .then(pl.lit(max_wage)).otherwise(pl.col("wage_imp_int")),
-        wage_imp=pl.when(pl.col("wage_imp") > max_wage)
-                   .then(pl.lit(max_wage)).otherwise(pl.col("wage_imp")),
-    ).with_columns(
-        wage_imp=pl.coalesce("wage_imp", "wage_imp_int"),
-    )
+        log.info(" ->  ln_wage_mean_worker, only_one_obs, ln_wage_mean_firm and "
+                 "only_one_worker added")
 
-    log.info(" ->  wage_imp_int and wage_imp added, implausibly high wages "
-             "bounded and the second stage filled from the first")
+        # --------------------------------------------------------------
+        # Step 2: extended imputation models including the leave-one-out means
+        # --------------------------------------------------------------
+        log.info("Step 2: imputation including the leave-one-out means")
+        _run_imputation_step(store, list(CONTROLS) + LEAVE_ONE_OUT, "ln_wage_imp2",
+                             carry_missing_east=False,
+                             generator=generator, log=log)
+        log.info(" ->  ln_wage_imp2 added")
 
-    # ------------------------------------------------------------------
-    # Clean up
-    # ------------------------------------------------------------------
-    dropped = [column for column in CLEANUP if column in work.columns]
-    log.info("The following variables are dropped from the data for cleanup: "
-             + ", ".join(dropped[:-1]) + " and " + dropped[-1])
+        # --------------------------------------------------------------
+        #   Imputed wages in levels, and the minor adjustments
+        # --------------------------------------------------------------
+        #
+        # 10_wages_imputation.do takes the 99th percentile of wage_imp, the
+        # level, not of its logarithm, and only after the second step has run:
+        #   sum wage_imp, d
+        #   global maxWage = 10 * r(p99)
+        # Ten seems awfully high as a cutoff and two would be more reasonable
+        # for excluding weirdly high observations, but ten is what the original
+        # code uses. `summarize, detail` and a continuous quantile do not define
+        # the 99th percentile the same way, so the bound differs in its last
+        # digits; it is ten times a percentile and binds on almost nothing, but
+        # it is a reason this column gets a tolerance rather than an exact
+        # comparison.
+        log.info("Add imputed wages in levels")
 
-    work = work.drop(dropped + ["_row"])
+        # The bound is read off the column before it is built, because the two
+        # are the same numbers and building it first would copy the table for
+        # nothing.
+        max_wage = store.sql(
+            "SELECT quantile_cont(exp(ln_wage_imp2), 0.99) * 10 FROM work").fetchone()[0]
+        log.info(f"Imputed wages are bounded at {max_wage:.2f} EUR per day")
 
-    log.info(" ->  Cleanup finished")
+        # The coalesce is what a cell that could not be fitted, a spell with no
+        # East/West information, or a draw that overflowed in the tail leaves
+        # behind: the first step's wage stands in for the second step's. The
+        # bound is written as a comparison rather than a minimum, because a
+        # minimum over a null and a number is the number, and a spell with no
+        # imputed wage has to keep its missing rather than acquire the bound.
+        _overwrite_work(store, f"""
+            SELECT * EXCLUDE (wage_imp),
+                   coalesce(wage_imp, wage_imp_int) AS wage_imp
+            FROM (SELECT *,
+                         CASE WHEN exp(ln_wage_imp) > {max_wage!r} THEN {max_wage!r}
+                              ELSE exp(ln_wage_imp) END AS wage_imp_int,
+                         CASE WHEN exp(ln_wage_imp2) > {max_wage!r} THEN {max_wage!r}
+                              ELSE exp(ln_wage_imp2) END AS wage_imp
+                  FROM work)""")
+
+        log.info(" ->  wage_imp_int and wage_imp added, implausibly high wages "
+                 "bounded and the second stage filled from the first")
+
+        # --------------------------------------------------------------
+        # Clean up
+        # --------------------------------------------------------------
+        dropped = [column for column in CLEANUP if column in _columns(store)]
+        log.info("The following variables are dropped from the data for cleanup: "
+                 + ", ".join(dropped[:-1]) + " and " + dropped[-1])
+
+        store.execute(
+            f"COPY (SELECT * EXCLUDE ({', '.join(dropped + ['_row'])}) "
+            f"      FROM work ORDER BY _row) "
+            f"TO '{output}' (FORMAT PARQUET, COMPRESSION ZSTD)")
+
+        log.info(" ->  Cleanup finished")
+
+    # The database is the size of the dataset and everything wanted out of it
+    # is in `output` by now, so it goes as soon as the connection is closed.
+    # The output file itself has to outlive the step, because what comes back
+    # is a scan of it; `_step_file()` takes it at the next call and at exit.
+    database.unlink(missing_ok=True)
+    Path(f"{database}.wal").unlink(missing_ok=True)
+
     log.info("Wage imputation file finished")
-    return work.lazy()
+    return pl.scan_parquet(output)

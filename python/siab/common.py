@@ -52,6 +52,7 @@ __all__ = [
     "count_rows",
     "database_path",
     "boundary_dir",
+    "spill_dir",
     "read_table",
     "write_table",
     "read_stata",
@@ -407,6 +408,21 @@ def boundary_dir(connection) -> Path:
         database = database_path(connection)
         folder = (database.parent if database is not None
                   else Path(tempfile.gettempdir())) / "siab_boundary"
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder
+
+
+def spill_dir() -> Path:
+    """The folder a step may put a working file of dataset size in.
+
+    `SIAB_SPILL` if it is set, which is what a small volume or a read-only mount
+    needs, and a folder in the system temporary directory otherwise. This is for
+    a step that has no store to ask: `boundary_dir()` puts the handover beside
+    the database, and the wage imputation works in a database of its own that
+    belongs to no store.
+    """
+    override = os.environ.get("SIAB_SPILL")
+    folder = Path(override) if override else Path(tempfile.gettempdir()) / "siab_spill"
     folder.mkdir(parents=True, exist_ok=True)
     return folder
 

@@ -14,9 +14,12 @@ is what the count decides; `generate_educ_variable` a tabulation for the log;
 using file and a match rate, both of which the reference's `merge` also
 computes; `build_monthly_panel` a row count it asserts on.
 
-`impute_wages` is the seventh and the exception: it collects the data itself,
-once, at the top of the step. It maximises a censored normal likelihood per
-year/education/east cell in numpy, and there is no lazy expression for that. Its
+`impute_wages` is the seventh and the exception: it works in a DuckDB database
+of its own. It maximises a censored normal likelihood per year/education/east
+cell in numpy, and there is no lazy expression for that, nor for the
+leave-one-out means, which are windows over the whole dataset that the
+streaming engine will not run. It reads one cell at a time and hands back a
+scan of what it writes out, so it holds a cell rather than the dataset. Its
 place here is the boundary check every other step gets, which is all this file
 ever proved. That is recorded so the next reader does not mistake the check for
 more than it is: what it proves is the boundary, not the interior.
