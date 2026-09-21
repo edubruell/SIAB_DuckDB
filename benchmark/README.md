@@ -83,7 +83,18 @@ done, which is what makes a sweep fit on one disk; `--keep-fixtures` keeps them.
 Two files land in the results folder:
 
 - `runs.csv` — one row per run: size, rows in, rows out, wall clock, peak
-  resident memory, store size before and after, and whether it finished.
+  resident memory, store size before, after and at its largest, and whether it
+  finished.
+
+  **`store_bytes_after` is the delivered store, `store_bytes_peak` is the disk
+  the run needed.** Both arms checkpoint after every step, so DuckDB reuses the
+  blocks each rewritten table freed, and both compact the store at the end of
+  the prep, which copies the live data into a fresh file. A finished store is
+  therefore about the size of what is in it and no longer says anything about
+  the run's high-water mark. That is what `store_bytes_peak` measures: the
+  harness samples the store, and the write-ahead log beside it, four times a
+  second while the run works. The Stata arm keeps no store, so its figure is
+  its working folder of .dta files.
 - `steps.csv` — one row per step, read off the timestamps all three arms write
   into their per-step logs. A step's `seconds` is its own finish minus the
   finish of the step before it. `log_span` is the distance from a log's first

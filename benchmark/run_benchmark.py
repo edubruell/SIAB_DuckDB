@@ -69,6 +69,8 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
+from contextlib import nullcontext
 from datetime import datetime
 from pathlib import Path
 
@@ -105,6 +107,48 @@ def folder_bytes(path: Path) -> int:
     if path.is_file():
         return path.stat().st_size
     return sum(item.stat().st_size for item in path.rglob("*") if item.is_file())
+
+
+def store_bytes(path: Path) -> int:
+    """The store and, for a DuckDB one, the write-ahead log beside it.
+
+    A run holds everything it has not checkpointed in the log, so a reading
+    that leaves it out is not the disk the run is using.
+    """
+    return folder_bytes(path) + folder_bytes(Path(f"{path}.wal"))
+
+
+class DiskWatch:
+    """Sample a store's size while a run works in it, for its high-water mark.
+
+    Both arms now checkpoint after every step and compact the store at the end
+    of the prep, so the file a run leaves behind is no longer the largest it
+    ever was: `store_bytes_after` measures the delivered store and this
+    measures the disk the run needed to produce it. A quarter-second sample
+    costs one `stat()` per file and misses nothing that lasts a step.
+    """
+
+    def __init__(self, path: Path, interval: float = 0.25):
+        self.path, self.interval, self.peak = path, interval, 0
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._sample, daemon=True)
+
+    def _sample(self) -> None:
+        while not self._stop.is_set():
+            try:
+                self.peak = max(self.peak, store_bytes(self.path))
+            except OSError:
+                pass
+            self._stop.wait(self.interval)
+
+    def __enter__(self) -> "DiskWatch":
+        self._thread.start()
+        return self
+
+    def __exit__(self, *_) -> None:
+        self._stop.set()
+        self._thread.join()
+        self.peak = max(self.peak, store_bytes(self.path))
 
 
 def clone(source: Path, target: Path) -> None:
@@ -190,18 +234,23 @@ def build_fixture(root: Path, copies: int, need_parquet: bool,
 
 
 def run_command(command: list[str], environment: dict[str, str],
-                output_file: Path, cwd: Path = PROJECT) -> tuple[float, int, str]:
-    """Run one configuration and give back wall clock, peak memory and output.
+                output_file: Path, cwd: Path = PROJECT,
+                watch: Path | None = None) -> tuple[float, int, int, str]:
+    """Run one configuration and give back wall clock, peak memory, peak disk
+    and output.
 
     `/usr/bin/time -l` writes its report to standard error after the command
-    it wrapped, so both streams are kept and searched together.
+    it wrapped, so both streams are kept and searched together. `watch` is the
+    store the run works in, sampled while it runs for the high-water mark.
     """
     started = datetime.now()
-    finished = subprocess.run(["/usr/bin/time", "-l", *command],
-                              cwd=str(cwd),
-                              env={**os.environ, **environment},
-                              capture_output=True, text=True)
+    with DiskWatch(watch) if watch is not None else nullcontext() as disk:
+        finished = subprocess.run(["/usr/bin/time", "-l", *command],
+                                  cwd=str(cwd),
+                                  env={**os.environ, **environment},
+                                  capture_output=True, text=True)
     seconds = (datetime.now() - started).total_seconds()
+    peak_disk = disk.peak if disk is not None else 0
     output = finished.stdout + finished.stderr
     output_file.parent.mkdir(parents=True, exist_ok=True)
     output_file.write_text(output)
@@ -209,8 +258,8 @@ def run_command(command: list[str], environment: dict[str, str],
     match = PEAK_RSS.search(output)
     peak = int(match.group(1)) if match else 0
     if finished.returncode != 0:
-        return seconds, peak, f"failed, exit {finished.returncode}"
-    return seconds, peak, "ok"
+        return seconds, peak, peak_disk, f"failed, exit {finished.returncode}"
+    return seconds, peak, peak_disk, "ok"
 
 
 def run_configuration(name: str, copies: int, paths: dict[str, Path],
@@ -255,7 +304,7 @@ def run_configuration(name: str, copies: int, paths: dict[str, Path],
                         "rows_in": copies * ROWS_PER_COPY, "rows_out": 0,
                         "wall_seconds": 0.0, "peak_rss_bytes": 0,
                         "store_bytes_before": 0, "store_bytes_after": 0,
-                        "status": "append failed"}
+                        "store_bytes_peak": 0, "status": "append failed"}
 
         command = [stata, "-b", "do",
                    str(HERE / "stata" / "bench_pipeline.do")]
@@ -275,12 +324,15 @@ def run_configuration(name: str, copies: int, paths: dict[str, Path],
                                              if name == "py-duckdb-parquet"
                                              else "memory")}
 
-    before = folder_bytes(store)
+    before = store_bytes(store)
     print(f"  {name}: running")
     started = datetime.now().timestamp()
-    seconds, peak, status = run_command(
+    # The Stata arm keeps no store: it works in .dta files under its own
+    # working folder, so that folder is what its disk figure measures.
+    seconds, peak, peak_disk, status = run_command(
         command, environment, run_root / "console.txt",
-        cwd=run_root if name == "stata" else PROJECT)
+        cwd=run_root if name == "stata" else PROJECT,
+        watch=(run_root / "work") if name == "stata" else store)
 
     # The R runner writes its step logs into the project's own log folder,
     # which it does not take from the environment, and the Stata run writes
@@ -311,7 +363,8 @@ def run_configuration(name: str, copies: int, paths: dict[str, Path],
     rows = int(match.group(1)) if match else 0
 
     print(f"  {name}: {status}, {seconds:.1f} s, "
-          f"peak {peak / 1e9:.2f} GB, {rows:,} rows out")
+          f"peak {peak / 1e9:.2f} GB memory, {peak_disk / 1e9:.2f} GB disk, "
+          f"{rows:,} rows out")
 
     return {
         "config": name,
@@ -321,7 +374,8 @@ def run_configuration(name: str, copies: int, paths: dict[str, Path],
         "wall_seconds": round(seconds, 1),
         "peak_rss_bytes": peak,
         "store_bytes_before": before,
-        "store_bytes_after": folder_bytes(store),
+        "store_bytes_after": store_bytes(store),
+        "store_bytes_peak": peak_disk,
         "status": status,
     }
 
