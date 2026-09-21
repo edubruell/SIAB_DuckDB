@@ -193,7 +193,10 @@ def step_logger(name: str, log_file: str | os.PathLike | None = None) -> logging
 # the target's name, and everything below works on either.
 #
 # DuckDB is imported where it is used rather than at the top of the module, so
-# the Parquet store runs in an environment that has no DuckDB in it.
+# nothing here needs it until a `.duckdb` store is opened. A whole run needs it
+# either way since 2026-09-21: the wage imputation works in a database of its
+# own whatever the store, because no polars plan sorts, cuts and windows a
+# dataset out of core.
 #
 # A DuckDB store has one further choice to make, which a Parquet store does
 # not: how a step hands its table over. `DuckDBStore` carries it, because a

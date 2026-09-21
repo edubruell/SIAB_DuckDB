@@ -66,7 +66,7 @@ Install the arm you intend to run. Nothing in the R arm needs Python, and nothin
 
 - **Python 3.11** or newer, and [uv](https://docs.astral.sh/uv/) to resolve the environment. `uv run --project python` installs everything below on first use from `python/pyproject.toml`.
 - **polars**: holds all eighteen steps. **pyarrow** writes and reads the Parquet files the steps hand over through.
-- **duckdb**: needed only for a `.duckdb` store. It is installed by default, because that store is the default, and the package imports it only when such a store is opened. An environment without DuckDB runs the whole prep into a folder of Parquet files.
+- **duckdb**: the default store, what the R arm reads, and since 2026-09-21 what the wage imputation works in whatever the store: that step sorts the dataset, reads one cell at a time and takes leave-one-out means as ordered windows, none of which a polars plan runs out of core. A Parquet store still keeps its own tables as files and hands them over as files, and the store layer imports DuckDB only when a `.duckdb` store is opened.
 - **numpy** and **scipy**: `scipy.optimize` maximises the censored normal likelihood used for imputing wages on observables, which is what `survival::survreg()` does in the R arm.
 - **pyreadstat** and **pandas**: `pyreadstat` reads the STATA delivery and the Basic Establishment File, and returns a `pandas` frame.
 

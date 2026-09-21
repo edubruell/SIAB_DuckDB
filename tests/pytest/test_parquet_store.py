@@ -214,9 +214,12 @@ def test_reading_a_table_that_is_not_there_says_which(store):
 # ======================================================================
 
 def test_the_module_imports_and_the_store_runs_without_duckdb(tmp_path, monkeypatch):
-    # An environment that never installed DuckDB has to reach a finished panel
-    # all the same, which is the point of the Parquet store. The import is
-    # blocked here rather than uninstalled, which tests the same line.
+    # The store layer reaches for DuckDB only when a `.duckdb` store is opened,
+    # so a Parquet store reads and writes its tables in an environment that has
+    # none. This is about the store layer and no longer about a whole run: the
+    # wage imputation has worked in a database of its own since 2026-09-21,
+    # whatever the store. The import is blocked here rather than uninstalled,
+    # which tests the same line.
     real_import = builtins.__import__
 
     def blocked(name, *args, **kwargs):
