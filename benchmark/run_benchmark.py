@@ -20,8 +20,29 @@ Each configuration gets its own copy of the store, because a run overwrites the
 of the two is written to.
 
 Sizes are given as copies of the FDZ test delivery, which is 577,776 rows. The
-real SIAB 7523 v2 core file is 82,389,923 rows, which is 143 copies; a row of it
-costs 204 bytes in memory, so that size is already past a 16 GB laptop.
+real SIAB 7523 v2 core file is 82,389,923 rows, which is 143 copies.
+
+A copy count that matches the real core file does not give a real delivery's
+shape, and two differences decide how a row here may be read:
+
+  * **The rows are fatter.** The test core file is 95.5 bytes a row -- 46
+    variables, 21 `int8`, 19 `int16`, 3 `int32`, 3 `double` -- where a real SIAB
+    7514 is 2.7 GB over 52M rows, 51.9 bytes a row. Stacking copies inherits the
+    fat row, so a disk or memory figure from this fixture runs about 1.84x a real
+    delivery's. Wall clock and the ranking between arms are unaffected, because
+    all five arms read the same rows; a claim of the form "this arm runs out of
+    memory at size X" is affected, and measures the test data's storage types
+    rather than the arm.
+  * **The establishment side overshoots.** The test delivery carries 292,693
+    `bhp_basis_v1` rows per 577,776 core rows, a ratio of 0.51, where a real
+    delivery carries 16,817,726 per 82,389,923, a ratio of 0.20. At 143 copies
+    the core lands within 0.3 percent of a real SIAB while `bhp_basis` reaches
+    41.9M rows against the real 16.8M. The merges are over-stressed, not
+    under-stressed, which is the safe direction to be wrong in.
+
+For calibration: the original Stata prep has been run over a real 7514 on a
+16 GB machine, at most 308 bytes an input row, against 535 bytes an input row
+measured here at ten copies.
 
 Run it with:
 
