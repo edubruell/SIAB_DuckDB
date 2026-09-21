@@ -1,0 +1,88 @@
+{
+  "note": [
+    "The one definition of the pipeline's step order. Five scripts spell that",
+    "order out by hand, each for its own reason, and nothing generates them",
+    "from this file: the two R runners, the R dump writer, the Python runner",
+    "and the Python dump writer. The duplication is accepted (contention C7,",
+    "ruled 2026-09-21c); this file plus tests/testthat/test-step_order.R and",
+    "tests/pytest/test_step_order.py are what catches the next divergence.",
+    "",
+    "`steps` is the order every script runs its calls in. A script that leaves",
+    "a step out names it under `skips`, with the reason, and a script that",
+    "passes a divergent argument names it under `arguments`. Both are the",
+    "differences the project means to have. Adding a step, moving one, or",
+    "changing a declared argument therefore takes an edit here as well, which",
+    "is the point: a change made in four scripts of five fails the two tests.",
+    "",
+    "benchmark/stata/bench_pipeline.do is deliberately outside this. It spells",
+    "out the Stata reference's own step order rather than this project's."
+  ],
+  "steps": [
+    "drop_empty_columns",
+    "split_episodes",
+    "reallocate_one_time_payments",
+    "generate_biographic_variables",
+    "restrict_observation_period",
+    "generate_occupation_variables",
+    "merge_basic_bhp",
+    "generate_industry_variables",
+    "generate_educ_variable",
+    "generate_limit_assess",
+    "generate_limit_marginal",
+    "deflate_wages",
+    "impute_wages",
+    "merge_annual_bhp",
+    "merge_akm",
+    "handle_parallel_episodes",
+    "build_yearly_panel",
+    "build_monthly_panel"
+  ],
+  "scripts": {
+    "R/siab_main.R": {
+      "arm": "R",
+      "skips": {
+        "merge_annual_bhp": "11_merge_BHP.do is switched off in the reference master; the call is commented out",
+        "merge_akm": "12_merge_AKM.do is switched off in the reference master; the call is commented out",
+        "build_monthly_panel": "an alternative to the yearly panel, not a step after it; the call is commented out"
+      },
+      "arguments": {
+        "handling": "wage"
+      }
+    },
+    "R/run_testdata.R": {
+      "arm": "R",
+      "skips": {
+        "merge_akm": "no FDZ test product carries the two AKM files, so a pipeline run cannot make this call",
+        "build_monthly_panel": "an alternative to the yearly panel, not a step after it; the call is commented out"
+      },
+      "arguments": {
+        "handling": "wage"
+      }
+    },
+    "tests/fixtures/make_r_dumps.R": {
+      "arm": "R",
+      "skips": {},
+      "arguments": {
+        "handling": "tenure"
+      }
+    },
+    "python/main.py": {
+      "arm": "python",
+      "skips": {
+        "merge_annual_bhp": "11_merge_BHP.do is switched off in the reference master; the call is commented out",
+        "merge_akm": "12_merge_AKM.do is switched off in the reference master; the call is commented out",
+        "build_monthly_panel": "an alternative to the yearly panel, not a step after it; the call is commented out"
+      },
+      "arguments": {
+        "handling": "wage"
+      }
+    },
+    "tests/pytest/make_py_dumps.py": {
+      "arm": "python",
+      "skips": {},
+      "arguments": {
+        "handling": "tenure"
+      }
+    }
+  }
+}

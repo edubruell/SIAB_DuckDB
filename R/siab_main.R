@@ -75,10 +75,10 @@ con |>
                                 max_year = 2023,
                                 log_file = here("log","03d_observation_period.log")) |>
   generate_occupation_variables(log_file = here("log","02_occupations.log")) |>
-  generate_educ_variable(       log_file = here("log","03_education.log")) |>
   merge_basic_bhp(              log_file = here("log","03b_bhp_basis.log"),
                                 bhp_file = rawdata("SIAB_7523_v2_bhp_basis_v1.dta")) |>
   generate_industry_variables(  log_file = here("log","03c_industries.log")) |>
+  generate_educ_variable(       log_file = here("log","03_education.log")) |>
   generate_limit_assess(        log_file = here("log","04_wage_assesment_ceiling.log")) |>
   generate_limit_marginal(      log_file = here("log","05_wages_marginal.log"))|>
   deflate_wages(                log_file = here("log","06_wages_deflation.log")) |>
