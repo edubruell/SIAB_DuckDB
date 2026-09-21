@@ -44,6 +44,12 @@ For calibration: the original Stata prep has been run over a real 7514 on a
 16 GB machine, at most 308 bytes an input row, against 535 bytes an input row
 measured here at ten copies.
 
+Two further gaps measured on 2026-09-21 are closed. The generated delivery is
+written at the source's own width rather than twice it, and both read-ins cast
+each Stata integer to the width the delivery declared rather than to 32 bits,
+which took an `orig` row from 200 bytes to 109. The 535 bytes an input row above
+predates both and is the last figure on this page that does.
+
 Run it with:
 
   uv run --project python python benchmark/run_benchmark.py --copies 1 10 \

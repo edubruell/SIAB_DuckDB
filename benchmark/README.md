@@ -117,6 +117,13 @@ For calibration, the original Stata prep has been run over a real 7514 on a
 16 GB machine -- at most 308 bytes an input row, against 535 bytes an input row
 measured here at ten copies, a ratio the row width accounts for.
 
+Two of the four gaps measured on 2026-09-21 are closed. The generated delivery
+is no longer twice the source's width, and neither arm's `orig` table is: both
+read-ins cast each Stata integer to the width the delivery declared rather than
+to 32 bits, which took an `orig` row from 200 bytes to 109. What remains is the
+test delivery's own 95.5 bytes a row against a real 7514's 51.9, which no change
+to this project can narrow, and the establishment side below.
+
 **The establishment side overshoots.** The test delivery carries 292,693
 `bhp_basis_v1` rows per 577,776 core rows, a ratio of 0.51, where a real delivery
 carries 16,817,726 per 82,389,923, a ratio of 0.20. At 143 copies the core lands
@@ -140,10 +147,14 @@ file inventory of a real delivery taken on a sibling project's IAB seat.
   arm ports it.
 - **Per-step times are to the second.** All three arms stamp their logs to the
   second, which is nothing at the sizes this folder exists for.
-- **A written Stata file is about half as large again as the source.**
-  pyreadstat's writer has no `byte` or `int` of its own and widens every integer
-  to 32 bits. The generator still hands it the narrow type, without which a
-  column holding one missing value goes out as a double or a string.
+- **A written Stata file is the width of the source, since 2026-09-21.** It
+  used to be about twice that: pyreadstat's writer has no `byte` or `int` of its
+  own and widened every integer to 32 bits, so a generated core file was 196
+  bytes a row against the source delivery's 95. The generator writes through
+  pandas' Stata writer instead, which keeps each column's width, and puts the
+  delivery's own `%tdD_m_CY` format back on the five date columns afterwards.
+  A one-copy core file is now 55.0 MB against the source's 55.2 MB, and every
+  value reads back as it did from the fat file.
 - **The Stata arm is bounded by memory, at generation time and at run time.**
   The per-copy core files are appended by Stata itself, which holds the result
   whole. A delivery Stata cannot append is one it could not have prepared, and

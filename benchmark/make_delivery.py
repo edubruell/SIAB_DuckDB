@@ -68,6 +68,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import polars as pl
 import pyreadstat
 
@@ -114,11 +115,12 @@ YEAR_COLUMN = "jahr"
 INT32_MAX = 2_147_483_647
 
 # What a Stata storage type is in pandas, with and without a missing value in
-# the column. pyreadstat's writer has no `byte` or `int` of its own and widens
-# every integer it is given to a 32-bit one, so a written file is about half as
-# large again as the source, whatever is done here. Handing it the narrow type
-# still matters: without it a column that holds one missing value goes out as a
-# double or a string.
+# the column. The narrow type is what the written file ends up carrying: the
+# delivery goes out through pandas' own Stata writer, which maps an 8-bit
+# integer to a Stata `byte`, a 16-bit one to an `int` and a 32-bit one to a
+# `long`. pyreadstat's writer widens every integer it is given to 32 bits, and
+# wrote a core file of 196 bytes a row where the source delivery packs the same
+# variables into 95.
 NUMPY_TYPES = {"int8": "int8", "int16": "int16", "int32": "int32",
                "float": "float32", "double": "float64"}
 NULLABLE_TYPES = {"int8": "Int8", "int16": "Int16", "int32": "Int32",
@@ -332,21 +334,102 @@ def writable_value_labels(meta, columns: list[str]) -> dict:
     return labels
 
 
+def mark_dates(path: Path, columns: list[str], dates: dict[str, str]) -> None:
+    """Put the delivery's own display format back on the date columns.
+
+    A date is an integer in Stata and the display format is the only thing that
+    marks it as one, so a file written without the format is read back as a
+    five-figure number by both arms. pandas writes a date only by turning it
+    into a timestamp first, and its writer then stores that column as a double,
+    which costs 8 bytes a row where the delivery uses 2. Writing the day count
+    as the `int` the delivery had it as and setting the format afterwards keeps
+    both the width and the meaning.
+
+    The format has to be the delivery's, `%tdD_m_CY`, rather than a plain
+    `%td`. pyreadstat converts a column it recognises as a date into timestamps
+    on the way in and leaves one it does not alone, and it recognises `%td` and
+    not `%tdD_m_CY`. A file marked `%td` therefore comes back through the
+    read-in shifted by the 3,653 days between Stata's epoch and polars', which
+    is what a run over it showed: 1975 to 2023 became 1964 to 2013.
+
+    The format list is a header block of one fixed-width slot per variable,
+    ahead of the data, so this seeks to the slots it needs and writes nothing
+    else. It reads them back and fails if a write did not take.
+    """
+    if not dates:
+        return
+
+    # The header is a few kilobytes; read enough of it to find the block
+    # without reading a delivery-sized file into memory.
+    with open(path, "r+b") as handle:
+        head = handle.read(1_048_576)
+        opening, closing = head.find(b"<formats>"), head.find(b"</formats>")
+        if opening < 0 or closing < 0:
+            raise ValueError(f"{path.name} carries no <formats> block")
+        start = opening + len(b"<formats>")
+        width, remainder = divmod(closing - start, len(columns))
+        if remainder:
+            raise ValueError(
+                f"{path.name}'s format block is {closing - start} bytes over "
+                f"{len(columns)} variables, which is not a whole slot each")
+
+        wanted = {}
+        for name, display in dates.items():
+            encoded = display.encode("ascii")
+            if len(encoded) >= width:
+                raise ValueError(
+                    f"{path.name}: the format `{display}` of `{name}` does not "
+                    f"fit a {width}-byte slot")
+            wanted[name] = encoded.ljust(width, b"\x00")
+            handle.seek(start + columns.index(name) * width)
+            handle.write(wanted[name])
+
+        handle.flush()
+        handle.seek(start)
+        block = handle.read(closing - start)
+
+    for name in dates:
+        slot = columns.index(name)
+        if block[slot * width:(slot + 1) * width] != wanted[name]:
+            raise ValueError(
+                f"{path.name}: the date format of `{name}` did not take")
+
+
+def date_columns(meta, columns: list[str]) -> dict[str, str]:
+    """Which of these columns the source file displays as a date, and how.
+
+    Stata stores a date as an integer and the display format is the only thing
+    that says it is one, which is how both read-ins decide it too.
+    """
+    return {name: meta.original_variable_types[name] for name in columns
+            if meta.original_variable_types.get(name, "").startswith(("%t", "%d"))}
+
+
 def write_stata(frame: pl.DataFrame, path: Path, meta) -> None:
     """Write a frame as a Stata file carrying the source file's metadata.
 
-    pyreadstat takes a pandas frame and writes the whole thing in one go, so
-    this is where a large synthetic delivery is bounded: the peak is the frame
-    in pandas plus pyreadstat's own copy of it.
+    pandas takes the whole frame and writes it in one go, so this is where a
+    large synthetic delivery is bounded: the peak is the frame in pandas plus
+    the writer's own working copy.
+
+    The writer is pandas' rather than pyreadstat's because it is the one that
+    keeps a column's width. pyreadstat widens every integer to 32 bits, which
+    made a generated core file 196 bytes a row against the source delivery's
+    95, so a fixture built from it was twice as heavy as the thing it stands
+    for on every axis the benchmark measures. pandas maps an 8-bit integer to a
+    Stata `byte`, a 16-bit one to an `int` and a 32-bit one to a `long`.
+
+    What is given up is the display format of the columns that are not dates:
+    pandas writes its own, `%8.0g` where the delivery had `%45.0f`. Nothing in
+    either arm or in the reference reads one. The dates are the exception and
+    `mark_dates()` puts their format back, because the format is the only thing
+    that says a column is a date and both read-ins go by it.
     """
     pandas_frame = frame.to_pandas()
 
-    # Put every column back on the storage type the source file gave it.
-    # pyreadstat reads a Stata `byte` that holds one missing value as a pandas
-    # object column, and writing that back gives a string variable or a double
-    # where the delivery had a one-byte integer. On a stacked delivery that is
-    # the difference between a file that is a little larger than the source
-    # times the copies and one that is three times that.
+    # Put every column back on the storage type the source file gave it. Both
+    # the file's width and, for a column holding a missing value, its type
+    # depend on this: without it such a column goes out as a double.
     for name in pandas_frame.columns:
         storage = meta.readstat_variable_types.get(name)
         if storage not in NUMPY_TYPES:
@@ -355,17 +438,18 @@ def write_stata(frame: pl.DataFrame, path: Path, meta) -> None:
                   else NUMPY_TYPES[storage])
         pandas_frame[name] = pandas_frame[name].astype(target)
 
-    path.parent.mkdir(parents=True, exist_ok=True)
     columns = list(pandas_frame.columns)
-    pyreadstat.write_dta(
-        pandas_frame,
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pandas_frame.to_stata(
         str(path),
-        column_labels={name: meta.column_names_to_labels[name]
-                       for name in columns},
-        variable_value_labels=writable_value_labels(meta, columns),
-        variable_format={name: meta.original_variable_types[name]
-                         for name in columns},
+        write_index=False,
+        version=118,
+        variable_labels={name: meta.column_names_to_labels[name]
+                         for name in columns
+                         if meta.column_names_to_labels.get(name)},
+        value_labels=writable_value_labels(meta, columns),
     )
+    mark_dates(path, columns, date_columns(meta, columns))
 
 
 def establishment_files(delivery: Path) -> list[str]:
