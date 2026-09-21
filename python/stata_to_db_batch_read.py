@@ -26,10 +26,20 @@ own:
     five-figure number.
   * **The storage types.** pyreadstat returns a float column for any Stata
     integer that carries a missing value, so the column type would depend on
-    the batch. Each column is cast to what its Stata storage type says it is:
-    `byte`, `int` and `long` to a 32-bit integer, `float` and `double` to a
-    double. That is the same mapping readstata13 makes on the R side, so both
-    arms build the same `orig` table out of the same file.
+    the batch. Each column is cast to what its Stata storage type says it is,
+    at the width the delivery itself uses: `byte` to an 8-bit integer, `int` to
+    a 16-bit one, `long` to a 32-bit one, and `float` and `double` to a double.
+    A `%td` column is a date whatever its storage type. The R arm builds the
+    same table from the same file, through the same mapping.
+
+    The widths matter more than they look. Reading every Stata integer as
+    32 bits, which is what this did until 2026-09-21, makes an `orig` row
+    200 bytes where the delivery packs the same 46 variables into 95. On the
+    test delivery the storage types are 21 `byte`, 19 `int`, 3 `long` and 3
+    `double`, five of the `int` columns being dates, and the cast plan below
+    takes a row from 204.4 to 113.4 bytes in polars. Nothing is lost: each
+    column keeps the width Stata gave it, and the whole range of a Stata
+    `byte`, including its missing codes, fits an 8-bit integer.
 
 The store is either a DuckDB database or a folder of Parquet files, picked by
 the name of the target exactly as main.py picks it: a name ending in `.duckdb`
@@ -99,12 +109,24 @@ def person_key(meta) -> str:
     return "persnr_siab" if "persnr_siab" in meta.column_names else "persnr"
 
 
+# What each Stata storage type becomes, at the width Stata itself uses. A
+# Stata `byte` runs -127 to 100 with its missing codes at 101 to 127, an `int`
+# runs to 32,740 and a `long` to 2,147,483,620, so each fits the signed type of
+# the same width with room to spare.
+STORAGE_TYPES: dict[str, pl.DataType] = {
+    "int8": pl.Int8,
+    "int16": pl.Int16,
+    "int32": pl.Int32,
+}
+
+
 def column_types(meta) -> dict[str, pl.DataType]:
     """What each column should end up as, from its Stata storage type.
 
     A `%td` display format makes a date whatever the storage type says, because
     Stata stores a date as an integer and the format is the only thing that
-    marks it as one.
+    marks it as one. Every other integer keeps the width the delivery gave it,
+    which is what stops an `orig` row costing twice what the source does.
     """
     plan: dict[str, pl.DataType] = {}
     for name in meta.column_names:
@@ -112,10 +134,8 @@ def column_types(meta) -> dict[str, pl.DataType]:
         storage = meta.readstat_variable_types[name]
         if display.startswith("%t") or display.startswith("%d"):
             plan[name] = pl.Date
-        elif storage.startswith("int"):
-            plan[name] = pl.Int32
         else:
-            plan[name] = pl.Float64
+            plan[name] = STORAGE_TYPES.get(storage, pl.Float64)
     return plan
 
 
@@ -181,6 +201,12 @@ def read_batch(siab_file: str | os.PathLike,
         if dtype == pl.Date:
             column = (column.cast(pl.Int32, strict=False)
                       + STATA_EPOCH_OFFSET).cast(pl.Date)
+        elif dtype in (pl.Int8, pl.Int16, pl.Int32):
+            # Two casts rather than one. The first is lenient, because that is
+            # how a float column carrying Stata missings has always been read;
+            # the second is strict, so a value outside the width the delivery
+            # declared stops the read-in instead of turning into a null.
+            column = column.cast(pl.Int32, strict=False).cast(dtype, strict=True)
         else:
             column = column.cast(dtype, strict=False)
         casts.append(column.alias(name))

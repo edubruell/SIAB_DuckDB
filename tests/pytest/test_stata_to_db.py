@@ -31,6 +31,7 @@ from stata_to_db_batch_read import (
     column_types,
     ingest,
     person_key,
+    read_batch,
     stata_metadata,
 )
 
@@ -72,6 +73,42 @@ def delivery(tmp_path):
                           {"begepi": "%tdD_m_CY", "alo_beg": "%tdD_m_CY"})
 
 
+@pytest.fixture
+def narrow_delivery(tmp_path):
+    """The same shape, written at the widths a real delivery uses.
+
+    pyreadstat's writer widens every integer to 32 bits, so the fixture above
+    cannot say what the reader does with a Stata `byte` or `int`. pandas' Stata
+    writer keeps the width, which is what a delivery carries and what the cast
+    plan has to follow.
+    """
+    frame = pd.DataFrame({
+        "persnr_siab": np.array([1, 1, 2, 2], dtype="int32"),
+        "spell": np.array([1, 2, 1, 2], dtype="int8"),
+        "gebjahr": np.array([1955, 1955, 1972, 1972], dtype="int16"),
+        "quelle": pd.array([1, None, 2, 3], dtype="Int8"),
+        "begepi": np.array([11688, 12054, 11688, 12054], dtype="int16"),
+        "tentgelt": np.array([100.5, 110.25, 50.0, 60.0], dtype="float64"),
+    })
+    path = tmp_path / "SIAB_narrow.dta"
+    frame.to_stata(str(path), write_index=False, version=118)
+    # The delivery's own date format, which is the only thing that marks the
+    # column as a date. pandas writes a plain numeric format for an integer.
+    _set_format(path, list(frame.columns), "begepi", "%tdD_m_CY")
+    return path
+
+
+def _set_format(path, columns, name, display):
+    """Overwrite one variable's display format in a written .dta header."""
+    data = path.read_bytes()
+    start = data.index(b"<formats>") + len(b"<formats>")
+    width = (data.index(b"</formats>") - start) // len(columns)
+    slot = start + columns.index(name) * width
+    path.write_bytes(data[:slot]
+                     + display.encode("ascii").ljust(width, b"\x00")
+                     + data[slot + width:])
+
+
 # ======================================================================
 #  The pieces
 # ======================================================================
@@ -94,6 +131,49 @@ def test_a_date_column_is_a_date_whatever_its_storage_type(delivery):
     assert plan["persnr_siab"] == pl.Int32
     assert plan["spell"] == pl.Int32
     assert plan["tentgelt"] == pl.Float64
+
+
+def test_each_integer_keeps_the_width_the_delivery_declared(narrow_delivery):
+    plan = column_types(stata_metadata(narrow_delivery))
+
+    assert plan["spell"] == pl.Int8
+    assert plan["quelle"] == pl.Int8
+    assert plan["gebjahr"] == pl.Int16
+    assert plan["persnr_siab"] == pl.Int32
+    assert plan["tentgelt"] == pl.Float64
+    # A date is a date whatever it is stored as, and this one is a Stata `int`.
+    assert plan["begepi"] == pl.Date
+
+
+def test_a_narrow_delivery_keeps_its_values_and_its_missing(narrow_delivery,
+                                                            tmp_path):
+    target = tmp_path / "narrow.duckdb"
+    ingest(narrow_delivery, target)
+
+    with duckdb.connect(str(target)) as connection:
+        table = connection.sql("SELECT * FROM orig ORDER BY persnr, spell").pl()
+
+    assert table["spell"].dtype == pl.Int8
+    assert table["gebjahr"].dtype == pl.Int16
+    assert table["persnr"].dtype == pl.Int32
+    assert table["spell"].to_list() == [1, 2, 1, 2]
+    assert table["gebjahr"].to_list() == [1955, 1955, 1972, 1972]
+    assert table["quelle"].to_list() == [1, None, 2, 3]
+    assert table["begepi"][0] == dt.date(1992, 1, 1)
+
+
+def test_a_value_outside_the_declared_width_stops_the_read_in(narrow_delivery):
+    """The strict half of the cast is a guard, so it has to fail loudly.
+
+    A well-formed delivery cannot reach this: the file's own header is what
+    says how wide a column is. A plan that under-declares one stands in for a
+    header that disagrees with its data.
+    """
+    plan = column_types(stata_metadata(narrow_delivery))
+    plan["gebjahr"] = pl.Int8  # 1955 does not fit eight bits
+
+    with pytest.raises(Exception):
+        read_batch(narrow_delivery, 0, 4, plan, 1)
 
 
 # ======================================================================
