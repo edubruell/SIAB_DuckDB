@@ -21,7 +21,7 @@ dbfolder  <- folder_reference_factory(
 )
 
 #Setup an empty database
-con <- dbConnect(duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
+con <- siab_connect(dbfolder("siab.duckdb"))
 
 # Close DuckDB connection
 dbDisconnect(con, shutdown = TRUE)
@@ -78,7 +78,7 @@ convert_to_duckdb <- function(siab_file, batch_size) {
       mutate(pn_batch=r)
     
     # Open DuckDB connection
-    con <- dbConnect(duckdb::duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
+    con <- siab_connect(dbfolder("siab.duckdb"))
     
     # Append batch data to DuckDB table
     dbWriteTable(con, "orig", batch_data, append = TRUE)

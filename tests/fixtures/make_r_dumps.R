@@ -53,7 +53,7 @@ if (!file.exists(db_file)) {
        ". Write one with R/stata_to_db_batch_read.R, or set SIAB_TEST_DB.")
 }
 
-con <- dbConnect(duckdb::duckdb(), dbdir = db_file, read_only = FALSE)
+con <- siab_connect(db_file)
 if (!"orig" %in% dbListTables(con)) {
   stop("The test database has no `orig` table: ", db_file)
 }

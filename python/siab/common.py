@@ -304,7 +304,9 @@ class DuckDBStore:
         return f"DuckDBStore({self.connection!r}, boundary={self.boundary!r})"
 
 
-def open_store(target: str | os.PathLike, boundary: str = DEFAULT_BOUNDARY):
+def open_store(target: str | os.PathLike, boundary: str = DEFAULT_BOUNDARY,
+               memory_limit: str | None = None,
+               temp_directory: str | os.PathLike | None = None):
     """Open the store the pipeline should work in, chosen by the target's name.
 
     A name ending in `.duckdb`, `.db` or `.ddb` is a DuckDB database and comes
@@ -316,11 +318,24 @@ def open_store(target: str | os.PathLike, boundary: str = DEFAULT_BOUNDARY):
     or `"parquet"`; see `DuckDBStore`. A Parquet store has no handover at all,
     because its tables are already the files the steps read and write, so the
     argument does not reach it.
+
+    DuckDB is given no memory budget of its own by default: it takes about 80
+    percent of the machine and spills beyond that. `memory_limit` says how much
+    it may hold, in DuckDB's own notation such as `"4GB"`, and `temp_directory`
+    where it may spill, which an in-memory database needs before it can spill at
+    all. Left at `None` both are no-ops. They are arguments here and read from
+    the environment at the call site, as `boundary` is, so a run's settings are
+    visible where the store is opened.
     """
     target = Path(target)
     if target.suffix.lower() in (".duckdb", ".db", ".ddb"):
         target.parent.mkdir(parents=True, exist_ok=True)
-        return DuckDBStore(_duckdb().connect(str(target)), boundary)
+        connection = _duckdb().connect(str(target))
+        for setting, value in (("memory_limit", memory_limit),
+                               ("temp_directory", temp_directory)):
+            if value:
+                connection.execute(f"SET {setting} = '{value}'")
+        return DuckDBStore(connection, boundary)
     return ParquetStore(target)
 
 

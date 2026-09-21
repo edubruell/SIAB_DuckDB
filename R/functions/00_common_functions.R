@@ -97,6 +97,32 @@ validate_inputs <- function(predicates) {
 #1. Database related functions
 #====================================================================
 
+#Open a DuckDB connection with this arm's settings
+#
+#DuckDB is given no memory budget of its own by default: it takes about 80
+#percent of the machine and spills beyond that. `memory_limit` says how much it
+#may hold, in DuckDB's own notation such as `4GB`, and `temp_directory` where it
+#may spill. Both come from the environment, and unset they are no-ops, so a
+#connection behaves as it did before this function existed.
+#
+#Every script in this arm connects through here, which is the counterpart of
+#`open_store()` in the Python arm: one place configures a connection, rather
+#than each dbConnect() call carrying its own settings or missing them.
+siab_connect <- function(dbdir,
+                         read_only      = FALSE,
+                         memory_limit   = Sys.getenv("SIAB_DUCKDB_MEMORY_LIMIT"),
+                         temp_directory = Sys.getenv("SIAB_DUCKDB_TEMP_DIR")){
+  connection <- dbConnect(duckdb::duckdb(), dbdir = dbdir, read_only = read_only)
+
+  c(memory_limit   = memory_limit,
+    temp_directory = temp_directory) |>
+    keep(nzchar) |>
+    imap(\(value, setting) glue("SET {setting} = '{value}'")) |>
+    walk(\(statement) dbExecute(connection, statement))
+
+  connection
+}
+
 compute_and_overwrite <- function(query,target_table="data"){
   #Check whether there is no temp table
   if(dbExistsTable(con, "temp")){

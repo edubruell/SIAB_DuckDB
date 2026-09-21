@@ -218,7 +218,12 @@ def main() -> None:
     # state halfway through.
     if py_db.exists():
         py_db.unlink()
-    con = open_store(py_db, os.environ.get("SIAB_BOUNDARY", DEFAULT_BOUNDARY))
+    con = open_store(
+        py_db,
+        os.environ.get("SIAB_BOUNDARY", DEFAULT_BOUNDARY),
+        memory_limit=os.environ.get("SIAB_DUCKDB_MEMORY_LIMIT"),
+        temp_directory=os.environ.get("SIAB_DUCKDB_TEMP_DIR"),
+    )
     con.execute(f"ATTACH '{db_file}' AS src (READ_ONLY)")
 
     tables = [row[0] for row in con.execute(

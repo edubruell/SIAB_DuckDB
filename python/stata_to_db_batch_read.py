@@ -287,7 +287,11 @@ def ingest(siab_file: str | os.PathLike,
           f"{len(bounds)} batch(es)")
     del keys, person_column
 
-    store = open_store(target)
+    store = open_store(
+        target,
+        memory_limit=os.environ.get("SIAB_DUCKDB_MEMORY_LIMIT"),
+        temp_directory=os.environ.get("SIAB_DUCKDB_TEMP_DIR"),
+    )
     if isinstance(store, ParquetStore):
         sink = _ParquetSink(store.path(table))
     else:

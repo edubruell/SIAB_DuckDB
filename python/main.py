@@ -94,7 +94,12 @@ def main() -> None:
             f"python/stata_to_db_batch_read.py, or set SIAB_DB."
         )
 
-    store = open_store(target, os.environ.get("SIAB_BOUNDARY", DEFAULT_BOUNDARY))
+    store = open_store(
+        target,
+        os.environ.get("SIAB_BOUNDARY", DEFAULT_BOUNDARY),
+        memory_limit=os.environ.get("SIAB_DUCKDB_MEMORY_LIMIT"),
+        temp_directory=os.environ.get("SIAB_DUCKDB_TEMP_DIR"),
+    )
     if "orig" not in table_names(store):
         raise SystemExit(f"There is no `orig` table in {store_description(store)}")
 

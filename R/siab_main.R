@@ -34,7 +34,7 @@ rawdata   <- folder_reference_factory(
 )
 
 # Open DuckDB connection
-con <- dbConnect(duckdb::duckdb(), dbdir = dbfolder("siab.duckdb"), read_only = FALSE)
+con <- siab_connect(dbfolder("siab.duckdb"))
 
 
 #Load the database and look for tables 
