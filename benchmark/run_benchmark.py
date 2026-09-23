@@ -262,6 +262,23 @@ def run_command(command: list[str], environment: dict[str, str],
     return seconds, peak, peak_disk, "ok"
 
 
+def duckdb_settings(name: str) -> dict[str, str]:
+    """The DuckDB memory limit and spill folder a run was given.
+
+    Both arms read them from the environment, which each run inherits from this
+    script. An empty value means DuckDB's default: a limit of 80 percent of the
+    machine, and a spill folder the arm picks. A run that stops at that default
+    limit and a run that cannot fit under a limit it was given look the same in
+    every other column, so the row has to say which it was. The imputed wages
+    also depend on the limit, so two runs are comparable on `wage_imp` only at
+    the same one. Stata opens no DuckDB and records neither.
+    """
+    if name == "stata":
+        return {"duckdb_memory_limit": "n/a", "duckdb_temp_dir": "n/a"}
+    return {"duckdb_memory_limit": os.environ.get("SIAB_DUCKDB_MEMORY_LIMIT", ""),
+            "duckdb_temp_dir": os.environ.get("SIAB_DUCKDB_TEMP_DIR", "")}
+
+
 def run_configuration(name: str, copies: int, paths: dict[str, Path],
                       results: Path, seed: int) -> dict:
     """Run one arm at one size and collect everything worth recording."""
@@ -304,7 +321,8 @@ def run_configuration(name: str, copies: int, paths: dict[str, Path],
                         "rows_in": copies * ROWS_PER_COPY, "rows_out": 0,
                         "wall_seconds": 0.0, "peak_rss_bytes": 0,
                         "store_bytes_before": 0, "store_bytes_after": 0,
-                        "store_bytes_peak": 0, "status": "append failed"}
+                        "store_bytes_peak": 0, **duckdb_settings(name),
+                        "status": "append failed"}
 
         command = [stata, "-b", "do",
                    str(HERE / "stata" / "bench_pipeline.do")]
@@ -376,6 +394,7 @@ def run_configuration(name: str, copies: int, paths: dict[str, Path],
         "store_bytes_before": before,
         "store_bytes_after": store_bytes(store),
         "store_bytes_peak": peak_disk,
+        **duckdb_settings(name),
         "status": status,
     }
 

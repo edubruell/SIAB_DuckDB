@@ -82,9 +82,9 @@ done, which is what makes a sweep fit on one disk; `--keep-fixtures` keeps them.
 
 Two files land in the results folder:
 
-- `runs.csv` — one row per run: size, rows in, rows out, wall clock, peak
-  resident memory, store size before, after and at its largest, and whether it
-  finished.
+- `runs.csv` — one row per run: size, rows in, rows out, wall clock time, peak
+  resident memory, store size before, after and at its largest, the DuckDB
+  memory limit and spill folder the run was given, and whether it finished.
 
   **`store_bytes_after` is the delivered store, `store_bytes_peak` is the disk
   the run needed.** Both arms checkpoint after every step, so DuckDB reuses the
@@ -95,6 +95,21 @@ Two files land in the results folder:
   harness samples the store, and the write-ahead log beside it, four times a
   second while the run works. The Stata arm keeps no store, so its figure is
   its working folder of .dta files.
+
+  **Peak disk is a fixed multiple of the delivered store**, about 4.5x in the R
+  arm and 2.9x in the two Python configurations over a DuckDB file, measured at
+  1, 50 and 100 copies. `py-parquet` keeps a folder of Parquet files and does
+  not follow the rule: its ratio moved from 1.69x at one copy to 2.81x at 50.
+
+  **`duckdb_memory_limit` and `duckdb_temp_dir` record `SIAB_DUCKDB_MEMORY_LIMIT`
+  and `SIAB_DUCKDB_TEMP_DIR`** as the run inherited them; empty means DuckDB's
+  default, a limit of 80 percent of the machine. At 100 copies on a 24 GB
+  machine, all three Python configurations stopped at that default with
+  `failed to pin block`, `py-parquet` included, because the wage imputation
+  works in DuckDB whatever the store. Set both variables before a sweep goes
+  above 50 copies. Compare `wage_imp` only between runs at the same limit: the
+  limit changes the order in which DuckDB adds up the imputation's means, and so
+  the draw (see the main README).
 - `steps.csv` — one row per step, read off the timestamps all three arms write
   into their per-step logs. A step's `seconds` is its own finish minus the
   finish of the step before it. `log_span` is the distance from a log's first
@@ -103,6 +118,13 @@ Two files land in the results folder:
   and R evaluates a pipe's argument only where the function uses it, so every R
   step writes its opening line while the pipe is being built, in reverse order.
   Finish stamps are in pipeline order in all three.
+
+On a laptop, run a sweep under `caffeinate -ims`. A benchmark process does not
+keep macOS awake, and a machine that sleeps during a step records the sleep as
+that step's time, which looks exactly like a memory cliff; check `pmset -g log`
+before reading one. Do not delete large files during a measured run either:
+APFS frees the space in the background, and a 76 s delete once added 294 s to
+an R run at 50 copies.
 
 ## Sizes
 
